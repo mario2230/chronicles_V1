@@ -806,6 +806,7 @@ const GAME_DATA = {
     "tipo": "local",
     "raridade": "rara",
     "weight": 12,
+    "inicial": true,
     "regiaoOrigem": ["ruinas", "deserto"],
     "minNivel": 5,
     "historia": [
@@ -936,6 +937,7 @@ const GAME_DATA = {
     "tipo": "local",
     "raridade": "incomum",
     "weight": 20,
+    "inicial": true,
     "regiaoOrigem": ["floresta", "cemiterio"],
     "minNivel": 3,
     "historia": [
@@ -992,6 +994,7 @@ const GAME_DATA = {
     "tipo": "local",
     "raridade": "incomum",
     "weight": 18,
+    "inicial": true,
     "regiaoOrigem": ["ruinas", "montanha"],
     "minNivel": 4,
     "historia": [
@@ -1032,6 +1035,7 @@ const GAME_DATA = {
     "tipo": "local",
     "raridade": "rara",
     "weight": 15,
+    "inicial": true,
     "regiaoOrigem": ["deserto", "montanha"],
     "minNivel": 12,
     "historia": [
