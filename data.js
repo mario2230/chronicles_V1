@@ -431,7 +431,7 @@ const GAME_DATA = {
       "ataqueInimigo": 6,
       "defesaInimigo": 2,
       "ouroDrop": [4, 10],
-      "expDrop": 9,
+      "expDrop": 14,
       "contadorTag": "banditosDerrotados"
     },
     "desbloqueia": ["guilda_bandidos"]
@@ -467,7 +467,7 @@ const GAME_DATA = {
     "nome": "Ruínas Esquecidas",
     "tipo": "local",
     "raridade": "incomum",
-    "weight": 25,
+    "weight": 20,
     "inicial": true,
     "regiaoOrigem": ["floresta", "aldeia"],
     "minNivel": 2,
@@ -499,7 +499,7 @@ const GAME_DATA = {
       "ataqueInimigo": 7,
       "defesaInimigo": 4,
       "ouroDrop": [5, 12],
-      "expDrop": 12
+      "expDrop": 22
     }
   },
   {
@@ -1031,9 +1031,9 @@ const GAME_DATA = {
     "nome": "Portões do Castelo",
     "tipo": "local",
     "raridade": "rara",
-    "weight": 8,
+    "weight": 15,
     "regiaoOrigem": ["deserto", "montanha"],
-    "minNivel": 8,
+    "minNivel": 12,
     "historia": [
       "Os portões colossais do castelo se abrem lentamente diante de você.",
       "Bandeiras esfarrapadas tremulam sobre as muralhas do castelo."
@@ -1323,7 +1323,7 @@ const GAME_DATA = {
     "titulo": "Arquimago",
     "condicao": "classe_nivel",
     "classe": "mago",
-    "nivelMinimo": 15,
+    "nivelMinimo": 35,
     "texto": "Seu domínio das artes arcanas alcança um nível quase divino. Você se torna uma lenda viva."
   },
   {
@@ -1331,7 +1331,7 @@ const GAME_DATA = {
     "emoji": "👻",
     "titulo": "Lenda",
     "condicao": "nivel_geral",
-    "nivelMinimo": 20,
+    "nivelMinimo": 100,
     "texto": "Sua jornada se torna lenda, contada por gerações ao redor de fogueiras em todo o reino."
   },
   {
@@ -1349,14 +1349,7 @@ const GAME_DATA = {
     "condicao": "flag",
     "flag": "flagelo_goblins",
     "texto": "Ao derrotar o Rei Goblin, você desmantelou o império de sucata, trazendo paz definitiva às estradas da região."
-  },
-  {
-    "id": "heroi_povo",
-    "emoji": "🛡️",
-    "titulo": "Defensor dos Humildes",
-    "condicao": "nivel_geral",
-    "nivelMinimo": 12,
-    "texto": "Embora não tenha matado deuses ou dragões, você protegeu os mais fracos e sua lenda viverá nos corações do povo simples."
   }
+
 ]
 };
