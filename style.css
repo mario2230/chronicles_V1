@@ -455,6 +455,12 @@ body.weather-praga footer.cards { border-top-color: #4ADE80; }
 
 .game-card {
   width: 210px;
+  min-width: 210px;
+  max-width: 210px;
+  height: 260px;
+  min-height: 260px;
+  max-height: 260px;
+  flex-shrink: 0;
   background: var(--card);
   border: 1px solid var(--border);
   border-radius: 14px;
@@ -464,7 +470,18 @@ body.weather-praga footer.cards { border-top-color: #4ADE80; }
   display: flex;
   flex-direction: column;
   gap: 8px;
+  overflow: hidden;
   animation: cardFloat 4.5s ease-in-out infinite;
+}
+.game-card.card-escolha { border-style: dashed; border-color: var(--secondary); }
+.card-choice-tag {
+  align-self: flex-start;
+  font-size: 0.58rem;
+  color: var(--secondary);
+  border: 1px solid var(--secondary);
+  padding: 2px 6px;
+  border-radius: 5px;
+  font-weight: 700;
 }
 @keyframes cardFloat {
   0%, 100% { transform: translateY(0); }
@@ -530,9 +547,26 @@ body.weather-praga footer.cards { border-top-color: #4ADE80; }
 .rarity-lendaria { color: #FACC15; border-color: #FACC15 !important; }
 .rarity-mitica { color: #F87171; border-color: #F87171 !important; }
 
-.game-card .card-name { font-weight: 700; font-size: 0.9rem; }
+.game-card .card-name {
+  font-weight: 700;
+  font-size: 0.9rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  min-height: 2.4em;
+}
 .game-card .card-type { font-size: 0.65rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: .05em; }
-.game-card .card-desc { font-size: 0.72rem; color: var(--text-dim); line-height: 1.4; min-height: 34px; }
+.game-card .card-desc {
+  font-size: 0.72rem;
+  color: var(--text-dim);
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  flex: 1;
+}
 .game-card .card-new {
   align-self: flex-start;
   font-size: 0.58rem;
@@ -549,6 +583,120 @@ body.weather-praga footer.cards { border-top-color: #4ADE80; }
 @keyframes cardOut { to { opacity: 0; transform: translateY(-14px) scale(.9); } }
 .game-card.entering { animation: cardIn .35s ease; }
 @keyframes cardIn { from { opacity: 0; transform: translateY(14px) scale(.92);} to { opacity:1; transform: translateY(0) scale(1);} }
+
+/* ---------- FEEDBACK DE COMBATE ---------- */
+#heroPanel { position: relative; }
+.floating-dmg {
+  position: absolute;
+  top: 40%;
+  font-weight: 800;
+  font-size: 1.05rem;
+  pointer-events: none;
+  z-index: 40;
+  animation: floatUp 1.1s ease-out forwards;
+  text-shadow: 0 0 10px rgba(0,0,0,0.8);
+}
+.floating-dmg.dmg-neg { color: var(--cor-vermelho); }
+.floating-dmg.dmg-pos { color: var(--cor-amarelo); font-size: 0.85rem; }
+.floating-dmg.dmg-heal { color: var(--cor-verde); }
+.floating-dmg.dmg-fatal { color: var(--cor-vermelho); font-size: 1.4rem; }
+.floating-dmg.dmg-crit {
+  color: #ffd700;
+  font-size: 1.25rem;
+  top: 30%;
+  text-shadow: 0 0 14px rgba(255,215,0,0.85), 0 0 4px rgba(0,0,0,0.9);
+  animation: floatUpCrit 1.2s cubic-bezier(.2,.9,.3,1) forwards;
+}
+@keyframes floatUpCrit {
+  0% { opacity: 0; transform: translateY(4px) scale(0.7) rotate(-4deg); }
+  12% { opacity: 1; transform: translateY(-4px) scale(1.25) rotate(2deg); }
+  70% { opacity: 1; transform: translateY(-30px) scale(1.05) rotate(0deg); }
+  100% { opacity: 0; transform: translateY(-48px) scale(0.95); }
+}
+.story-highlight-crit {
+  color: #ffd700;
+  font-family: 'Inter', system-ui, sans-serif;
+}
+@keyframes floatUp {
+  0% { opacity: 0; transform: translateY(6px) scale(0.9); }
+  15% { opacity: 1; transform: translateY(0) scale(1.08); }
+  75% { opacity: 1; transform: translateY(-26px) scale(1); }
+  100% { opacity: 0; transform: translateY(-42px) scale(0.95); }
+}
+
+.flash-hit { animation: flashHit .5s ease; }
+@keyframes flashHit {
+  0% { box-shadow: inset 0 0 0 0 rgba(248,113,113,0); }
+  20% { box-shadow: inset 0 0 40px 6px rgba(248,113,113,0.45); }
+  100% { box-shadow: inset 0 0 0 0 rgba(248,113,113,0); }
+}
+.flash-heal { animation: flashHeal .5s ease; }
+@keyframes flashHeal {
+  0% { box-shadow: inset 0 0 0 0 rgba(74,222,128,0); }
+  20% { box-shadow: inset 0 0 36px 6px rgba(74,222,128,0.4); }
+  100% { box-shadow: inset 0 0 0 0 rgba(74,222,128,0); }
+}
+
+.screen-shake { animation: shakeNormal .4s ease; }
+.screen-shake-strong { animation: shakeStrong .45s ease; }
+@keyframes shakeNormal {
+  0%, 100% { transform: translate(0,0); }
+  20% { transform: translate(-4px, 2px); }
+  40% { transform: translate(4px, -2px); }
+  60% { transform: translate(-3px, 1px); }
+  80% { transform: translate(3px, -1px); }
+}
+@keyframes shakeStrong {
+  0%, 100% { transform: translate(0,0) rotate(0); }
+  15% { transform: translate(-7px, 4px) rotate(-0.3deg); }
+  30% { transform: translate(7px, -4px) rotate(0.3deg); }
+  45% { transform: translate(-6px, 3px) rotate(-0.2deg); }
+  60% { transform: translate(6px, -3px) rotate(0.2deg); }
+  75% { transform: translate(-3px, 2px); }
+  90% { transform: translate(3px, -1px); }
+}
+
+/* ---------- FASE / DECISÃO ---------- */
+.fase-tag {
+  color: var(--secondary);
+  font-weight: 700;
+  border: 1px solid var(--secondary);
+  border-radius: 999px;
+  padding: 2px 10px;
+  font-size: 0.68rem;
+}
+.tree-node.type-fase .tree-emoji { border-color: var(--cor-amarelo); box-shadow: 0 0 12px rgba(250,204,21,0.35); }
+
+.story-highlight {
+  color: var(--cor-amarelo);
+  font-family: 'Inter', system-ui, sans-serif;
+}
+.story-highlight-dark {
+  color: var(--cor-vermelho);
+  font-family: 'Inter', system-ui, sans-serif;
+}
+.story-entry-recent { animation: fadeIn .4s ease, storyGlowSoft 1.6s ease; }
+@keyframes storyGlowSoft {
+  0% { box-shadow: -8px 0 12px -7px rgba(168,85,247,0.4); }
+  100% { box-shadow: -8px 0 0px -7px rgba(168,85,247,0); }
+}
+
+/* ---------- MODAL DE ESCOLHA (diálogo / gameplay) ---------- */
+.choice-box { max-width: 560px; }
+.choice-header { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; }
+.choice-emoji { font-size: 1.8rem; }
+.choice-options { display: flex; flex-direction: column; gap: 10px; }
+.choice-option {
+  background: #101010;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px;
+  cursor: pointer;
+  transition: all .15s;
+}
+.choice-option:hover { border-color: var(--secondary); background: #151020; transform: translateX(3px); }
+.choice-option-label { font-weight: 700; font-size: 0.9rem; }
+.choice-option-dica { font-size: 0.7rem; color: var(--text-dim); margin-top: 4px; font-style: italic; }
 
 /* ---------- WORLD EVENT BANNER ---------- */
 .world-event {
@@ -800,5 +948,5 @@ body.weather-corrupcao #weatherLayer {
 @media (max-width: 900px) {
   main.panels { grid-template-columns: 1fr; grid-template-rows: auto auto 1fr; }
   footer.cards { flex-wrap: wrap; }
-  .game-card { width: 160px; }
+  .game-card { width: 160px; min-width: 160px; max-width: 160px; height: 230px; min-height: 230px; max-height: 230px; }
 }
