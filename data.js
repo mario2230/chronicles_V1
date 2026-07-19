@@ -150,7 +150,7 @@ const GAME_DATA = {
     "titulo": "A Caçadora",
     "personalidade": "Independente, arredia, detesta cidades.",
     "descricao": "Conhece cada trilha da floresta melhor do que seu próprio nome.",
-    "regiaoOrigem": ["floresta", "pantano"]
+    "regiaoOrigem": ["floresta"]
   },
   {
     "id": "seraphina",
@@ -181,7 +181,7 @@ const GAME_DATA = {
     "raridade": "comum",
     "weight": 10,
     "inicial": true,
-    "regiaoOrigem": ["aldeia", "pantano", "montanha"],
+    "regiaoOrigem": ["aldeia"],
     "minNivel": 1,
     "historia": [
       "Você contempla mais uma vez sua aldeia natal antes de partir.",
@@ -189,7 +189,7 @@ const GAME_DATA = {
     ],
     "cor": "azul",
     "efeito": { "tipo": "mudar_regiao", "regiao": "aldeia" },
-    "desbloqueia": ["mercador", "ferreiro", "estrada_floresta", "eldrin_encontro", "kael_encontro"]
+    "desbloqueia": ["mercador", "ferreiro", "estrada_floresta", "eldrin_encontro", "kael_encontro", "pocao_mana", "seraphina_encontro", "resgate_aldeia", "vendedor_ambulante", "corvo_mensageiro", "poco_desejos", "bardo_viajante", "torneio_aldeia", "cajado_piromante", "grimorio_necromante", "espelho_ilusorio", "orbe_elemental"]
   },
   {
     "id": "eldrin_encontro",
@@ -255,7 +255,7 @@ const GAME_DATA = {
     ],
     "cor": "verde",
     "efeito": { "tipo": "mudar_regiao", "regiao": "floresta" },
-    "desbloqueia": ["lobo", "veado", "cogumelos", "lenhador", "arvore_anciã", "acampamento", "lyra_encontro"]
+    "desbloqueia": ["lobo", "veado", "cogumelos", "lenhador", "arvore_anciã", "acampamento", "lyra_encontro", "goblin", "javali_selvagem", "encruzilhada_moral", "druida_protetor", "vento_selvagem", "memoria_eldrin_secreta", "escola_ilusionismo"]
   },
   {
     "id": "lyra_encontro",
@@ -271,7 +271,8 @@ const GAME_DATA = {
       "Lyra desce de um galho sem fazer ruído algum. \"A floresta fala de você. Ainda não decidi se isso é bom.\""
     ],
     "cor": "verde",
-    "efeito": { "tipo": "personagem", "personagemId": "lyra", "relacao": 8, "exp": 6 }
+    "efeito": { "tipo": "personagem", "personagemId": "lyra", "relacao": 8, "exp": 6 },
+    "desbloqueia": ["oferta_lyra"]
   },
   {
     "id": "lobo",
@@ -477,7 +478,7 @@ const GAME_DATA = {
     ],
     "cor": "azul",
     "efeito": { "tipo": "mudar_regiao", "regiao": "ruinas" },
-    "desbloqueia": ["esqueleto", "bandido", "tesouro_ruinas", "portal_misterioso"]
+    "desbloqueia": ["esqueleto", "bandido", "tesouro_ruinas", "portal_misterioso", "prisioneiro_masmorra", "ruinas_biblioteca"]
   },
   {
     "id": "esqueleto",
@@ -546,7 +547,7 @@ const GAME_DATA = {
     "raridade": "incomum",
     "weight": 25,
     "inicial": true,
-    "regiaoOrigem": ["floresta", "aldeia", "pantano", "vulcao"],
+    "regiaoOrigem": ["floresta", "aldeia", "pantano"],
     "minNivel": 3,
     "historia": [
       "O ar fica mais frio conforme você sobe a trilha rochosa.",
@@ -554,7 +555,7 @@ const GAME_DATA = {
     ],
     "cor": "azul",
     "efeito": { "tipo": "mudar_regiao", "regiao": "montanha" },
-    "desbloqueia": ["aguia", "troll", "caverna_gelo", "dragao", "vulcao_base", "duelo_kael"]
+    "desbloqueia": ["aguia", "troll", "caverna_gelo", "dragao", "vulcao_base", "duelo_kael", "ferreiro_ambulante", "gigante_pedra", "escola_elementalismo"]
   },
   {
     "id": "aguia",
@@ -610,7 +611,7 @@ const GAME_DATA = {
     ],
     "cor": "azul",
     "efeito": { "tipo": "mudar_regiao", "regiao": "caverna" },
-    "desbloqueia": ["lobo_branco", "cristal_gelo", "abismo_fenda"]
+    "desbloqueia": ["lobo_branco", "cristal_gelo", "abismo_fenda", "morcego_vampiro"]
   },
   {
     "id": "lobo_branco",
@@ -815,7 +816,7 @@ const GAME_DATA = {
     ],
     "cor": "azul",
     "efeito": { "tipo": "mudar_regiao", "regiao": "templo" },
-    "desbloqueia": ["sacerdote_caido", "sumo_sacerdote", "espada_lendaria"]
+    "desbloqueia": ["sacerdote_caido", "sumo_sacerdote", "espada_lendaria", "chamado_arcano", "espirito_guardiao", "escola_piromancia"]
   },
   {
     "id": "sacerdote_caido",
@@ -881,7 +882,7 @@ const GAME_DATA = {
     ],
     "cor": "cinza",
     "efeito": { "tipo": "mudar_regiao", "regiao": "cemiterio" },
-    "desbloqueia": ["fantasma", "esqueleto", "rei_lich"]
+    "desbloqueia": ["fantasma", "esqueleto", "rei_lich", "pacto_sombrio", "sombra_do_passado", "necromante_iniciante", "circulo_convocacao", "lamina_do_juramento", "grimm_encontro", "escola_necromancia"]
   },
   {
     "id": "fantasma",
@@ -1003,7 +1004,7 @@ const GAME_DATA = {
     ],
     "cor": "azul",
     "efeito": { "tipo": "mudar_regiao", "regiao": "deserto" },
-    "desbloqueia": ["escorpiao", "mercador"]
+    "desbloqueia": ["escorpiao", "mercador", "caravana_mercadores", "cobra_venenosa", "oasis_deserto"]
   },
   {
     "id": "escorpiao",
@@ -1044,7 +1045,7 @@ const GAME_DATA = {
     ],
     "cor": "azul",
     "efeito": { "tipo": "mudar_regiao", "regiao": "castelo" },
-    "desbloqueia": ["cavaleiro_negro", "espada_lendaria"]
+    "desbloqueia": ["cavaleiro_negro", "espada_lendaria", "arena_desafio"]
   },
   {
     "id": "cavaleiro_negro",
@@ -1612,7 +1613,7 @@ const GAME_DATA = {
     "raridade": "rara",
     "weight": 10,
     "faseMin": 2,
-    "regiaoOrigem": ["montanha", "abismo"],
+    "regiaoOrigem": ["montanha"],
     "minNivel": 8,
     "historia": [
       "O calor se torna insuportável conforme você se aproxima da base do vulcão.",
@@ -1832,7 +1833,7 @@ const GAME_DATA = {
     "raridade": "epica",
     "weight": 6,
     "faseMin": 3,
-    "regiaoOrigem": ["caverna", "vulcao"],
+    "regiaoOrigem": ["caverna"],
     "minNivel": 11,
     "historia": [
       "Uma fenda escura se abre no chão da caverna, exalando um frio que não é natural.",
@@ -1840,7 +1841,7 @@ const GAME_DATA = {
     ],
     "cor": "roxo",
     "efeito": { "tipo": "mudar_regiao", "regiao": "abismo" },
-    "desbloqueia": ["horror_abissal", "sussurros_vazio", "cristal_alma", "devorador_abismo"]
+    "desbloqueia": ["horror_abissal", "sussurros_vazio", "cristal_alma", "devorador_abismo", "ultimo_covil", "visao_do_que_podia_ser", "errante_cegado", "olho_infinito"]
   },
   {
     "id": "horror_abissal",
@@ -2148,7 +2149,7 @@ const GAME_DATA = {
     "raridade": "rara",
     "weight": 12,
     "faseMin": 2,
-    "regiaoOrigem": ["cemiterio", "ruinas", "abismo"],
+    "regiaoOrigem": ["cemiterio", "ruinas"],
     "minNivel": 5,
     "historia": [
       "Uma sombra com sua própria forma o observa do outro lado da névoa.",
@@ -2252,7 +2253,7 @@ const GAME_DATA = {
     "nome": "Lâmina do Juramento Sombrio",
     "tipo": "artefato",
     "raridade": "lendaria",
-    "weight": 1,
+    "weight": 0,
     "oculta": true,
     "regiaoOrigem": ["ruinas", "cemiterio", "pantano", "abismo"],
     "minNivel": 6,
@@ -2267,7 +2268,7 @@ const GAME_DATA = {
     "nome": "O Último Covil",
     "tipo": "chefe",
     "raridade": "mitica",
-    "weight": 5,
+    "weight": 1,
     "faseMin": 4,
     "regiaoOrigem": ["vulcao", "abismo"],
     "minNivel": 16,
@@ -2293,7 +2294,7 @@ const GAME_DATA = {
     "nome": "Visão do que Podia Ser",
     "tipo": "misterio",
     "raridade": "mitica",
-    "weight": 7,
+    "weight": 2,
     "faseMin": 4,
     "regiaoOrigem": ["abismo", "templo"],
     "minNivel": 14,
@@ -2360,7 +2361,7 @@ const GAME_DATA = {
     "nome": "Errante Cegado",
     "tipo": "npc",
     "raridade": "rara",
-    "weight": 15,
+    "weight": 10,
     "regiaoOrigem": ["abismo", "cemiterio"],
     "minNivel": 9,
     "historia": [
@@ -2486,7 +2487,387 @@ const GAME_DATA = {
         }
       ]
     }
+  },
+
+  /* ============================================================
+     REDE DE ESTRADAS — conecta todos os terrenos entre si e garante
+     que sempre exista um caminho de volta para a aldeia natal, de
+     qualquer região em que o jogador esteja. Sem isso, a jornada vira
+     uma via de mão única e o jogador fica "preso" longe de casa.
+     ============================================================ */
+  {
+    "id": "estrada_para_aldeia",
+    "emoji": "🏘",
+    "nome": "Estrada de Volta",
+    "tipo": "local",
+    "raridade": "comum",
+    "weight": 16,
+    "inicial": true,
+    "regiaoOrigem": ["floresta", "ruinas", "montanha", "caverna", "templo", "cemiterio", "pantano", "deserto", "castelo", "vulcao", "capital", "abismo"],
+    "minNivel": 1,
+    "historia": [
+      "Uma trilha conhecida aponta de volta para a aldeia natal.",
+      "Você reconhece marcos familiares — o caminho para casa está logo ali.",
+      "Depois de tanto caminhar, a ideia de rever a aldeia parece reconfortante.",
+      "Um velho marco de pedra indica a distância até a aldeia.",
+      "O cheiro de pão fresco, mesmo distante, lembra você de que a aldeia não fica tão longe assim."
+    ],
+    "cor": "azul",
+    "efeito": { "tipo": "mudar_regiao", "regiao": "aldeia" }
+  },
+  {
+    "id": "trilha_vulcao_montanha",
+    "emoji": "🏔",
+    "nome": "Descida do Vulcão",
+    "tipo": "local",
+    "raridade": "comum",
+    "weight": 14,
+    "inicial": true,
+    "regiaoOrigem": ["vulcao"],
+    "minNivel": 8,
+    "historia": [
+      "O ar esfria conforme você desce de volta para as trilhas rochosas da montanha.",
+      "Deixar o calor do vulcão para trás traz um alívio imediato."
+    ],
+    "cor": "azul",
+    "efeito": { "tipo": "mudar_regiao", "regiao": "montanha" }
+  },
+  {
+    "id": "saida_abismo",
+    "emoji": "🧊",
+    "nome": "Saída do Abismo",
+    "tipo": "local",
+    "raridade": "comum",
+    "weight": 14,
+    "inicial": true,
+    "regiaoOrigem": ["abismo"],
+    "minNivel": 11,
+    "historia": [
+      "A fenda se estreita atrás de você conforme retorna à caverna congelada.",
+      "O silêncio do abismo dá lugar ao eco familiar do gelo rachando."
+    ],
+    "cor": "azul",
+    "efeito": { "tipo": "mudar_regiao", "regiao": "caverna" }
+  },
+  {
+    "id": "portao_capital_castelo",
+    "emoji": "🏰",
+    "nome": "Retorno ao Castelo",
+    "tipo": "local",
+    "raridade": "comum",
+    "weight": 14,
+    "inicial": true,
+    "regiaoOrigem": ["capital"],
+    "minNivel": 10,
+    "historia": [
+      "Você deixa as ruas movimentadas da capital e retorna às muralhas do castelo.",
+      "O burburinho da capital fica para trás enquanto os portões do castelo se erguem à frente."
+    ],
+    "cor": "azul",
+    "efeito": { "tipo": "mudar_regiao", "regiao": "castelo" }
+  },
+  {
+    "id": "travessia_deserto_pantano",
+    "emoji": "🌙",
+    "nome": "Travessia das Terras Baixas",
+    "tipo": "local",
+    "raridade": "incomum",
+    "weight": 12,
+    "inicial": true,
+    "regiaoOrigem": ["deserto", "pantano"],
+    "minNivel": 3,
+    "historia": [
+      "A areia dá lugar à lama conforme o terreno muda sob seus pés.",
+      "Um caminho pouco usado conecta as dunas áridas aos pântanos encharcados."
+    ],
+    "cor": "verde",
+    "efeito": { "tipo": "mudar_regiao", "regiao": "pantano" }
+  },
+  {
+    "id": "travessia_pantano_deserto",
+    "emoji": "🏜",
+    "nome": "Rumo às Dunas",
+    "tipo": "local",
+    "raridade": "incomum",
+    "weight": 12,
+    "inicial": true,
+    "regiaoOrigem": ["pantano", "deserto"],
+    "minNivel": 3,
+    "historia": [
+      "A lama seca sob seus pés conforme o pântano dá lugar à areia quente.",
+      "O horizonte se abre em dunas douradas depois da névoa densa do pântano."
+    ],
+    "cor": "laranja",
+    "efeito": { "tipo": "mudar_regiao", "regiao": "deserto" }
+  },
+{
+  "id": "escola_piromancia",
+  "emoji": "🔥",
+  "nome": "Escola de Piromancia",
+  "tipo": "escola",
+  "raridade": "rara",
+  "weight": 8,
+  "regiaoOrigem": [
+    "templo",
+    "ruinas"
+  ],
+  "minNivel": 3,
+  "faseMin": 2,
+  "historia": [
+    "Um piromante itinerante se oferece para lhe ensinar os fundamentos das chamas — avisando, com um sorriso torto, que você vai se queimar algumas vezes no caminho."
+  ],
+  "cor": "vermelho",
+  "efeito": {
+    "tipo": "escola",
+    "escolaId": "piromancia",
+    "bonus": {
+      "ataque": 3
+    }
   }
+},
+{
+  "id": "escola_necromancia",
+  "emoji": "☠",
+  "nome": "Escola de Necromancia",
+  "tipo": "escola",
+  "raridade": "rara",
+  "weight": 8,
+  "regiaoOrigem": [
+    "cemiterio",
+    "pantano"
+  ],
+  "minNivel": 3,
+  "faseMin": 2,
+  "historia": [
+    "Entre os túmulos, uma voz sem corpo ensina a ouvir os mortos — e, vez ou outra, a se recusar a permanecer quieta diante deles."
+  ],
+  "cor": "roxo",
+  "efeito": {
+    "tipo": "escola",
+    "escolaId": "necromancia",
+    "bonus": {
+      "vidaMax": 15
+    }
+  }
+},
+{
+  "id": "escola_ilusionismo",
+  "emoji": "🌙",
+  "nome": "Escola de Ilusionismo",
+  "tipo": "escola",
+  "raridade": "rara",
+  "weight": 8,
+  "regiaoOrigem": [
+    "floresta",
+    "caverna"
+  ],
+  "minNivel": 3,
+  "faseMin": 2,
+  "historia": [
+    "Uma figura encapuzada desaparece e reaparece três vezes seguidas antes de aceitar lhe ensinar a arte de enganar os olhos."
+  ],
+  "cor": "azul",
+  "efeito": {
+    "tipo": "escola",
+    "escolaId": "ilusionismo",
+    "bonus": {
+      "velocidade": 3
+    }
+  }
+},
+{
+  "id": "escola_elementalismo",
+  "emoji": "⚡",
+  "nome": "Escola de Elementalismo",
+  "tipo": "escola",
+  "raridade": "rara",
+  "weight": 8,
+  "regiaoOrigem": [
+    "montanha",
+    "deserto"
+  ],
+  "minNivel": 3,
+  "faseMin": 2,
+  "historia": [
+    "Um velho elementalista canaliza um raio pela própria mão só para provar que os elementos podem ser domados por quem tem paciência."
+  ],
+  "cor": "azul",
+  "efeito": {
+    "tipo": "escola",
+    "escolaId": "elementalismo",
+    "bonus": {
+      "mana": 20
+    }
+  }
+},
+{
+  "id": "cajado_piromante",
+  "emoji": "🔥",
+  "nome": "Cajado do Piromante",
+  "tipo": "item",
+  "raridade": "epica",
+  "weight": 6,
+  "regiaoOrigem": [
+    "aldeia",
+    "floresta",
+    "montanha",
+    "ruinas",
+    "caverna",
+    "pantano",
+    "deserto",
+    "templo",
+    "cemiterio",
+    "castelo",
+    "vulcao",
+    "capital",
+    "abismo"
+  ],
+  "minNivel": 4,
+  "faseMin": 2,
+  "condicao": {
+    "tag": "escola_piromancia",
+    "minimo": 1
+  },
+  "historia": [
+    "O cajado arde sem se consumir, como se as chamas reconhecessem em você uma das suas."
+  ],
+  "cor": "vermelho",
+  "efeito": {
+    "tipo": "item",
+    "slot": "arma",
+    "nomeItem": "Cajado do Piromante",
+    "bonus": {
+      "ataque": 6,
+      "mana": 10
+    }
+  }
+},
+{
+  "id": "grimorio_necromante",
+  "emoji": "📕",
+  "nome": "Grimório Necromante",
+  "tipo": "item",
+  "raridade": "epica",
+  "weight": 6,
+  "regiaoOrigem": [
+    "aldeia",
+    "floresta",
+    "montanha",
+    "ruinas",
+    "caverna",
+    "pantano",
+    "deserto",
+    "templo",
+    "cemiterio",
+    "castelo",
+    "vulcao",
+    "capital",
+    "abismo"
+  ],
+  "minNivel": 4,
+  "faseMin": 2,
+  "condicao": {
+    "tag": "escola_necromancia",
+    "minimo": 1
+  },
+  "historia": [
+    "As páginas do grimório sussurram nomes que você não reconhece, mas que parecem reconhecer você."
+  ],
+  "cor": "roxo",
+  "efeito": {
+    "tipo": "item",
+    "slot": "acessorio",
+    "nomeItem": "Grimório Necromante",
+    "bonus": {
+      "vidaMax": 20,
+      "defesa": 2
+    }
+  }
+},
+{
+  "id": "espelho_ilusorio",
+  "emoji": "🪞",
+  "nome": "Espelho Ilusório",
+  "tipo": "item",
+  "raridade": "epica",
+  "weight": 6,
+  "regiaoOrigem": [
+    "aldeia",
+    "floresta",
+    "montanha",
+    "ruinas",
+    "caverna",
+    "pantano",
+    "deserto",
+    "templo",
+    "cemiterio",
+    "castelo",
+    "vulcao",
+    "capital",
+    "abismo"
+  ],
+  "minNivel": 4,
+  "faseMin": 2,
+  "condicao": {
+    "tag": "escola_ilusionismo",
+    "minimo": 1
+  },
+  "historia": [
+    "O espelho mostra seu reflexo um instante depois do que deveria — o suficiente para confundir qualquer inimigo."
+  ],
+  "cor": "azul",
+  "efeito": {
+    "tipo": "item",
+    "slot": "acessorio",
+    "nomeItem": "Espelho Ilusório",
+    "bonus": {
+      "velocidade": 4,
+      "ataque": 1
+    }
+  }
+},
+{
+  "id": "orbe_elemental",
+  "emoji": "🔮",
+  "nome": "Orbe Elemental",
+  "tipo": "item",
+  "raridade": "epica",
+  "weight": 6,
+  "regiaoOrigem": [
+    "aldeia",
+    "floresta",
+    "montanha",
+    "ruinas",
+    "caverna",
+    "pantano",
+    "deserto",
+    "templo",
+    "cemiterio",
+    "castelo",
+    "vulcao",
+    "capital",
+    "abismo"
+  ],
+  "minNivel": 4,
+  "faseMin": 2,
+  "condicao": {
+    "tag": "escola_elementalismo",
+    "minimo": 1
+  },
+  "historia": [
+    "Dentro do orbe, fogo, água, terra e ar giram em equilíbrio perfeito, esperando seu comando."
+  ],
+  "cor": "azul",
+  "efeito": {
+    "tipo": "item",
+    "slot": "acessorio",
+    "nomeItem": "Orbe Elemental",
+    "bonus": {
+      "mana": 15,
+      "defesa": 2
+    }
+  }
+}
 ],
   events: [
   {
