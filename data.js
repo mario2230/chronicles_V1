@@ -691,7 +691,7 @@ const GAME_DATA = {
       "Você troca algumas moedas por suprimentos úteis."
     ],
     "cor": "laranja",
-    "efeito": { "tipo": "item", "slot": "consumivel", "cura": 25, "nomeItem": "Ração de Viagem", "custoOuro": 25 }
+    "efeito": { "tipo": "item", "slot": "consumivel", "cura": 45, "nomeItem": "Ração de Viagem", "custoOuro": 25 }
   },
   {
     "id": "ferreiro",
