@@ -376,7 +376,7 @@ const GAME_DATA = {
     "tipo": "local",
     "raridade": "comum",
     "weight": 20,
-    "regiaoOrigem": ["floresta", "montanha"],
+    "regiaoOrigem": ["floresta", "montanha", "pantano"],
     "minNivel": 1,
     "historia": [
       "Você descansa junto às cinzas de uma fogueira apagada.",
@@ -469,7 +469,7 @@ const GAME_DATA = {
     "raridade": "incomum",
     "weight": 20,
     "inicial": true,
-    "regiaoOrigem": ["floresta", "aldeia"],
+    "regiaoOrigem": ["floresta", "aldeia", "pantano"],
     "minNivel": 2,
     "historia": [
       "Pilares quebrados marcam a entrada de ruínas antigas.",
@@ -546,7 +546,7 @@ const GAME_DATA = {
     "raridade": "incomum",
     "weight": 25,
     "inicial": true,
-    "regiaoOrigem": ["floresta", "aldeia"],
+    "regiaoOrigem": ["floresta", "aldeia", "pantano"],
     "minNivel": 3,
     "historia": [
       "O ar fica mais frio conforme você sobe a trilha rochosa.",
