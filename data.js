@@ -683,7 +683,7 @@ const GAME_DATA = {
     "nome": "Mercador Viajante",
     "tipo": "npc",
     "raridade": "comum",
-    "weight": 30,
+    "weight": 40,
     "regiaoOrigem": ["aldeia", "ruinas", "deserto"],
     "minNivel": 1,
     "historia": [
@@ -691,15 +691,15 @@ const GAME_DATA = {
       "Você troca algumas moedas por suprimentos úteis."
     ],
     "cor": "laranja",
-    "efeito": { "tipo": "item", "slot": "consumivel", "cura": 25, "nomeItem": "Ração de Viagem", "custoOuro": 5 }
+    "efeito": { "tipo": "item", "slot": "consumivel", "cura": 25, "nomeItem": "Ração de Viagem", "custoOuro": 25 }
   },
   {
     "id": "ferreiro",
     "emoji": "🔨",
     "nome": "Ferreiro da Aldeia",
     "tipo": "npc",
-    "raridade": "incomum",
-    "weight": 25,
+    "raridade": "lendaria",
+    "weight": 3,
     "regiaoOrigem": ["aldeia"],
     "minNivel": 1,
     "historia": [
@@ -707,7 +707,7 @@ const GAME_DATA = {
       "Faíscas voam enquanto o ferreiro finaliza seu trabalho."
     ],
     "cor": "laranja",
-    "efeito": { "tipo": "item", "slot": "arma", "nomeItem": "Espada de Ferro", "bonus": { "ataque": 3 }, "custoOuro": 10 }
+    "efeito": { "tipo": "item", "slot": "arma", "nomeItem": "Espada de Ferro", "bonus": { "ataque": 50 }, "custoOuro": 50 }
   },
   {
     "id": "machado_lenhador",
