@@ -36,6 +36,17 @@
   </main>
 
   <footer class="cards" id="cardsFooter"></footer>
+
+
+<button id="musicBtn" class="music-btn" title="Música">
+    🔇
+</button>
+
+<audio id="bgMusic" loop>
+    <source src="53-kevin-graham-main-version-47358-01-40.mp3" type="audio/mpeg">
+</audio>
+
+
 </div>
 
 <div id="weatherLayer"></div>
@@ -45,3 +56,28 @@
 <script src="game.js"></script>
 </body>
 </html>
+
+<script>
+  const music = document.getElementById("bgMusic");
+const musicBtn = document.getElementById("musicBtn");
+
+let playing = false;
+
+musicBtn.addEventListener("click", async () => {
+
+    if(!playing){
+        try{
+            await music.play();
+            playing = true;
+            musicBtn.textContent = "🔊";
+        }catch(err){
+            console.error(err);
+        }
+    }else{
+        music.pause();
+        playing = false;
+        musicBtn.textContent = "🔇";
+    }
+
+});
+</script>
