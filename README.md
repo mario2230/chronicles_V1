@@ -57,7 +57,41 @@ esses quatro arquivos e troque a função `loadData()` em `game.js` para usar
 rodar um servidor local (`python3 -m http.server` na pasta do projeto), pois
 navegadores bloqueiam `fetch()` de arquivos abertos via `file://`.
 
-## Como adicionar conteúdo (sem tocar na lógica do jogo)
+## Correções e novidades desta rodada
+
+**🐛 Bug crítico corrigido:** várias cartas de mistério (`orin_biblioteca_perdida`,
+`cronica_dos_reis`, `bencao_da_fogueira` e outras) usavam campos que a função
+`resolverMisterio` não sabia interpretar, e uma delas nem tinha o campo `ouro` que
+o código lia sem checar. Isso derrubava o jogo com um erro no meio da partida —
+quase sempre o próximo clique ficava travado (cartas sem resposta), e a única saída
+parecia ser clicar em "Nova Aventura". A função foi reescrita para aceitar qualquer
+combinação de `ouro`/`exp`/`cura`/`vida`/`nomeItem`, então isso não deve mais
+acontecer, mesmo com mistérios futuros que usem campos diferentes.
+
+**🐛 Item faltante corrigido:** o combate `vessa_duelo` prometia o item
+`medalha_da_exilada` como recompensa, mas essa carta nunca tinha sido criada —
+o jogador vencia e não recebia nada. Criado.
+
+**⚔ Inimigos elite:** 8 inimigos raros/épicos que já existiam (Lobo Alfa, Espectro
+da Torre, Necromante Iniciante, Arena de Combate, Horror Abissal, Guarda Real, O
+Treino de Vessa, Mercenário Rival) agora carregam `"elite": true`. Isso dá a eles o
+mesmo tremor de tela e prefixo de destaque no diário que um chefe tem, e recompensas
+40% maiores — sem contar como "chefe" nem encerrar a run. 4 inimigos elite novos
+foram adicionados: Xamã Goblin, Javali Ancestral, Morcego Rei e Salamandra Matriarca.
+
+**👑 Dois subchefes novos** (não encerram a partida): Matriarca do Pântano (gatilho:
+3 jacarés derrotados) e Senhor das Areias (gatilho: 3 escorpiões derrotados), cada um
+com um item exclusivo garantido.
+
+**⚠ Aviso visual nos chefes finais:** cartas cujo efeito tem `flagFinal` — ou seja, os
+poucos chefes que realmente **encerram a aventura** ao serem derrotados (Dragão, Rei
+Lich, Cavaleiro Negro, Coração do Vulcão, Rainha Usurpada, Devorador do Abismo, Último
+Covil) — agora aparecem com borda vermelha pulsante e a tag "⚠ Ponto Sem Volta". A
+maioria dos chefes (Rei dos Lobos, Guilda dos Bandidos, Sumo Sacerdote, Rei Goblin,
+Gigante de Pedra, Matriarca do Pântano, Senhor das Areias) **não** têm esse aviso —
+são batalhas marcantes, mas a jornada continua depois delas.
+
+
 
 Basta adicionar um novo objeto ao array `cards` dentro de `data.js`. Exemplo de uma
 nova carta de inimigo na floresta:

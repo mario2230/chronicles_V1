@@ -171,6 +171,7 @@ function novoEstado(classeId, seed) {
     currentCards: [],
     seenLines: {},
     faseAnunciada: 1,
+    battle: null,
   };
 }
 
@@ -570,22 +571,76 @@ function obterItem(card, bonusOverride, nomeOverride) {
   state.itensObtidos.add(card.id);
 
   if (slot === "consumivel") {
-    curar(card.efeito.cura || 0);
-    addStory(`Você usou ${nome} e recuperou vitalidade.`, "amarelo");
+    const existente = state.hero.inventario.find((it) => it.tipo === "consumivel" && it.itemId === card.id);
+    if (existente) existente.quantidade++;
+    else {
+      state.hero.inventario.push({
+        tipo: "consumivel",
+        itemId: card.id,
+        nome,
+        emoji: card.emoji,
+        cor: card.cor,
+        cura: card.efeito.cura || 0,
+        quantidade: 1,
+      });
+    }
+    addStory(`🎒 Você guardou ${nome} na mochila.`, "amarelo");
     return;
   }
 
-  const item = { id: card.id, nome, bonus, slot };
+  // trocar de equipamento não descarta o antigo — ele vira reserva na mochila
+  const anterior = state.hero.equipamentos[slot];
+  if (anterior) {
+    state.hero.inventario.push({
+      tipo: "equipamento",
+      itemId: anterior.id,
+      nome: anterior.nome,
+      emoji: anterior.emoji || "🎒",
+      slot,
+      bonus: anterior.bonus,
+    });
+  }
+  const item = { id: card.id, nome, emoji: card.emoji, bonus, slot };
   state.hero.equipamentos[slot] = item;
-  addStory(`Você equipou ${nome}.`, "amarelo");
+  addStory(anterior ? `Você trocou de equipamento por ${nome}. O antigo foi para a mochila.` : `Você equipou ${nome}.`, "amarelo");
+}
+
+// consome uma unidade de um item da mochila e aplica seu efeito. Funciona
+// tanto durante uma batalha em turnos quanto na exploração normal.
+function usarConsumivel(itemId) {
+  const entry = state.hero.inventario.find((it) => it.tipo === "consumivel" && it.itemId === itemId);
+  if (!entry || entry.quantidade <= 0) return false;
+  entry.quantidade--;
+  if (entry.quantidade <= 0) state.hero.inventario = state.hero.inventario.filter((it) => it !== entry);
+  curar(entry.cura);
+  addStory(`Você usou ${entry.nome} e recuperou vitalidade.`, "amarelo");
+  return true;
+}
+
+// troca um equipamento da reserva (mochila) pelo que está em uso no slot
+function equiparDaMochila(itemId) {
+  const idx = state.hero.inventario.findIndex((it) => it.tipo === "equipamento" && it.itemId === itemId);
+  if (idx === -1) return;
+  const entry = state.hero.inventario[idx];
+  const atual = state.hero.equipamentos[entry.slot];
+  state.hero.equipamentos[entry.slot] = { id: entry.itemId, nome: entry.nome, emoji: entry.emoji, bonus: entry.bonus, slot: entry.slot };
+  state.hero.inventario.splice(idx, 1);
+  if (atual) {
+    state.hero.inventario.push({ tipo: "equipamento", itemId: atual.id, nome: atual.nome, emoji: atual.emoji || "🎒", slot: entry.slot, bonus: atual.bonus });
+  }
+  addStory(`Você trocou de equipamento: agora usa ${entry.nome}.`, "amarelo");
+  renderHero();
+  const wrap = document.getElementById("inventoryModalRoot");
+  if (wrap) { wrap.innerHTML = inventoryModalContent(); bindInventoryModalEvents(); }
 }
 
 function resolverCombate(card) {
   const ef = card.efeito;
   const dificuldade = currentFase().dificuldade;
-  let vidaInimigo = Math.round(ef.vidaInimigo * dificuldade);
-  let ataqueInimigo = Math.round(ef.ataqueInimigo * (1 + (dificuldade - 1) * 0.6));
-  const defesaInimigo = ef.defesaInimigo;
+  const eliteMult = card.elite ? 1.35 : 1;
+  let vidaInimigo = Math.round(ef.vidaInimigo * dificuldade * eliteMult);
+  let ataqueInimigo = Math.round(ef.ataqueInimigo * (1 + (dificuldade - 1) * 0.6) * (card.elite ? 1.15 : 1));
+  const defesaInimigo = ef.defesaInimigo + (card.elite ? 1 : 0);
   const vidaInimigoMax = vidaInimigo;
 
   if (state.activeEvent && state.activeEvent.modificadores.buffInimigoAtaque) {
@@ -633,7 +688,7 @@ function resolverCombate(card) {
     spawnFloatingText(`-${dmgTotalSofrido} vida`, "dmg-neg");
     flashHeroPanel("hit");
   }
-  if (maiorGolpeSofrido >= Math.max(6, vidaMaxHero * 0.16) || card.tipo === "chefe") {
+  if (maiorGolpeSofrido >= Math.max(6, vidaMaxHero * 0.16) || card.tipo === "chefe" || card.elite) {
     shakeScreen(card.tipo === "chefe" ? "strong" : "normal");
   }
 
@@ -644,9 +699,11 @@ function resolverCombate(card) {
     return;
   }
 
-  const ouro = rndInt(ef.ouroDrop[0], ef.ouroDrop[1]);
+  const ouroBase = rndInt(ef.ouroDrop[0], ef.ouroDrop[1]);
+  const ouro = card.elite ? Math.round(ouroBase * 1.4) : ouroBase;
   state.hero.ouro += ouro;
-  ganharExp(ef.expDrop);
+  const expGanho = card.elite ? Math.round(ef.expDrop * 1.4) : ef.expDrop;
+  ganharExp(expGanho);
 
   // mostra ao jogador o quanto seu equipamento e build pesaram na vitória —
   // decisões de build precisam ser sentidas, não só numéricas nos bastidores.
@@ -655,7 +712,8 @@ function resolverCombate(card) {
   if (bonusEquip >= 3) sufixoBuild = ` Seu equipamento sozinho contribuiu com +${bonusEquip} de ataque no combate.`;
   else if (criticos >= 2) sufixoBuild = ` Sua velocidade garantiu ${criticos} acertos críticos.`;
 
-  addStory(`${pickStoryLine(card)} (+${ouro} ouro, +${ef.expDrop} exp)${sufixoBuild}`, card.cor);
+  const prefixoElite = card.elite ? "⚔ Inimigo Especial derrotado! " : "";
+  addStory(`${prefixoElite}${pickStoryLine(card)} (+${ouro} ouro, +${expGanho} exp)${sufixoBuild}`, card.cor);
   spawnFloatingText(`${Math.max(0, Math.round(vidaInimigoMax))} dano total causado`, "dmg-pos");
 
   if (ef.contadorTag) state.tags[ef.contadorTag] = (state.tags[ef.contadorTag] || 0) + 1;
@@ -699,6 +757,13 @@ function shakeScreen(intensity) {
   setTimeout(() => app.classList.remove("screen-shake", "screen-shake-strong"), 450);
 }
 
+// Resolve o resultado sorteado de uma carta de mistério. É deliberadamente
+// tolerante ao formato do resultado: em vez de exigir um "sub" fixo
+// (recompensa_leve/item/dano), ele apenas aplica os campos presentes
+// (ouro, exp, cura, vida, nomeItem...). Isso evita que a adição de novos
+// mistérios quebre o jogo por causa de uma combinação de campos que o
+// código não previa explicitamente — o bug que travava o jogo era
+// exatamente esse tipo de suposição rígida demais.
 function resolverMisterio(card) {
   const total = card.efeito.resultados.reduce((s, r) => s + r.chance, 0);
   let r = rnd() * total;
@@ -707,17 +772,38 @@ function resolverMisterio(card) {
     r -= res.chance;
     if (r <= 0) { escolhido = res; break; }
   }
-  if (escolhido.sub === "recompensa_leve") {
+
+  const partes = [];
+
+  if (Array.isArray(escolhido.ouro)) {
     const ouro = rndInt(escolhido.ouro[0], escolhido.ouro[1]);
-    state.hero.ouro += ouro;
-    if (escolhido.exp) ganharExp(escolhido.exp);
-    addStory(`${pickStoryLine(card)} (+${ouro} ouro)`, card.cor);
-  } else if (escolhido.sub === "item") {
-    obterItem(card, escolhido.bonus, escolhido.nomeItem);
-    addStory(pickStoryLine(card), card.cor);
-  } else if (escolhido.sub === "dano") {
+    if (ouro) { state.hero.ouro += ouro; partes.push(`${ouro >= 0 ? "+" : ""}${ouro} ouro`); }
+  } else if (typeof escolhido.ouro === "number" && escolhido.ouro) {
+    state.hero.ouro += escolhido.ouro;
+    partes.push(`${escolhido.ouro >= 0 ? "+" : ""}${escolhido.ouro} ouro`);
+  }
+
+  if (escolhido.exp) { ganharExp(escolhido.exp); partes.push(`+${escolhido.exp} exp`); }
+  if (escolhido.cura) { curar(escolhido.cura); partes.push(`+${escolhido.cura} vida`); }
+
+  if (escolhido.vida) {
     state.hero.vida = Math.max(0, state.hero.vida - escolhido.vida);
-    addStory(`${pickStoryLine(card)} (-${escolhido.vida} vida)`, "vermelho");
+    partes.push(`-${escolhido.vida} vida`);
+    spawnFloatingText(`-${escolhido.vida} vida`, "dmg-neg");
+    flashHeroPanel("hit");
+  }
+
+  if (escolhido.nomeItem) {
+    obterItem(card, escolhido.bonus, escolhido.nomeItem);
+  }
+
+  const cor = escolhido.vida ? "vermelho" : (card.cor || "cinza");
+  const sufixo = partes.length ? ` (${partes.join(", ")})` : "";
+  addStory(`${pickStoryLine(card)}${sufixo}`, cor);
+
+  if (state.hero.vida <= 0) {
+    state.hero.vida = 0;
+    addStory(`💀 O mistério cobrou um preço fatal.`, "vermelho");
   }
 }
 
@@ -862,13 +948,283 @@ function checkEndings() {
 }
 
 /* ============================================================
+   COMBATE EM TURNOS — exclusivo para chefes e subchefes.
+   Inimigos comuns e elites continuam resolvendo instantaneamente
+   via resolverCombate(), sem passar por aqui.
+   ============================================================ */
+function showBossWarningModal(card, alternativas) {
+  const root = document.getElementById("modalRoot");
+  root.innerHTML = `
+    <div class="modal-overlay">
+      <div class="modal-box boss-warning-box">
+        <div class="ending-emoji">⚠</div>
+        <h2 style="text-align:center;">Ponto Sem Volta</h2>
+        <p class="sub" style="text-align:center; margin-bottom:22px;">
+          ${card.emoji} <b>${card.nome}</b> é uma batalha decisiva. O resultado desse confronto —
+          vitória, fuga ou derrota — vai selar o destino desta jornada. Uma vez dentro, não há
+          como recuar da história que se segue.
+        </p>
+        <div class="boss-warning-actions">
+          <button class="btn-primary" id="btnLutarChefe">⚔ Lutar</button>
+          <button class="btn-secondary" id="btnRecuarChefe">🏃 Recuar</button>
+        </div>
+      </div>
+    </div>`;
+  document.getElementById("btnLutarChefe").addEventListener("click", () => {
+    root.innerHTML = "";
+    iniciarBatalha(card, alternativas);
+  });
+  document.getElementById("btnRecuarChefe").addEventListener("click", () => {
+    root.innerHTML = "";
+    document.querySelectorAll(".game-card").forEach((el) => (el.style.pointerEvents = ""));
+  });
+}
+
+function iniciarBatalha(card, alternativas) {
+  document.querySelectorAll(".game-card").forEach((el) => (el.style.pointerEvents = "none"));
+  const clickedEl = document.querySelector(`.game-card[data-id="${card.id}"]`);
+  if (clickedEl) clickedEl.classList.add("leaving");
+
+  state.turno++;
+  checkFaseTransition();
+
+  const ef = card.efeito;
+  const dificuldade = currentFase().dificuldade;
+  const vidaMax = Math.round(ef.vidaInimigo * dificuldade);
+
+  state.battle = {
+    card,
+    alternativas,
+    inimigo: {
+      nome: card.nome,
+      emoji: card.emoji,
+      vidaMax,
+      vida: vidaMax,
+      ataque: Math.round(ef.ataqueInimigo * (1 + (dificuldade - 1) * 0.6)),
+      defesa: ef.defesaInimigo,
+    },
+    rodada: 1,
+    defendendo: false,
+    showItemMenu: false,
+    fasesAvisadas: new Set(),
+    fim: null,
+    log: [`${card.emoji} ${card.nome} bloqueia seu caminho!`],
+  };
+  document.body.classList.add("in-battle");
+  renderBattleModal();
+}
+
+// fases genéricas por % de vida restante — dá tensão crescente a qualquer
+// chefe sem precisar de IA específica escrita por carta.
+function battleFaseInfo(pct) {
+  if (pct <= 0.10) return { chave: "10", mult: 1.5, aviso: "☠ Modo desesperado! O golpe final se aproxima." };
+  if (pct <= 0.25) return { chave: "25", mult: 1.35, aviso: "🔥 A fúria toma conta do inimigo." };
+  if (pct <= 0.50) return { chave: "50", mult: 1.2, aviso: "⚡ Uma nova fase da batalha começa." };
+  if (pct <= 0.75) return { chave: "75", mult: 1.1, aviso: "👁 O inimigo revela mais força." };
+  return { chave: "100", mult: 1, aviso: null };
+}
+
+function pushBattleLog(linhas) {
+  state.battle.log.push(...linhas);
+  state.battle.log = state.battle.log.slice(-6);
+}
+
+// resolve o turno do inimigo (usado tanto depois de atacar/defender/fugir
+// quanto depois de usar um item) e decide se a batalha terminou.
+function battleTurnoInimigo() {
+  const b = state.battle;
+  const fase = battleFaseInfo(b.inimigo.vida / b.inimigo.vidaMax);
+  const linhas = [];
+  if (fase.aviso && !b.fasesAvisadas.has(fase.chave)) {
+    b.fasesAvisadas.add(fase.chave);
+    linhas.push(fase.aviso);
+  }
+  let dmg = Math.max(1, Math.round(b.inimigo.ataque * fase.mult) - getDefesa() + rndInt(-2, 2));
+  if (b.defendendo) dmg = Math.max(1, Math.round(dmg * 0.4));
+  state.hero.vida = Math.max(0, state.hero.vida - dmg);
+  linhas.push(`${b.inimigo.emoji} ${b.inimigo.nome} causa ${dmg} de dano${b.defendendo ? " (reduzido pela defesa)" : ""}.`);
+  spawnFloatingText(`-${dmg}`, "dmg-neg");
+  flashHeroPanel("hit");
+  if (dmg >= Math.max(6, getVidaMax() * 0.16)) shakeScreen("normal");
+  b.defendendo = false;
+  b.rodada++;
+  pushBattleLog(linhas);
+
+  if (state.hero.vida <= 0) b.fim = "derrota";
+  renderBattleModal();
+  if (b.fim) setTimeout(finalizarBatalha, 1100);
+}
+
+function battleAction(tipo) {
+  const b = state.battle;
+  if (!b || b.fim) return;
+
+  if (tipo === "item") { b.showItemMenu = true; renderBattleModal(); return; }
+  if (tipo === "voltar") { b.showItemMenu = false; renderBattleModal(); return; }
+
+  if (tipo === "atacar") {
+    const critChance = Math.min(0.45, 0.08 + getVelocidade() * 0.012);
+    const isCrit = rnd() < critChance;
+    let dmg = Math.max(1, getAtaque() - b.inimigo.defesa + rndInt(-2, 3));
+    if (isCrit) dmg = Math.round(dmg * 1.7);
+    b.inimigo.vida = Math.max(0, b.inimigo.vida - dmg);
+    pushBattleLog([isCrit ? `💥 Crítico! Você causa ${dmg} de dano.` : `⚔ Você causa ${dmg} de dano.`]);
+    spawnFloatingText(isCrit ? `💥 -${dmg}` : `-${dmg}`, isCrit ? "dmg-crit" : "dmg-pos");
+  } else if (tipo === "defender") {
+    b.defendendo = true;
+    pushBattleLog(["🛡 Você se prepara para o próximo golpe."]);
+  } else if (tipo === "fugir") {
+    const chance = 0.3 + Math.max(0, getVelocidade() - 5) * 0.02;
+    if (rnd() < chance) {
+      b.fim = "fuga";
+      pushBattleLog(["🏃 Você foge da batalha!"]);
+      renderBattleModal();
+      setTimeout(finalizarBatalha, 900);
+      return;
+    }
+    pushBattleLog(["🏃 Você tenta fugir, mas não consegue escapar!"]);
+  }
+
+  if (b.inimigo.vida <= 0) {
+    b.fim = "vitoria";
+    pushBattleLog([`${b.inimigo.emoji} ${b.inimigo.nome} foi derrotado!`]);
+    renderBattleModal();
+    setTimeout(finalizarBatalha, 1100);
+    return;
+  }
+
+  battleTurnoInimigo();
+}
+
+function battleUsarItem(itemId) {
+  const b = state.battle;
+  if (!b || b.fim) return;
+  b.showItemMenu = false;
+  const ok = usarConsumivel(itemId);
+  if (!ok) { renderBattleModal(); return; }
+  pushBattleLog([`🧪 Você usa um item durante a batalha.`]);
+  battleTurnoInimigo();
+}
+
+function battleEndText(fim) {
+  if (fim === "vitoria") return "👑 Vitória!";
+  if (fim === "derrota") return "💀 Você foi derrotado...";
+  if (fim === "fuga") return "🏃 Você escapou.";
+  return "";
+}
+
+function renderBattleModal() {
+  const root = document.getElementById("modalRoot");
+  const b = state.battle;
+  if (!b) return;
+  const h = state.hero;
+  const vidaHeroPct = Math.max(0, Math.round((h.vida / getVidaMax()) * 100));
+  const vidaInimigoPct = Math.max(0, Math.round((b.inimigo.vida / b.inimigo.vidaMax) * 100));
+  const consumiveis = state.hero.inventario.filter((it) => it.tipo === "consumivel");
+
+  root.innerHTML = `
+    <div class="modal-overlay battle-overlay">
+      <div class="modal-box battle-box">
+        <div class="battle-enemy">
+          <div class="battle-emoji">${b.inimigo.emoji}</div>
+          <div class="battle-name">${b.inimigo.nome}</div>
+          <div class="stat-bar-track battle-bar"><div class="stat-bar-fill fill-vida" style="width:${vidaInimigoPct}%"></div></div>
+          <div class="battle-hp-num">${Math.max(0, Math.round(b.inimigo.vida))} / ${b.inimigo.vidaMax}</div>
+        </div>
+
+        <div class="battle-log">${b.log.map((l) => `<div class="battle-log-line">${l}</div>`).join("")}</div>
+
+        <div class="battle-hero">
+          <div class="battle-hero-top"><span>${h.emoji} ${h.nome}</span><span>${Math.round(h.vida)} / ${getVidaMax()} ❤️</span></div>
+          <div class="stat-bar-track battle-bar"><div class="stat-bar-fill fill-vida" style="width:${vidaHeroPct}%"></div></div>
+        </div>
+
+        ${
+          b.fim
+            ? `<div class="battle-end-note">${battleEndText(b.fim)}</div>`
+            : b.showItemMenu
+            ? `<div class="battle-actions battle-item-menu">
+                ${
+                  consumiveis.length
+                    ? consumiveis.map((it) => `<button class="battle-btn item-btn" onclick="battleUsarItem('${it.itemId}')">${it.emoji} ${it.nome} <span class="item-qty">x${it.quantidade}</span></button>`).join("")
+                    : '<div class="empty-note">Mochila sem consumíveis.</div>'
+                }
+                <button class="battle-btn voltar-btn" onclick="battleAction('voltar')">‹ Voltar</button>
+              </div>`
+            : `<div class="battle-actions">
+                <button class="battle-btn atacar" onclick="battleAction('atacar')">⚔ Atacar</button>
+                <button class="battle-btn defender" onclick="battleAction('defender')">🛡 Defender</button>
+                <button class="battle-btn item" onclick="battleAction('item')">🧪 Usar Item</button>
+                <button class="battle-btn fugir" onclick="battleAction('fugir')">🏃 Fugir</button>
+              </div>`
+        }
+      </div>
+    </div>`;
+}
+
+function finalizarBatalha() {
+  const b = state.battle;
+  if (!b) return;
+  const { card, alternativas, fim } = b;
+
+  addTreeNode(card, alternativas);
+
+  if (fim === "vitoria") {
+    const ouro = rndInt(card.efeito.ouroDrop[0], card.efeito.ouroDrop[1]);
+    state.hero.ouro += ouro;
+    ganharExp(card.efeito.expDrop);
+    addStory(`👑 ${pickStoryLine(card)} (+${ouro} ouro, +${card.efeito.expDrop} exp)`, card.cor);
+    if (card.efeito.contadorTag) state.tags[card.efeito.contadorTag] = (state.tags[card.efeito.contadorTag] || 0) + 1;
+    state.derrotados.add(card.id);
+    if (card.efeito.itemGarantido) {
+      const it = DATA.cards.find((c) => c.id === card.efeito.itemGarantido);
+      if (it) obterItem(it);
+    }
+    if (card.efeito.flagFinal) state.tags["flag_" + card.efeito.flagFinal] = true;
+    if (card.desbloqueia) card.desbloqueia.forEach((id) => state.availableCardIds.add(id));
+  } else if (fim === "fuga") {
+    addStory(`🏃 Você recua da batalha contra ${card.nome}. Ele ainda ronda por aí — talvez seja melhor voltar mais preparado.`, "cinza");
+  } else if (fim === "derrota") {
+    state.hero.vida = 0;
+    addStory(`💀 Você caiu diante de ${card.nome}.`, "vermelho");
+  }
+
+  document.body.classList.remove("in-battle");
+  document.getElementById("modalRoot").innerHTML = "";
+  state.battle = null;
+
+  tickGlobalEvent();
+  const ending = checkEndings();
+  if (ending) {
+    state.gameOver = true;
+    renderAll();
+    showEndingModal(ending);
+    return;
+  }
+
+  drawThreeCards();
+  renderAll();
+}
+
+/* ============================================================
    AÇÕES DO JOGADOR
    ============================================================ */
 function onCardClick(cardId) {
-  if (state.gameOver) return;
+  if (state.gameOver || state.battle) return;
   const card = state.currentCards.find((c) => c.id === cardId);
   if (!card) return;
   const alternativas = state.currentCards.filter((c) => c.id !== cardId);
+
+  // chefes e subchefes viram combate em turnos; inimigos comuns e elites
+  // continuam resolvendo instantaneamente, como sempre.
+  if (card.tipo === "chefe") {
+    if (card.efeito.flagFinal) {
+      showBossWarningModal(card, alternativas);
+    } else {
+      iniciarBatalha(card, alternativas);
+    }
+    return;
+  }
 
   if (card.efeito.tipo === "escolha") {
     showChoiceModal(card, alternativas);
@@ -1010,6 +1366,9 @@ function renderHero() {
     <div class="hero-section-title">Equipamentos</div>
     <div class="equip-list">${equipHtml}</div>
 
+    <div class="hero-section-title">Mochila</div>
+    <div class="empty-note codex-link" onclick="showInventoryModal()">${h.inventario.filter((i) => i.tipo === "consumivel").reduce((s, i) => s + i.quantidade, 0)} consumíveis, ${h.inventario.filter((i) => i.tipo === "equipamento").length} em reserva — abrir Mochila ›</div>
+
     ${h.escolas.length ? `
     <div class="hero-section-title">Escola</div>
     <div class="equip-list">${h.escolas.map((e) => `<div class="equip-item"><span>${e.emoji} ${e.nome}</span></div>`).join("")}</div>
@@ -1111,15 +1470,24 @@ function renderCards() {
     .map((c) => {
       const isNew = !state.tree.some((n) => n.nome === c.nome);
       const isEscolha = c.efeito && c.efeito.tipo === "escolha";
+      const isFinal = !!(c.efeito && c.efeito.flagFinal);
       const desc = isEscolha ? (c.efeito.intro || c.historia[0]) : c.historia[0];
+      const classes = [
+        "game-card", "entering", `card-rarity-${c.raridade}`,
+        isEscolha ? "card-escolha" : "",
+        c.elite ? "card-elite" : "",
+        isFinal ? "card-final" : "",
+      ].filter(Boolean).join(" ");
       return `
-      <div class="game-card entering card-rarity-${c.raridade} ${isEscolha ? "card-escolha" : ""}" data-id="${c.id}" onclick="onCardClick('${c.id}')">
+      <div class="${classes}" data-id="${c.id}" onclick="onCardClick('${c.id}')">
         <div class="card-top">
           <span class="card-emoji">${c.emoji}</span>
           <span class="card-rarity rarity-${c.raridade}">${RARITY_LABEL[c.raridade]}</span>
         </div>
         ${isNew ? '<span class="card-new">NOVO</span>' : ""}
         ${isEscolha ? '<span class="card-choice-tag">💬 Decisão</span>' : ""}
+        ${c.elite ? '<span class="card-elite-tag">⚔ Especial</span>' : ""}
+        ${isFinal ? '<span class="card-final-tag">⚠ Ponto Sem Volta</span>' : ""}
         <div class="card-name">${c.nome}</div>
         <div class="card-type">${c.tipo}</div>
         <div class="card-desc">${desc}</div>
@@ -1157,7 +1525,7 @@ function renderAll() {
   renderCards();
   renderEventBanner();
   applyWeather();
-  saveGame();
+  if (!state.battle) saveGame();
 }
 
 /* ============================================================
@@ -1266,6 +1634,89 @@ function showCodexModal() {
   });
 }
 
+function showInventoryModal() {
+  const root = document.getElementById("modalRoot");
+  root.innerHTML = `
+    <div class="modal-overlay" id="invOverlay">
+      <div class="modal-box codex-box" id="inventoryModalRoot">
+        ${inventoryModalContent()}
+      </div>
+    </div>`;
+  bindInventoryModalEvents();
+  document.getElementById("invOverlay").addEventListener("click", (e) => {
+    if (e.target.id === "invOverlay") root.innerHTML = "";
+  });
+}
+
+function inventoryModalContent() {
+  const h = state.hero;
+  const equipHtml = ["arma", "armadura", "acessorio"]
+    .map((slot) => {
+      const it = h.equipamentos[slot];
+      if (!it) return `<div class="inv-item"><span class="slot">${slot}</span><span class="empty-note">vazio</span></div>`;
+      const bonusTxt = Object.entries(it.bonus || {}).map(([k, v]) => `${k} ${v > 0 ? "+" : ""}${v}`).join(", ");
+      return `<div class="inv-item"><span class="slot">${slot}</span><span>${it.emoji || "🎒"} ${it.nome}<br><small style="color:#00E5FF">${bonusTxt}</small></span></div>`;
+    })
+    .join("");
+
+  const reserva = state.hero.inventario.filter((it) => it.tipo === "equipamento");
+  const reservaHtml = reserva.length
+    ? reserva
+        .map((it) => {
+          const bonusTxt = Object.entries(it.bonus || {}).map(([k, v]) => `${k} ${v > 0 ? "+" : ""}${v}`).join(", ");
+          return `<div class="inv-item inv-item-actionable" onclick="equiparDaMochila('${it.itemId}')">
+            <span class="slot">${it.slot}</span>
+            <span>${it.emoji} ${it.nome}<br><small style="color:#00E5FF">${bonusTxt}</small></span>
+            <span class="inv-swap-hint">trocar ›</span>
+          </div>`;
+        })
+        .join("")
+    : `<div class="empty-note">Nenhum equipamento de reserva.</div>`;
+
+  const consumiveis = state.hero.inventario.filter((it) => it.tipo === "consumivel");
+  const consumHtml = consumiveis.length
+    ? consumiveis
+        .map(
+          (it) => `<div class="inv-item inv-item-actionable" onclick="usarItemDaMochila('${it.itemId}')">
+            <span>${it.emoji} ${it.nome}</span>
+            <span class="item-qty">x${it.quantidade}</span>
+            <span class="inv-swap-hint">usar ›</span>
+          </div>`
+        )
+        .join("")
+    : `<div class="empty-note">Mochila sem consumíveis.</div>`;
+
+  return `
+    <h2>🎒 Mochila</h2>
+    <p class="sub">Tudo que ${h.nome} carrega nesta jornada.</p>
+
+    <div class="codex-section-title">Equipados</div>
+    <div class="equip-list">${equipHtml}</div>
+
+    <div class="codex-section-title">Reserva de Equipamentos</div>
+    <div class="equip-list">${reservaHtml}</div>
+
+    <div class="codex-section-title">Consumíveis</div>
+    <div class="equip-list">${consumHtml}</div>
+
+    <button class="btn-primary" id="btnCloseInventory" style="margin-top:18px;">Fechar</button>
+  `;
+}
+
+function bindInventoryModalEvents() {
+  const btn = document.getElementById("btnCloseInventory");
+  if (btn) btn.addEventListener("click", () => (document.getElementById("modalRoot").innerHTML = ""));
+}
+
+// usar um consumível a partir da mochila, fora de batalha — cura na hora
+function usarItemDaMochila(itemId) {
+  const ok = usarConsumivel(itemId);
+  if (!ok) return;
+  renderHero();
+  const wrap = document.getElementById("inventoryModalRoot");
+  if (wrap) { wrap.innerHTML = inventoryModalContent(); bindInventoryModalEvents(); }
+}
+
 function showEndingModal(ending) {
   const root = document.getElementById("modalRoot");
   root.innerHTML = `
@@ -1330,6 +1781,8 @@ function loadGame() {
       state.descobertos.forEach((id) => { state.vezesVista[id] = 3; });
     }
     if (!state.hero.escolas) state.hero.escolas = [];
+    if (!state.hero.inventario) state.hero.inventario = [];
+    state.battle = null; // nunca retoma no meio de uma batalha após recarregar a página
     return true;
   } catch (e) {
     return false;
@@ -1348,14 +1801,20 @@ function startGame(classeId, seed) {
 }
 
 document.getElementById("btnNewGame").addEventListener("click", () => {
+  if (state && state.battle) return; // trava de segurança: nunca durante uma batalha
   localStorage.removeItem("chronicles_save");
   document.getElementById("modalRoot").innerHTML = "";
   showClassSelectModal();
 });
 
 document.getElementById("btnCodex").addEventListener("click", () => {
-  if (!state) return;
+  if (!state || state.battle) return;
   showCodexModal();
+});
+
+document.getElementById("btnInventory").addEventListener("click", () => {
+  if (!state || state.battle) return;
+  showInventoryModal();
 });
 
 (async function init() {

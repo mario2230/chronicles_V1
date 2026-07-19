@@ -11,3044 +11,5303 @@
    ============================================================ */
 
 const GAME_DATA = {
-  classes: [
-  {
-    "id": "mago",
-    "emoji": "🧙",
-    "nome": "Mago",
-    "descricao": "Domina as artes arcanas. Frágil, porém devastador à distância.",
-    "vidaMax": 70,
-    "ataque": 8,
-    "defesa": 2,
-    "velocidade": 4,
-    "manaMax": 50,
-    "ouroInicial": 10
-  },
-  {
-    "id": "guerreiro",
-    "emoji": "⚔",
-    "nome": "Guerreiro",
-    "descricao": "Força bruta e resistência. Prospera no combate corpo a corpo.",
-    "vidaMax": 110,
-    "ataque": 9,
-    "defesa": 7,
-    "velocidade": 3,
-    "manaMax": 10,
-    "ouroInicial": 15
-  },
-  {
-    "id": "arqueiro",
-    "emoji": "🏹",
-    "nome": "Arqueiro",
-    "descricao": "Precisão e agilidade. Ataca antes de ser atacado.",
-    "vidaMax": 85,
-    "ataque": 8,
-    "defesa": 4,
-    "velocidade": 8,
-    "manaMax": 20,
-    "ouroInicial": 12
-  },
-  {
-    "id": "ladino",
-    "emoji": "🗡",
-    "nome": "Ladino",
-    "descricao": "Rápido, furtivo e oportunista. Prefere evitar do que enfrentar.",
-    "vidaMax": 75,
-    "ataque": 7,
-    "defesa": 3,
-    "velocidade": 9,
-    "manaMax": 15,
-    "ouroInicial": 25
-  },
-  {
-    "id": "paladino",
-    "emoji": "🛡",
-    "nome": "Paladino",
-    "descricao": "Guerreiro sagrado. Equilíbrio entre ataque, defesa e fé.",
-    "vidaMax": 100,
-    "ataque": 7,
-    "defesa": 8,
-    "velocidade": 4,
-    "manaMax": 25,
-    "ouroInicial": 10
-  },
-  {
-    "id": "necromante",
-    "emoji": "🌑",
-    "nome": "Necromante",
-    "descricao": "Manipula a morte a seu favor. Poderoso, mas instável.",
-    "vidaMax": 65,
-    "ataque": 9,
-    "defesa": 2,
-    "velocidade": 5,
-    "manaMax": 45,
-    "ouroInicial": 8
-  },
-  {
-    "id": "druida",
-    "emoji": "🍃",
-    "nome": "Druida",
-    "descricao": "Guardião da natureza. Versátil, com afinidade para a floresta.",
-    "vidaMax": 90,
-    "ataque": 6,
-    "defesa": 5,
-    "velocidade": 6,
-    "manaMax": 35,
-    "ouroInicial": 10
-  },
-  {
-    "id": "bardo",
-    "emoji": "🎸",
-    "nome": "Bardo",
-    "descricao": "Usa música e carisma para encantar e sobreviver. Muito rápido e cheio de truques.",
-    "vidaMax": 80,
-    "ataque": 6,
-    "defesa": 4,
-    "velocidade": 9,
-    "manaMax": 40,
-    "ouroInicial": 20
-  },
-  {
-    "id": "monge",
-    "emoji": "🥋",
-    "nome": "Monge",
-    "descricao": "Mestre do combate desarmado. Ágil e resistente, focado no equilíbrio interior.",
-    "vidaMax": 95,
-    "ataque": 8,
-    "defesa": 6,
-    "velocidade": 7,
-    "manaMax": 20,
-    "ouroInicial": 5
-  }
-],
-  // Elenco de personagens recorrentes. Cada um é referenciado por cartas com
-  // "efeito": { "tipo": "personagem", "personagemId": "<id>", ... }. O motor
-  // guarda relacionamento e memória automaticamente (ver game.js).
-  characters: [
-  {
-    "id": "eldrin",
-    "emoji": "🧙",
-    "nome": "Eldrin",
-    "titulo": "O Sábio",
-    "personalidade": "Paciente, enigmático, fala por parábolas.",
-    "descricao": "Um velho eremita que já viu impérios nascerem e caírem.",
-    "regiaoOrigem": ["aldeia", "floresta"]
-  },
-  {
-    "id": "kael",
-    "emoji": "⚔",
-    "nome": "Kael",
-    "titulo": "O Guerreiro",
-    "personalidade": "Direto, orgulhoso, admira coragem em combate.",
-    "descricao": "Um mercenário à procura de uma causa que valha a pena.",
-    "regiaoOrigem": ["aldeia", "montanha"]
-  },
-  {
-    "id": "lyra",
-    "emoji": "🏹",
-    "nome": "Lyra",
-    "titulo": "A Caçadora",
-    "personalidade": "Independente, arredia, detesta cidades.",
-    "descricao": "Conhece cada trilha da floresta melhor do que seu próprio nome.",
-    "regiaoOrigem": ["floresta"]
-  },
-  {
-    "id": "seraphina",
-    "emoji": "☀️",
-    "nome": "Seraphina",
-    "titulo": "A Curandeira",
-    "personalidade": "Gentil, devota e pacífica. Repudia a violência desnecessária.",
-    "descricao": "Uma sacerdotisa errante que leva a luz de sua divindade aos feridos.",
-    "regiaoOrigem": ["aldeia", "templo"]
-  },
-  {
-    "id": "grimm",
-    "emoji": "🦇",
-    "nome": "Grimm",
-    "titulo": "O Caçador",
-    "personalidade": "Sombrio, prático e de poucas palavras.",
-    "descricao": "Um matador de monstros que prefere trabalhar à noite e cobrar adiantado.",
-    "regiaoOrigem": ["cemiterio", "pantano"]
-  }
-
-],
-  cards: [
-  {
-    "id": "aldeia",
-    "emoji": "🏘",
-    "nome": "Aldeia Natal",
-    "tipo": "local",
-    "raridade": "comum",
-    "weight": 10,
-    "inicial": true,
-    "regiaoOrigem": ["aldeia"],
-    "minNivel": 1,
-    "historia": [
-      "Você contempla mais uma vez sua aldeia natal antes de partir.",
-      "As ruas da aldeia ainda guardam lembranças de sua infância."
-    ],
-    "cor": "azul",
-    "efeito": { "tipo": "mudar_regiao", "regiao": "aldeia" },
-    "desbloqueia": ["mercador", "ferreiro", "estrada_floresta", "eldrin_encontro", "kael_encontro", "pocao_mana", "seraphina_encontro", "resgate_aldeia", "vendedor_ambulante", "corvo_mensageiro", "poco_desejos", "bardo_viajante", "torneio_aldeia", "cajado_piromante", "grimorio_necromante", "espelho_ilusorio", "orbe_elemental"]
-  },
-  {
-    "id": "eldrin_encontro",
-    "emoji": "🧙",
-    "nome": "Eldrin, o Sábio",
-    "tipo": "personagem",
-    "raridade": "incomum",
-    "weight": 26,
-    "regiaoOrigem": ["aldeia"],
-    "minNivel": 1,
-    "historia": [
-      "Um velho eremita observa você da porta da taverna. \"Vejo em você uma jornada que ainda nem começou de verdade\", diz ele.",
-      "Eldrin ajusta o manto surrado e sorri. \"Poucos param para conversar com um velho tolo. Isso diz algo sobre você.\""
-    ],
-    "cor": "roxo",
-    "efeito": { "tipo": "personagem", "personagemId": "eldrin", "relacao": 8, "exp": 6 },
-    "desbloqueia": ["eldrin_ensinamento"]
-  },
-  {
-    "id": "kael_encontro",
-    "emoji": "⚔",
-    "nome": "Kael, o Guerreiro",
-    "tipo": "personagem",
-    "raridade": "incomum",
-    "weight": 26,
-    "regiaoOrigem": ["aldeia"],
-    "minNivel": 1,
-    "historia": [
-      "Um mercenário de cicatrizes visíveis mede você com o olhar. \"Não parece grande coisa. Prove-me o contrário.\"",
-      "Kael afia a espada sem tirar os olhos de você. \"Ouvi dizer que a floresta anda perigosa. Bom teste, se você tiver estômago.\""
-    ],
-    "cor": "vermelho",
-    "efeito": { "tipo": "personagem", "personagemId": "kael", "relacao": 8, "exp": 6 }
-  },
-  {
-    "id": "eldrin_ensinamento",
-    "emoji": "📖",
-    "nome": "Ensinamento de Eldrin",
-    "tipo": "personagem",
-    "raridade": "rara",
-    "weight": 14,
-    "regiaoOrigem": ["floresta"],
-    "minNivel": 2,
-    "historia": [
-      "Eldrin reaparece sentado junto a uma fogueira na floresta, como se soubesse exatamente onde encontrá-lo. \"Voltamos a nos ver. Deixe-me lhe ensinar algo útil.\""
-    ],
-    "cor": "roxo",
-    "efeito": { "tipo": "personagem", "personagemId": "eldrin", "relacao": 14, "exp": 18 }
-  },
-  {
-    "id": "estrada_floresta",
-    "emoji": "🌲",
-    "nome": "Estrada da Floresta",
-    "tipo": "local",
-    "raridade": "comum",
-    "weight": 30,
-    "inicial": true,
-    "regiaoOrigem": ["aldeia", "floresta"],
-    "minNivel": 1,
-    "historia": [
-      "Você segue por uma estrada estreita que leva a uma floresta antiga.",
-      "O caminho se estreita entre árvores altas e sombrias."
-    ],
-    "cor": "verde",
-    "efeito": { "tipo": "mudar_regiao", "regiao": "floresta" },
-    "desbloqueia": ["lobo", "veado", "cogumelos", "lenhador", "arvore_anciã", "acampamento", "lyra_encontro", "goblin", "javali_selvagem", "encruzilhada_moral", "druida_protetor", "vento_selvagem", "memoria_eldrin_secreta", "escola_ilusionismo"]
-  },
-  {
-    "id": "lyra_encontro",
-    "emoji": "🏹",
-    "nome": "Lyra, a Caçadora",
-    "tipo": "personagem",
-    "raridade": "incomum",
-    "weight": 26,
-    "regiaoOrigem": ["floresta"],
-    "minNivel": 1,
-    "historia": [
-      "Uma flecha cravada numa árvore próxima anuncia sua chegada antes de qualquer palavra. \"Está pisando alto demais para quem quer passar despercebido\", diz uma voz entre as folhas.",
-      "Lyra desce de um galho sem fazer ruído algum. \"A floresta fala de você. Ainda não decidi se isso é bom.\""
-    ],
-    "cor": "verde",
-    "efeito": { "tipo": "personagem", "personagemId": "lyra", "relacao": 8, "exp": 6 },
-    "desbloqueia": ["oferta_lyra"]
-  },
-  {
-    "id": "lobo",
-    "emoji": "🐺",
-    "nome": "Lobo",
-    "tipo": "inimigo",
-    "raridade": "comum",
-    "weight": 90,
-    "regiaoOrigem": ["floresta"],
-    "minNivel": 1,
-    "historia": [
-      "O herói derrotou o lobo com um golpe certeiro.",
-      "O lobo tentou atacar, mas caiu diante da sua arma.",
-      "A batalha foi intensa, porém o herói saiu vitorioso."
-    ],
-    "cor": "vermelho",
-    "efeito": {
-      "tipo": "combate",
-      "vidaInimigo": 18,
-      "ataqueInimigo": 5,
-      "defesaInimigo": 1,
-      "ouroDrop": [2, 6],
-      "expDrop": 8,
-      "contadorTag": "lobosDerrotados"
-    },
-    "desbloqueia": ["rei_dos_lobos"]
-  },
-  {
-    "id": "veado",
-    "emoji": "🦌",
-    "nome": "Veado",
-    "tipo": "evento",
-    "raridade": "comum",
-    "weight": 60,
-    "regiaoOrigem": ["floresta"],
-    "minNivel": 1,
-    "historia": [
-      "Um veado cruza seu caminho e desaparece na mata.",
-      "Você observa um veado pastar tranquilamente."
-    ],
-    "cor": "verde",
-    "efeito": { "tipo": "recompensa_leve", "ouro": [0, 2], "exp": 2 }
-  },
-  {
-    "id": "cogumelos",
-    "emoji": "🍄",
-    "nome": "Cogumelos Silvestres",
-    "tipo": "item",
-    "raridade": "comum",
-    "weight": 55,
-    "regiaoOrigem": ["floresta", "pantano"],
-    "minNivel": 1,
-    "historia": [
-      "Você colhe cogumelos que podem ser úteis para poções.",
-      "Cogumelos estranhos crescem na base de uma árvore."
-    ],
-    "cor": "amarelo",
-    "efeito": { "tipo": "item", "slot": "consumivel", "cura": 15, "nomeItem": "Cogumelos Silvestres" }
-  },
-  {
-    "id": "lenhador",
-    "emoji": "🪓",
-    "nome": "Lenhador Perdido",
-    "tipo": "npc",
-    "raridade": "incomum",
-    "weight": 30,
-    "regiaoOrigem": ["floresta"],
-    "minNivel": 1,
-    "historia": [
-      "Um lenhador perdido agradece sua ajuda e oferece uma recompensa.",
-      "O lenhador compartilha rações em troca de companhia."
-    ],
-    "cor": "laranja",
-    "efeito": { "tipo": "npc", "ouro": [3, 8], "expChance": 5 },
-    "desbloqueia": ["machado_lenhador"]
-  },
-  {
-    "id": "arvore_anciã",
-    "emoji": "🌳",
-    "nome": "Árvore Ancestral",
-    "tipo": "misterio",
-    "raridade": "rara",
-    "weight": 12,
-    "regiaoOrigem": ["floresta"],
-    "minNivel": 2,
-    "historia": [
-      "A árvore ancestral sussurra segredos antigos ao seu ouvido.",
-      "Você sente uma energia estranha emanar do tronco centenário."
-    ],
-    "cor": "cinza",
-    "efeito": { "tipo": "misterio", "resultados": [
-      { "chance": 50, "sub": "recompensa_leve", "ouro": [5, 12], "exp": 10 },
-      { "chance": 30, "sub": "item", "slot": "acessorio", "nomeItem": "Amuleto da Floresta", "bonus": { "mana": 5 } },
-      { "chance": 20, "sub": "dano", "vida": 8 }
-    ] },
-    "desbloqueia": ["druida_ermitao"]
-  },
-  {
-    "id": "acampamento",
-    "emoji": "🏕",
-    "nome": "Acampamento Abandonado",
-    "tipo": "local",
-    "raridade": "comum",
-    "weight": 20,
-    "regiaoOrigem": ["floresta", "montanha", "pantano"],
-    "minNivel": 1,
-    "historia": [
-      "Você descansa junto às cinzas de uma fogueira apagada.",
-      "Um acampamento vazio oferece um breve refúgio."
-    ],
-    "cor": "verde",
-    "efeito": { "tipo": "recompensa_leve", "cura": 20, "exp": 3 }
-  },
-  {
-    "id": "rei_dos_lobos",
-    "emoji": "🐺👑",
-    "nome": "Rei dos Lobos",
-    "tipo": "chefe",
-    "raridade": "epica",
-    "weight": 4,
-    "regiaoOrigem": ["floresta"],
-    "minNivel": 4,
-    "condicao": { "tag": "lobosDerrotados", "minimo": 4 },
-    "historia": [
-      "A alcateia toda uiva quando seu líder cai diante de você.",
-      "O Rei dos Lobos reconhece sua força antes de sucumbir."
-    ],
-    "cor": "vermelho",
-    "efeito": {
-      "tipo": "combate",
-      "vidaInimigo": 60,
-      "ataqueInimigo": 12,
-      "defesaInimigo": 4,
-      "ouroDrop": [20, 35],
-      "expDrop": 40,
-      "itemGarantido": "pele_rei_lobos"
-    }
-  },
-  {
-    "id": "bandido",
-    "emoji": "🏹",
-    "nome": "Bandido",
-    "tipo": "inimigo",
-    "raridade": "comum",
-    "weight": 70,
-    "regiaoOrigem": ["floresta", "ruinas", "deserto"],
-    "minNivel": 1,
-    "historia": [
-      "O bandido foge após levar a pior no confronto.",
-      "Você desarma o bandido antes que ele reaja.",
-      "Um golpe rápido encerra a emboscada do bandido."
-    ],
-    "cor": "vermelho",
-    "efeito": {
-      "tipo": "combate",
-      "vidaInimigo": 22,
-      "ataqueInimigo": 6,
-      "defesaInimigo": 2,
-      "ouroDrop": [4, 10],
-      "expDrop": 14,
-      "contadorTag": "banditosDerrotados"
-    },
-    "desbloqueia": ["guilda_bandidos"]
-  },
-  {
-    "id": "guilda_bandidos",
-    "emoji": "🏴",
-    "nome": "Guilda dos Bandidos",
-    "tipo": "chefe",
-    "raridade": "epica",
-    "weight": 4,
-    "regiaoOrigem": ["ruinas"],
-    "minNivel": 5,
-    "condicao": { "tag": "banditosDerrotados", "minimo": 4 },
-    "historia": [
-      "O líder da guilda cai, e seus comparsas se dispersam pela noite.",
-      "Você desmantela a guilda que aterrorizava a região."
-    ],
-    "cor": "vermelho",
-    "efeito": {
-      "tipo": "combate",
-      "vidaInimigo": 70,
-      "ataqueInimigo": 13,
-      "defesaInimigo": 5,
-      "ouroDrop": [30, 45],
-      "expDrop": 45,
-      "itemGarantido": "adaga_sombria"
-    }
-  },
-  {
-    "id": "ruinas_entrada",
-    "emoji": "🏛",
-    "nome": "Ruínas Esquecidas",
-    "tipo": "local",
-    "raridade": "incomum",
-    "weight": 20,
-    "inicial": true,
-    "regiaoOrigem": ["floresta", "aldeia", "pantano"],
-    "minNivel": 2,
-    "historia": [
-      "Pilares quebrados marcam a entrada de ruínas antigas.",
-      "O silêncio das ruínas esconde perigos e tesouros."
-    ],
-    "cor": "azul",
-    "efeito": { "tipo": "mudar_regiao", "regiao": "ruinas" },
-    "desbloqueia": ["esqueleto", "bandido", "tesouro_ruinas", "portal_misterioso", "prisioneiro_masmorra", "ruinas_biblioteca"]
-  },
-  {
-    "id": "esqueleto",
-    "emoji": "💀",
-    "nome": "Esqueleto Guardião",
-    "tipo": "inimigo",
-    "raridade": "incomum",
-    "weight": 20,
-    "regiaoOrigem": ["ruinas", "cemiterio"],
-    "minNivel": 2,
-    "historia": [
-      "Os ossos do guardião se espalham pelo chão de pedra.",
-      "O esqueleto desaba, vencido por sua lâmina."
-    ],
-    "cor": "vermelho",
-    "efeito": {
-      "tipo": "combate",
-      "vidaInimigo": 28,
-      "ataqueInimigo": 7,
-      "defesaInimigo": 4,
-      "ouroDrop": [5, 12],
-      "expDrop": 22
-    }
-  },
-  {
-    "id": "tesouro_ruinas",
-    "emoji": "💰",
-    "nome": "Baú Antigo",
-    "tipo": "item",
-    "raridade": "rara",
-    "weight": 15,
-    "regiaoOrigem": ["ruinas", "caverna"],
-    "minNivel": 2,
-    "historia": [
-      "Dentro do baú, moedas antigas brilham à meia-luz.",
-      "Você força a fechadura enferrujada e encontra um tesouro."
-    ],
-    "cor": "amarelo",
-    "efeito": { "tipo": "recompensa_leve", "ouro": [15, 30], "exp": 5 }
-  },
-  {
-    "id": "portal_misterioso",
-    "emoji": "🌀",
-    "nome": "Portal Instável",
-    "tipo": "misterio",
-    "raridade": "epica",
-    "weight": 6,
-    "regiaoOrigem": ["ruinas", "templo"],
-    "minNivel": 3,
-    "historia": [
-      "O portal pulsa com uma luz que não pertence a este mundo.",
-      "Você atravessa o portal e sente a realidade se dobrar."
-    ],
-    "cor": "roxo",
-    "efeito": { "tipo": "misterio", "resultados": [
-      { "chance": 40, "sub": "item", "slot": "acessorio", "nomeItem": "Fragmento do Vazio", "bonus": { "ataque": 3 } },
-      { "chance": 30, "sub": "recompensa_leve", "ouro": [10, 20], "exp": 15 },
-      { "chance": 30, "sub": "dano", "vida": 12 }
-    ] }
-  },
-  {
-    "id": "montanha_trilha",
-    "emoji": "🏔",
-    "nome": "Trilha da Montanha",
-    "tipo": "local",
-    "raridade": "incomum",
-    "weight": 25,
-    "inicial": true,
-    "regiaoOrigem": ["floresta", "aldeia", "pantano"],
-    "minNivel": 3,
-    "historia": [
-      "O ar fica mais frio conforme você sobe a trilha rochosa.",
-      "As montanhas se erguem imponentes à sua frente."
-    ],
-    "cor": "azul",
-    "efeito": { "tipo": "mudar_regiao", "regiao": "montanha" },
-    "desbloqueia": ["aguia", "troll", "caverna_gelo", "dragao", "vulcao_base", "duelo_kael", "ferreiro_ambulante", "gigante_pedra", "escola_elementalismo"]
-  },
-  {
-    "id": "aguia",
-    "emoji": "🦅",
-    "nome": "Águia Selvagem",
-    "tipo": "evento",
-    "raridade": "comum",
-    "weight": 55,
-    "regiaoOrigem": ["montanha"],
-    "minNivel": 3,
-    "historia": [
-      "Uma águia sobrevoa em círculos e some entre as nuvens.",
-      "O grito da águia ecoa pelo desfiladeiro."
-    ],
-    "cor": "verde",
-    "efeito": { "tipo": "recompensa_leve", "ouro": [2, 5], "exp": 4 }
-  },
-  {
-    "id": "troll",
-    "emoji": "👹",
-    "nome": "Troll da Montanha",
-    "tipo": "inimigo",
-    "raridade": "rara",
-    "weight": 20,
-    "regiaoOrigem": ["montanha"],
-    "minNivel": 4,
-    "historia": [
-      "O troll desaba com um rugido que ecoa pelas pedras.",
-      "Você esquiva do porrete gigante e contra-ataca."
-    ],
-    "cor": "vermelho",
-    "efeito": {
-      "tipo": "combate",
-      "vidaInimigo": 45,
-      "ataqueInimigo": 10,
-      "defesaInimigo": 5,
-      "ouroDrop": [12, 22],
-      "expDrop": 22
-    }
-  },
-  {
-    "id": "caverna_gelo",
-    "emoji": "🧊",
-    "nome": "Caverna Congelada",
-    "tipo": "local",
-    "raridade": "incomum",
-    "weight": 20,
-    "regiaoOrigem": ["montanha"],
-    "minNivel": 4,
-    "historia": [
-      "O gelo reflete sua tocha em mil pontos de luz.",
-      "Estalactites de gelo pendem sobre sua cabeça."
-    ],
-    "cor": "azul",
-    "efeito": { "tipo": "mudar_regiao", "regiao": "caverna" },
-    "desbloqueia": ["lobo_branco", "cristal_gelo", "abismo_fenda", "morcego_vampiro"]
-  },
-  {
-    "id": "lobo_branco",
-    "emoji": "🐺❄",
-    "nome": "Lobo Branco",
-    "tipo": "inimigo",
-    "raridade": "incomum",
-    "weight": 35,
-    "regiaoOrigem": ["caverna", "montanha"],
-    "minNivel": 4,
-    "historia": [
-      "O lobo branco se funde novamente com a neve, derrotado.",
-      "Suas presas geladas não foram páreo para sua defesa."
-    ],
-    "cor": "vermelho",
-    "efeito": {
-      "tipo": "combate",
-      "vidaInimigo": 32,
-      "ataqueInimigo": 8,
-      "defesaInimigo": 3,
-      "ouroDrop": [6, 14],
-      "expDrop": 15
-    }
-  },
-  {
-    "id": "cristal_gelo",
-    "emoji": "💎",
-    "nome": "Cristal de Gelo Eterno",
-    "tipo": "artefato",
-    "raridade": "lendaria",
-    "weight": 3,
-    "regiaoOrigem": ["caverna"],
-    "minNivel": 6,
-    "historia": [
-      "O cristal pulsa com um frio que fortalece sua vontade.",
-      "Ao tocar o cristal, um poder gélido percorre suas veias."
-    ],
-    "cor": "roxo",
-    "efeito": { "tipo": "item", "slot": "acessorio", "nomeItem": "Cristal de Gelo Eterno", "bonus": { "defesa": 5, "vidaMax": 20 } }
-  },
-  {
-    "id": "dragao",
-    "emoji": "🐉",
-    "nome": "Dragão",
-    "tipo": "chefe",
-    "raridade": "mitica",
-    "weight": 2,
-    "regiaoOrigem": ["montanha"],
-    "minNivel": 12,
-    "condicao": { "itemRequerido": "espada_lendaria" },
-    "historia": [
-      "As chamas do dragão iluminam o céu antes de ele cair.",
-      "Após uma batalha lendária, o dragão finalmente sucumbe."
-    ],
-    "cor": "vermelho",
-    "efeito": {
-      "tipo": "combate",
-      "vidaInimigo": 150,
-      "ataqueInimigo": 22,
-      "defesaInimigo": 10,
-      "ouroDrop": [80, 150],
-      "expDrop": 120,
-      "itemGarantido": "coracao_dragao",
-      "flagFinal": "cacador_de_dragoes"
-    }
-  },
-  {
-    "id": "mercador",
-    "emoji": "👨‍💼",
-    "nome": "Mercador Viajante",
-    "tipo": "npc",
-    "raridade": "comum",
-    "weight": 30,
-    "regiaoOrigem": ["aldeia", "ruinas", "deserto"],
-    "minNivel": 1,
-    "historia": [
-      "O mercador oferece um bom negócio antes de seguir viagem.",
-      "Você troca algumas moedas por suprimentos úteis."
-    ],
-    "cor": "laranja",
-    "efeito": { "tipo": "item", "slot": "consumivel", "cura": 45, "nomeItem": "Ração de Viagem", "custoOuro": 25 }
-  },
-  {
-    "id": "ferreiro",
-    "emoji": "🔨",
-    "nome": "Ferreiro da Aldeia",
-    "tipo": "npc",
-    "raridade": "lendaria",
-    "weight": 3,
-    "regiaoOrigem": ["aldeia"],
-    "minNivel": 1,
-    "historia": [
-      "O ferreiro forja uma lâmina sob encomenda especialmente para você.",
-      "Faíscas voam enquanto o ferreiro finaliza seu trabalho."
-    ],
-    "cor": "laranja",
-    "efeito": { "tipo": "item", "slot": "arma", "nomeItem": "Espada de Ferro Élfica", "bonus": { "ataque": 9 }, "custoOuro": 35 }
-  },
-  {
-    "id": "machado_lenhador",
-    "emoji": "🪓",
-    "nome": "Machado do Lenhador",
-    "tipo": "item",
-    "raridade": "incomum",
-    "weight": 18,
-    "regiaoOrigem": ["floresta"],
-    "minNivel": 2,
-    "historia": [
-      "O machado é pesado, mas corta com força brutal.",
-      "Você equipa o machado deixado pelo lenhador."
-    ],
-    "cor": "amarelo",
-    "efeito": { "tipo": "item", "slot": "arma", "nomeItem": "Machado do Lenhador", "bonus": { "ataque": 4, "velocidade": -1 } }
-  },
-  {
-    "id": "druida_ermitao",
-    "emoji": "🍃",
-    "nome": "Druida Eremita",
-    "tipo": "npc",
-    "raridade": "rara",
-    "weight": 10,
-    "regiaoOrigem": ["floresta"],
-    "minNivel": 3,
-    "historia": [
-      "O eremita compartilha um pouco de sua sabedoria ancestral.",
-      "Ervas raras são oferecidas em troca de sua companhia."
-    ],
-    "cor": "laranja",
-    "efeito": { "tipo": "item", "slot": "consumivel", "cura": 40, "nomeItem": "Elixir da Natureza" }
-  },
-  {
-    "id": "pele_rei_lobos",
-    "emoji": "🐺",
-    "nome": "Pele do Rei dos Lobos",
-    "tipo": "item",
-    "raridade": "epica",
-    "weight": 0,
-    "regiaoOrigem": ["floresta"],
-    "minNivel": 4,
-    "oculta": true,
-    "historia": ["Você veste a pele do Rei dos Lobos como um troféu de guerra."],
-    "cor": "amarelo",
-    "efeito": { "tipo": "item", "slot": "armadura", "nomeItem": "Pele do Rei dos Lobos", "bonus": { "defesa": 4, "vidaMax": 15 } }
-  },
-  {
-    "id": "adaga_sombria",
-    "emoji": "🗡",
-    "nome": "Adaga Sombria",
-    "tipo": "item",
-    "raridade": "epica",
-    "weight": 0,
-    "regiaoOrigem": ["ruinas"],
-    "minNivel": 5,
-    "oculta": true,
-    "historia": ["A adaga sombria parece sussurrar em sua mão."],
-    "cor": "amarelo",
-    "efeito": { "tipo": "item", "slot": "arma", "nomeItem": "Adaga Sombria", "bonus": { "ataque": 5, "velocidade": 2 } }
-  },
-  {
-    "id": "espada_lendaria",
-    "emoji": "⚔",
-    "nome": "Espada Lendária",
-    "tipo": "artefato",
-    "raridade": "lendaria",
-    "weight": 3,
-    "regiaoOrigem": ["templo", "castelo"],
-    "minNivel": 8,
-    "historia": [
-      "A espada canta ao sair de sua bainha de pedra.",
-      "Um poder antigo desperta ao empunhar a lâmina lendária."
-    ],
-    "cor": "roxo",
-    "efeito": { "tipo": "item", "slot": "arma", "nomeItem": "Espada Lendária", "bonus": { "ataque": 8, "defesa": 2 } }
-  },
-  {
-    "id": "coracao_dragao",
-    "emoji": "❤️‍🔥",
-    "nome": "Coração de Dragão",
-    "tipo": "artefato",
-    "raridade": "mitica",
-    "weight": 0,
-    "regiaoOrigem": ["montanha"],
-    "minNivel": 12,
-    "oculta": true,
-    "historia": ["O coração do dragão pulsa com um calor sobrenatural em suas mãos."],
-    "cor": "roxo",
-    "efeito": { "tipo": "item", "slot": "acessorio", "nomeItem": "Coração de Dragão", "bonus": { "ataque": 6, "defesa": 6, "vidaMax": 30 } }
-  },
-  {
-    "id": "templo_entrada",
-    "emoji": "⛪",
-    "nome": "Templo Esquecido",
-    "tipo": "local",
-    "raridade": "rara",
-    "weight": 12,
-    "inicial": true,
-    "regiaoOrigem": ["ruinas", "deserto"],
-    "minNivel": 5,
-    "historia": [
-      "Colunas cobertas de musgo guardam a entrada do templo.",
-      "Um silêncio sagrado paira sobre o templo em ruínas."
-    ],
-    "cor": "azul",
-    "efeito": { "tipo": "mudar_regiao", "regiao": "templo" },
-    "desbloqueia": ["sacerdote_caido", "sumo_sacerdote", "espada_lendaria", "chamado_arcano", "espirito_guardiao", "escola_piromancia"]
-  },
-  {
-    "id": "sacerdote_caido",
-    "emoji": "👻",
-    "nome": "Sacerdote Caído",
-    "tipo": "inimigo",
-    "raridade": "rara",
-    "weight": 18,
-    "regiaoOrigem": ["templo", "cemiterio"],
-    "minNivel": 5,
-    "historia": [
-      "O espírito do sacerdote se dissolve em fumaça, enfim em paz.",
-      "Suas orações sombrias não impediram a derrota."
-    ],
-    "cor": "vermelho",
-    "efeito": {
-      "tipo": "combate",
-      "vidaInimigo": 38,
-      "ataqueInimigo": 9,
-      "defesaInimigo": 3,
-      "ouroDrop": [10, 18],
-      "expDrop": 18,
-      "contadorTag": "templosVisitados"
-    }
-  },
-  {
-    "id": "sumo_sacerdote",
-    "emoji": "⛪",
-    "nome": "Sumo Sacerdote",
-    "tipo": "chefe",
-    "raridade": "epica",
-    "weight": 4,
-    "regiaoOrigem": ["templo"],
-    "minNivel": 7,
-    "condicao": { "tag": "templosVisitados", "minimo": 3 },
-    "historia": [
-      "O Sumo Sacerdote se curva, reconhecendo sua fé mais forte.",
-      "A luz do templo se apaga com a queda do Sumo Sacerdote."
-    ],
-    "cor": "vermelho",
-    "efeito": {
-      "tipo": "combate",
-      "vidaInimigo": 80,
-      "ataqueInimigo": 14,
-      "defesaInimigo": 7,
-      "ouroDrop": [35, 55],
-      "expDrop": 50
-    }
-  },
-  {
-    "id": "cemiterio_portao",
-    "emoji": "⚰️",
-    "nome": "Portão do Cemitério",
-    "tipo": "local",
-    "raridade": "incomum",
-    "weight": 20,
-    "inicial": true,
-    "regiaoOrigem": ["ruinas", "pantano"],
-    "minNivel": 3,
-    "historia": [
-      "Névoa espessa cobre as lápides ao entrar no cemitério.",
-      "Os portões enferrujados rangem ao serem abertos."
-    ],
-    "cor": "cinza",
-    "efeito": { "tipo": "mudar_regiao", "regiao": "cemiterio" },
-    "desbloqueia": ["fantasma", "esqueleto", "rei_lich", "pacto_sombrio", "sombra_do_passado", "necromante_iniciante", "circulo_convocacao", "lamina_do_juramento", "grimm_encontro", "escola_necromancia"]
-  },
-  {
-    "id": "fantasma",
-    "emoji": "👻",
-    "nome": "Fantasma Errante",
-    "tipo": "inimigo",
-    "raridade": "incomum",
-    "weight": 30,
-    "regiaoOrigem": ["cemiterio", "pantano"],
-    "minNivel": 3,
-    "historia": [
-      "O fantasma se dissipa com um lamento distante.",
-      "Sua lâmina atravessa o fantasma, que finalmente descansa."
-    ],
-    "cor": "vermelho",
-    "efeito": {
-      "tipo": "combate",
-      "vidaInimigo": 26,
-      "ataqueInimigo": 8,
-      "defesaInimigo": 1,
-      "ouroDrop": [5, 10],
-      "expDrop": 13
-    }
-  },
-  {
-    "id": "rei_lich",
-    "emoji": "👑💀",
-    "nome": "Rei Lich",
-    "tipo": "chefe",
-    "raridade": "mitica",
-    "weight": 2,
-    "regiaoOrigem": ["cemiterio"],
-    "minNivel": 15,
-    "historia": [
-      "A coroa do Rei Lich se estilhaça ao tocar o chão.",
-      "Um silêncio eterno toma o lugar do poder do Lich."
-    ],
-    "cor": "vermelho",
-    "efeito": {
-      "tipo": "combate",
-      "vidaInimigo": 170,
-      "ataqueInimigo": 24,
-      "defesaInimigo": 9,
-      "ouroDrop": [90, 160],
-      "expDrop": 130,
-      "flagFinal": "senhor_das_trevas"
-    }
-  },
-  {
-    "id": "pantano_entrada",
-    "emoji": "🐊",
-    "nome": "Pântano Nebuloso",
-    "tipo": "local",
-    "raridade": "incomum",
-    "weight": 20,
-    "inicial": true,
-    "regiaoOrigem": ["floresta", "cemiterio"],
-    "minNivel": 3,
-    "historia": [
-      "O ar úmido do pântano gruda em sua pele.",
-      "Sons estranhos ecoam entre as árvores retorcidas."
-    ],
-    "cor": "azul",
-    "efeito": { "tipo": "mudar_regiao", "regiao": "pantano" },
-    "desbloqueia": ["jacare", "bruxa_pantano"]
-  },
-  {
-    "id": "jacare",
-    "emoji": "🐊",
-    "nome": "Jacaré Gigante",
-    "tipo": "inimigo",
-    "raridade": "incomum",
-    "weight": 32,
-    "regiaoOrigem": ["pantano"],
-    "minNivel": 3,
-    "historia": [
-      "O jacaré submerge novamente nas águas turvas, derrotado.",
-      "Suas mandíbulas poderosas não bastaram desta vez."
-    ],
-    "cor": "vermelho",
-    "efeito": {
-      "tipo": "combate",
-      "vidaInimigo": 34,
-      "ataqueInimigo": 9,
-      "defesaInimigo": 4,
-      "ouroDrop": [6, 14],
-      "expDrop": 16
-    }
-  },
-  {
-    "id": "bruxa_pantano",
-    "emoji": "🧙‍♀️",
-    "nome": "Bruxa do Pântano",
-    "tipo": "npc",
-    "raridade": "rara",
-    "weight": 10,
-    "regiaoOrigem": ["pantano"],
-    "minNivel": 4,
-    "historia": [
-      "A bruxa oferece uma poção em troca de um pequeno favor.",
-      "Seus olhos verdes brilham enquanto prepara um feitiço para você."
-    ],
-    "cor": "roxo",
-    "efeito": { "tipo": "item", "slot": "consumivel", "cura": 35, "nomeItem": "Poção da Bruxa" }
-  },
-  {
-    "id": "deserto_dunas",
-    "emoji": "🏜",
-    "nome": "Dunas Intermináveis",
-    "tipo": "local",
-    "raridade": "incomum",
-    "weight": 18,
-    "inicial": true,
-    "regiaoOrigem": ["ruinas", "montanha"],
-    "minNivel": 4,
-    "historia": [
-      "O calor do deserto castiga cada passo dado.",
-      "Dunas se estendem até onde a vista alcança."
-    ],
-    "cor": "azul",
-    "efeito": { "tipo": "mudar_regiao", "regiao": "deserto" },
-    "desbloqueia": ["escorpiao", "mercador", "caravana_mercadores", "cobra_venenosa", "oasis_deserto"]
-  },
-  {
-    "id": "escorpiao",
-    "emoji": "🦂",
-    "nome": "Escorpião Gigante",
-    "tipo": "inimigo",
-    "raridade": "incomum",
-    "weight": 30,
-    "regiaoOrigem": ["deserto"],
-    "minNivel": 4,
-    "historia": [
-      "O ferrão do escorpião se quebra contra sua defesa.",
-      "Você derrota o escorpião antes que ele ataque de novo."
-    ],
-    "cor": "vermelho",
-    "efeito": {
-      "tipo": "combate",
-      "vidaInimigo": 30,
-      "ataqueInimigo": 9,
-      "defesaInimigo": 3,
-      "ouroDrop": [7, 15],
-      "expDrop": 15
-    }
-  },
-  {
-    "id": "castelo_portao",
-    "emoji": "🏰",
-    "nome": "Portões do Castelo",
-    "tipo": "local",
-    "raridade": "rara",
-    "weight": 15,
-    "inicial": true,
-    "regiaoOrigem": ["deserto", "montanha"],
-    "minNivel": 12,
-    "historia": [
-      "Os portões colossais do castelo se abrem lentamente diante de você.",
-      "Bandeiras esfarrapadas tremulam sobre as muralhas do castelo."
-    ],
-    "cor": "azul",
-    "efeito": { "tipo": "mudar_regiao", "regiao": "castelo" },
-    "desbloqueia": ["cavaleiro_negro", "espada_lendaria", "arena_desafio"]
-  },
-  {
-    "id": "cavaleiro_negro",
-    "emoji": "🖤",
-    "nome": "Cavaleiro Negro",
-    "tipo": "chefe",
-    "raridade": "epica",
-    "weight": 5,
-    "regiaoOrigem": ["castelo"],
-    "minNivel": 9,
-    "historia": [
-      "A armadura negra desaba com um estrondo metálico.",
-      "O Cavaleiro Negro se ajoelha, finalmente vencido."
-    ],
-    "cor": "vermelho",
-    "efeito": {
-      "tipo": "combate",
-      "vidaInimigo": 95,
-      "ataqueInimigo": 16,
-      "defesaInimigo": 8,
-      "ouroDrop": [40, 70],
-      "expDrop": 60,
-      "flagFinal": "rei"
-    },
-    "desbloqueia": ["capital_muralhas"]
-  },
-  {
-    "id": "goblin",
-    "emoji": "👺",
-    "nome": "Goblin Saqueador",
-    "tipo": "inimigo",
-    "raridade": "comum",
-    "weight": 85,
-    "regiaoOrigem": ["floresta", "ruinas", "caverna"],
-    "minNivel": 1,
-    "historia": [
-      "Um goblin salta de trás de uma rocha balançando uma adaga enferrujada.",
-      "Você surpreende um goblin ocupado demais contando moedas roubadas."
-    ],
-    "cor": "vermelho",
-    "efeito": {
-      "tipo": "combate",
-      "vidaInimigo": 15,
-      "ataqueInimigo": 4,
-      "defesaInimigo": 1,
-      "ouroDrop": [3, 9],
-      "expDrop": 6,
-      "contadorTag": "goblinsDerrotados"
-    },
-    "desbloqueia": ["rei_goblin"]
-  },
-  {
-    "id": "rei_goblin",
-    "emoji": "👹👑",
-    "nome": "Rei Goblin",
-    "tipo": "chefe",
-    "raridade": "epica",
-    "weight": 5,
-    "regiaoOrigem": ["ruinas", "caverna"],
-    "minNivel": 3,
-    "condicao": { "tag": "goblinsDerrotados", "minimo": 4 },
-    "historia": [
-      "O Rei Goblin levanta de seu trono de sucata, furioso com a ousadia da sua invasão.",
-      "Com um grito estridente, o Rei ordena que você entregue todo o seu ouro. Você puxa a arma."
-    ],
-    "cor": "vermelho",
-    "efeito": {
-      "tipo": "combate",
-      "vidaInimigo": 55,
-      "ataqueInimigo": 10,
-      "defesaInimigo": 4,
-      "ouroDrop": [25, 40],
-      "expDrop": 35,
-      "itemGarantido": "coroa_sucata",
-      "flagFinal": "flagelo_goblins"
-    }
-  },
-  {
-    "id": "coroa_sucata",
-    "emoji": "👑",
-    "nome": "Coroa de Sucata",
-    "tipo": "item",
-    "raridade": "epica",
-    "weight": 10,
-    "regiaoOrigem": ["caverna"],
-    "minNivel": 3,
-    "oculta": true,
-    "historia": ["Uma coroa feia e torta, mas que emite uma leve magia de proteção."],
-    "cor": "amarelo",
-    "efeito": { "tipo": "item", "slot": "acessorio", "nomeItem": "Coroa de Sucata", "bonus": { "defesa": 3, "vidaMax": 10 } }
-  },
-  {
-    "id": "morcego_vampiro",
-    "emoji": "🦇",
-    "nome": "Morcego Vampiro",
-    "tipo": "inimigo",
-    "raridade": "comum",
-    "weight": 65,
-    "regiaoOrigem": ["caverna", "cemiterio"],
-    "minNivel": 2,
-    "historia": [
-      "Um chiado ecoa no escuro antes da criatura alada mergulhar em sua direção.",
-      "O morcego tenta cravar as presas em seu pescoço!"
-    ],
-    "cor": "vermelho",
-    "efeito": {
-      "tipo": "combate",
-      "vidaInimigo": 20,
-      "ataqueInimigo": 7,
-      "defesaInimigo": 1,
-      "ouroDrop": [2, 6],
-      "expDrop": 10
-    }
-  },
-  {
-    "id": "pocao_mana",
-    "emoji": "🧪",
-    "nome": "Poção Arcano",
-    "tipo": "item",
-    "raridade": "incomum",
-    "weight": 35,
-    "regiaoOrigem": ["ruinas", "aldeia", "templo"],
-    "minNivel": 1,
-    "historia": [
-      "O líquido azul brilha fracamente, prometendo restaurar sua energia mágica."
-    ],
-    "cor": "amarelo",
-    "efeito": { "tipo": "item", "slot": "consumivel", "cura": 0, "mana": 30, "nomeItem": "Poção Arcano" }
-  },
-  {
-    "id": "seraphina_encontro",
-    "emoji": "☀️",
-    "nome": "Seraphina, a Curandeira",
-    "tipo": "personagem",
-    "raridade": "incomum",
-    "weight": 32,
-    "regiaoOrigem": ["aldeia", "templo"],
-    "minNivel": 1,
-    "historia": [
-      "Seraphina termina de enfaixar o braço de um lenhador e se volta para você. 'A luz guia seus passos?'",
-      "Você sente uma aura de paz imediata ao se aproximar da curandeira."
-    ],
-    "cor": "roxo",
-    "efeito": { "tipo": "personagem", "personagemId": "seraphina", "relacao": 10, "exp": 8 },
-    "desbloqueia": ["bencao_seraphina"]
-  },
-  {
-    "id": "bencao_seraphina",
-    "emoji": "✨",
-    "nome": "Bênção da Luz",
-    "tipo": "personagem",
-    "raridade": "rara",
-    "weight": 12,
-    "regiaoOrigem": ["templo", "ruinas"],
-    "minNivel": 3,
-    "historia": [
-      "Seraphina recita uma prece antiga. Suas feridas se fecham e seu espírito se fortalece."
-    ],
-    "cor": "roxo",
-    "efeito": { "tipo": "personagem", "personagemId": "seraphina", "relacao": 15, "cura": 50 }
-  },
-
-  /* ============================================================
-     EXPANSÃO — cartas de decisão (diálogo e gameplay)
-     "tipo": "escolha" pausa a resolução automática e abre um modal com
-     2-4 opções. Cada opção usa os mesmos campos de efeito das outras
-     cartas (ouro, exp, cura, dano, statDelta, relacao, tag, itemGarantido,
-     flagFinal, desbloqueia) — é assim que decisões constroem um build.
-     ============================================================ */
-  {
-    "id": "encruzilhada_moral",
-    "emoji": "🛤",
-    "nome": "Viajante Ferido",
-    "tipo": "escolha",
-    "raridade": "incomum",
-    "weight": 30,
-    "regiaoOrigem": ["floresta", "aldeia", "deserto"],
-    "minNivel": 1,
-    "historia": ["Um viajante ferido pede ajuda à beira do caminho."],
-    "cor": "azul",
-    "efeito": {
-      "tipo": "escolha",
-      "intro": "Um viajante ferido pede ajuda à beira do caminho. Seus pertences estão espalhados pelo chão — seria fácil levá-los.",
-      "opcoes": [
-        {
-          "id": "ajudar",
-          "label": "🩹 Ajudá-lo a se levantar",
-          "dica": "Custa tempo, mas fortalece seu caráter.",
-          "historia": ["Você enfaixa os ferimentos do viajante. Ele agradece e revela um atalho conhecido só por quem viaja há anos."],
-          "exp": 6,
-          "statDelta": { "defesa": 1 },
-          "tag": "caminho_compaixao"
-        },
-        {
-          "id": "roubar",
-          "label": "🪙 Aproveitar e levar seus pertences",
-          "dica": "Ganho rápido, mas alguém vai lembrar disso.",
-          "historia": ["Você recolhe os pertences do viajante enquanto ele geme de dor. O ouro pesa mais na consciência do que no bolso."],
-          "ouro": [10, 18],
-          "tag": "caminho_ganancia",
-          "statDelta": { "velocidade": 1 }
-        },
-        {
-          "id": "ignorar",
-          "label": "🚶 Seguir seu caminho",
-          "dica": "Sem risco, sem recompensa.",
-          "historia": ["Você segue adiante. O lamento do viajante se perde atrás de você."],
-          "exp": 1
-        }
-      ]
-    },
-    "desbloqueia": ["filho_do_viajante"]
-  },
-  {
-    "id": "duelo_kael",
-    "emoji": "⚔",
-    "nome": "O Desafio de Kael",
-    "tipo": "escolha",
-    "raridade": "rara",
-    "weight": 16,
-    "regiaoOrigem": ["montanha", "aldeia"],
-    "minNivel": 3,
-    "historia": ["Kael crava a espada no chão diante de você e sorri."],
-    "cor": "vermelho",
-    "efeito": {
-      "tipo": "escolha",
-      "intro": "Kael crava a espada no chão diante de você. \"Chega de conversa. Prove sua força — ou admita que prefere as sombras.\"",
-      "opcoes": [
-        {
-          "id": "aceitar",
-          "label": "⚔ Aceitar o duelo",
-          "dica": "Risco de dano real, mas Kael respeita coragem.",
-          "historia": ["O duelo é breve e brutal. Vocês dois terminam ofegantes, mas Kael estende a mão com um respeito que não existia antes."],
-          "dano": 12,
-          "statDelta": { "ataque": 2 },
-          "relacao": 15,
-          "personagemId": "kael",
-          "tag": "caminho_forca"
-        },
-        {
-          "id": "recusar",
-          "label": "🛡 Recusar com calma",
-          "dica": "Sem dano, mas Kael pode duvidar de você.",
-          "historia": ["Você recusa. Kael solta uma risada seca. \"Covardia ou sabedoria — o tempo dirá.\""],
-          "relacao": -8,
-          "personagemId": "kael"
-        }
-      ]
-    }
-  },
-  {
-    "id": "oferta_lyra",
-    "emoji": "🏹",
-    "nome": "A Caçada de Lyra",
-    "tipo": "escolha",
-    "raridade": "rara",
-    "weight": 16,
-    "regiaoOrigem": ["floresta"],
-    "minNivel": 2,
-    "historia": ["Lyra propõe uma caçada silenciosa antes do amanhecer."],
-    "cor": "verde",
-    "efeito": {
-      "tipo": "escolha",
-      "intro": "Lyra aponta para trilhas mal visíveis na copa das árvores. \"Uma caçada de verdade exige silêncio absoluto. Você tem estômago para isso?\"",
-      "opcoes": [
-        {
-          "id": "seguir",
-          "label": "🌲 Segui-la em silêncio",
-          "dica": "Aprende os métodos dela — ganha velocidade permanente.",
-          "historia": ["Vocês se movem como sombras entre as árvores. Lyra ensina truques que levam anos para se aprender sozinho."],
-          "statDelta": { "velocidade": 2 },
-          "relacao": 12,
-          "personagemId": "lyra",
-          "tag": "caminho_furtivo",
-          "exp": 8
-        },
-        {
-          "id": "distrair",
-          "label": "🔥 Preferir acender uma fogueira e descansar",
-          "dica": "Recupera vida, mas perde a chance com Lyra.",
-          "historia": ["Você prefere o calor da fogueira à trilha gelada. Lyra parte sozinha, sem uma palavra."],
-          "cura": 25,
-          "relacao": -5,
-          "personagemId": "lyra"
-        }
-      ]
-    }
-  },
-  {
-    "id": "pacto_sombrio",
-    "emoji": "🕯",
-    "nome": "A Voz na Escuridão",
-    "tipo": "escolha",
-    "raridade": "epica",
-    "weight": 8,
-    "faseMin": 2,
-    "regiaoOrigem": ["ruinas", "cemiterio", "pantano"],
-    "minNivel": 5,
-    "historia": ["Uma voz sussurra promessas de poder no escuro."],
-    "cor": "roxo",
-    "efeito": {
-      "tipo": "escolha",
-      "intro": "Uma voz sem corpo sussurra no escuro: \"Aceite o que ofereço e nunca mais será fraco. O preço é apenas... um pedaço de quem você é.\"",
-      "opcoes": [
-        {
-          "id": "aceitar_pacto",
-          "label": "🖤 Selar o pacto",
-          "dica": "Poder considerável, mas corrompe permanentemente sua história.",
-          "historia": ["Frio percorre suas veias enquanto o pacto se sela. Você sente mais forte — e mais distante de quem já foi."],
-          "statDelta": { "ataque": 3, "defesa": -1 },
-          "tag": "corrupcao"
-        },
-        {
-          "id": "recusar_pacto",
-          "label": "✨ Recusar e seguir em frente",
-          "dica": "Sem ganho imediato, mas mantém seu caminho limpo.",
-          "historia": ["Você recusa. A voz ri baixinho antes de se dissolver no silêncio. \"Voltarei a perguntar, quando estiver desesperado.\""],
-          "tag": "caminho_pureza",
-          "exp": 10
-        }
-      ]
-    }
-  },
-  {
-    "id": "resgate_aldeia",
-    "emoji": "🔥",
-    "nome": "A Aldeia em Chamas",
-    "tipo": "escolha",
-    "raridade": "epica",
-    "weight": 6,
-    "faseMin": 2,
-    "regiaoOrigem": ["aldeia"],
-    "minNivel": 6,
-    "historia": ["Fumaça sobe da aldeia natal enquanto gritos ecoam ao longe."],
-    "cor": "vermelho",
-    "efeito": {
-      "tipo": "escolha",
-      "intro": "Fumaça sobe da sua aldeia natal. Bandidos saqueiam as casas enquanto os moradores gritam por ajuda.",
-      "opcoes": [
-        {
-          "id": "defender",
-          "label": "⚔ Entrar em combate para defendê-la",
-          "dica": "Perigoso, mas salva vidas e ganha respeito de toda a região.",
-          "historia": ["Você enfrenta os saqueadores em meio às chamas. A aldeia é salva, mas o preço em ferimentos é alto."],
-          "dano": 20,
-          "ouro": [15, 25],
-          "exp": 20,
-          "tag": "heroi_da_aldeia",
-          "statDelta": { "defesa": 1 }
-        },
-        {
-          "id": "evacuar",
-          "label": "🏃 Ajudar os moradores a fugir",
-          "dica": "Mais seguro, menos glorioso.",
-          "historia": ["Você guia os moradores para longe do fogo. Ninguém morre, mas os saqueadores levam tudo que podem."],
-          "exp": 10,
-          "tag": "protetor_discreto"
-        },
-        {
-          "id": "ignorar_aldeia",
-          "label": "🌑 Seguir viagem sem olhar para trás",
-          "dica": "Sem risco algum — e sem retorno também.",
-          "historia": ["Você segue viagem. A fumaça desaparece no horizonte atrás de você, e algo dentro de você também."],
-          "tag": "coracao_frio",
-          "statDelta": { "velocidade": 1, "defesa": -1 }
-        }
-      ]
-    }
-  },
-  {
-    "id": "vendedor_ambulante",
-    "emoji": "🎭",
-    "nome": "Vendedor de Segredos",
-    "tipo": "escolha",
-    "raridade": "incomum",
-    "weight": 20,
-    "regiaoOrigem": ["aldeia", "deserto", "ruinas"],
-    "minNivel": 2,
-    "historia": ["Um vendedor estranho oferece um frasco que 'não deveria existir'."],
-    "cor": "laranja",
-    "efeito": {
-      "tipo": "escolha",
-      "intro": "\"Este frasco não deveria existir\", diz o vendedor com um sorriso torto. \"Dez moedas, e é seu — sem garantias.\"",
-      "opcoes": [
-        {
-          "id": "comprar",
-          "label": "💰 Comprar o frasco misterioso",
-          "dica": "Pode ser ótimo, pode ser péssimo.",
-          "historia": [
-            "Você bebe o conteúdo. Uma onda de energia percorre seu corpo — o negócio valeu a pena."
-          ],
-          "ouro": [-10, -10],
-          "statDelta": { "vidaMax": 10 },
-          "tag": "colecionador_estranho"
-        },
-        {
-          "id": "recusar_vendedor",
-          "label": "🚫 Recusar educadamente",
-          "dica": "Nenhum risco, nenhuma novidade.",
-          "historia": ["Você recusa. O vendedor dá de ombros e desaparece na multidão como se nunca tivesse existido."]
-        }
-      ]
-    }
-  },
-  {
-    "id": "prisioneiro_masmorra",
-    "emoji": "⛓",
-    "nome": "Prisioneiro Esquecido",
-    "tipo": "escolha",
-    "raridade": "rara",
-    "weight": 12,
-    "regiaoOrigem": ["ruinas", "castelo", "cemiterio"],
-    "minNivel": 4,
-    "historia": ["Um prisioneiro encadeado implora por liberdade em uma cela esquecida."],
-    "cor": "cinza",
-    "efeito": {
-      "tipo": "escolha",
-      "intro": "Um prisioneiro encadeado implora por liberdade. \"Não sou quem dizem que sou. Solte-me e nunca esquecerei.\"",
-      "opcoes": [
-        {
-          "id": "libertar",
-          "label": "🔓 Libertá-lo",
-          "dica": "Um aliado leal — ou um erro caro. Nunca se sabe de verdade.",
-          "historia": ["As correntes caem. O prisioneiro promete retribuir a dívida, onde quer que seus caminhos voltem a se cruzar."],
-          "tag": "aliado_misterioso",
-          "relacao": 10,
-          "personagemId": "kael"
-        },
-        {
-          "id": "deixar",
-          "label": "🚪 Deixá-lo onde está",
-          "dica": "Mais seguro. Mais frio.",
-          "historia": ["Você tranca a porta novamente. Os gritos diminuem conforme você se afasta pelo corredor."],
-          "ouro": [5, 10],
-          "tag": "coracao_frio"
-        }
-      ]
-    }
-  },
-  {
-    "id": "conselho_guerra",
-    "emoji": "🏛",
-    "nome": "Conselho de Guerra",
-    "tipo": "escolha",
-    "raridade": "epica",
-    "weight": 5,
-    "faseMin": 3,
-    "regiaoOrigem": ["capital", "castelo"],
-    "minNivel": 10,
-    "historia": ["Generais discutem estratégias diante de um mapa do reino."],
-    "cor": "azul",
-    "efeito": {
-      "tipo": "escolha",
-      "intro": "Generais discutem estratégias diante de um mapa do reino. Sua opinião, pela primeira vez, pesa tanto quanto a deles.",
-      "opcoes": [
-        {
-          "id": "ataque_direto",
-          "label": "⚔ Defender um ataque direto",
-          "dica": "Caminho agressivo — favorece builds de combate.",
-          "historia": ["Sua proposta é aceita. Os soldados se preparam para marchar sob um plano ousado que carrega seu nome."],
-          "statDelta": { "ataque": 2 },
-          "tag": "estrategista_ofensivo"
-        },
-        {
-          "id": "cerco_paciente",
-          "label": "🛡 Propor um cerco paciente",
-          "dica": "Caminho defensivo — favorece builds de resistência.",
-          "historia": ["O conselho aprova a cautela. Menos glória, mais vidas poupadas — e você sabe que fez a escolha certa."],
-          "statDelta": { "defesa": 2 },
-          "tag": "estrategista_defensivo"
-        },
-        {
-          "id": "diplomacia",
-          "label": "🕊 Insistir em negociar primeiro",
-          "dica": "Caminho diplomático — abre rotas únicas na capital.",
-          "historia": ["Alguns generais bufam, mas o conselho aceita tentar a paz antes do sangue. Você sente que abriu uma porta que a espada jamais abriria."],
-          "tag": "diplomata",
-          "exp": 15
-        }
-      ]
-    }
-  },
-  {
-    "id": "motim_popular",
-    "emoji": "🔥",
-    "nome": "Motim nas Ruas",
-    "tipo": "escolha",
-    "raridade": "epica",
-    "weight": 5,
-    "faseMin": 3,
-    "regiaoOrigem": ["capital"],
-    "minNivel": 11,
-    "historia": ["O povo toma as ruas da capital, exigindo respostas."],
-    "cor": "vermelho",
-    "efeito": {
-      "tipo": "escolha",
-      "intro": "O povo toma as ruas, exigindo respostas que a coroa se recusa a dar. As chamas das tochas se multiplicam a cada minuto.",
-      "opcoes": [
-        {
-          "id": "apoiar_povo",
-          "label": "✊ Apoiar o povo",
-          "dica": "Constrói o caminho para depor a rainha usurpadora.",
-          "historia": ["Você ergue a voz ao lado do povo. A guarda hesita — pela primeira vez em anos, o medo muda de lado."],
-          "tag": "aliado_do_povo",
-          "relacao": 10,
-          "personagemId": "kael"
-        },
-        {
-          "id": "conter_motim",
-          "label": "🛡 Ajudar a conter o motim",
-          "dica": "Mantém a ordem, mas afasta possíveis aliados.",
-          "historia": ["Você ajuda a dispersar a multidão. A ordem volta, fria e pesada como antes."],
-          "ouro": [20, 30],
-          "tag": "leal_a_coroa"
-        }
-      ]
-    }
-  },
-  {
-    "id": "chamado_arcano",
-    "emoji": "🔵",
-    "nome": "O Chamado Arcano",
-    "tipo": "escolha",
-    "raridade": "rara",
-    "weight": 14,
-    "faseMin": 2,
-    "regiaoOrigem": ["templo", "ruinas"],
-    "minNivel": 5,
-    "condicao": { "classe": "mago" },
-    "historia": ["Runas antigas reagem à sua presença, reconhecendo seu domínio arcano."],
-    "cor": "roxo",
-    "efeito": {
-      "tipo": "escolha",
-      "intro": "Runas antigas se acendem ao seu redor, reagindo à sua magia como se o reconhecessem de outra vida.",
-      "opcoes": [
-        {
-          "id": "absorver",
-          "label": "🔮 Absorver o poder das runas",
-          "dica": "Grande ganho de mana, mas drena um pouco de vitalidade.",
-          "historia": ["Você absorve as runas. O conhecimento de séculos passa por sua mente em segundos — dolorosos segundos."],
-          "statDelta": { "manaMax": 15 },
-          "dano": 8,
-          "tag": "arcano_profundo"
-        },
-        {
-          "id": "estudar",
-          "label": "📖 Apenas estudá-las com cautela",
-          "dica": "Ganho modesto, sem riscos.",
-          "historia": ["Você copia os símbolos com cuidado, preferindo entender antes de absorver qualquer poder."],
-          "exp": 14
-        }
-      ]
-    },
-    "sinergiaTag": ["arcano_profundo"]
-  },
-
-  /* ============================================================
-     EXPANSÃO — Região Vulcão (endgame, montanha avançada)
-     ============================================================ */
-  {
-    "id": "vulcao_base",
-    "emoji": "🌋",
-    "nome": "Base do Vulcão",
-    "tipo": "local",
-    "raridade": "rara",
-    "weight": 10,
-    "faseMin": 2,
-    "regiaoOrigem": ["montanha"],
-    "minNivel": 8,
-    "historia": [
-      "O calor se torna insuportável conforme você se aproxima da base do vulcão.",
-      "Rios de lava distante iluminam as rochas em um brilho alaranjado."
-    ],
-    "cor": "vermelho",
-    "efeito": { "tipo": "mudar_regiao", "regiao": "vulcao" },
-    "desbloqueia": ["salamandra_flamejante", "forjador_lava", "obsidiana_flamejante", "coracao_vulcao"]
-  },
-  {
-    "id": "salamandra_flamejante",
-    "emoji": "🦎",
-    "nome": "Salamandra Flamejante",
-    "tipo": "inimigo",
-    "raridade": "rara",
-    "weight": 30,
-    "regiaoOrigem": ["vulcao"],
-    "minNivel": 8,
-    "historia": [
-      "A salamandra se contorce entre as pedras quentes, finalmente vencida.",
-      "Suas chamas se apagam com um silvo agudo.",
-      "Você esquiva de uma baforada de fogo antes do golpe final."
-    ],
-    "cor": "vermelho",
-    "sinergiaTag": ["caminho_forca"],
-    "efeito": {
-      "tipo": "combate",
-      "vidaInimigo": 55,
-      "ataqueInimigo": 13,
-      "defesaInimigo": 5,
-      "ouroDrop": [14, 26],
-      "expDrop": 24,
-      "contadorTag": "salamandrasDerrotadas"
-    }
-  },
-  {
-    "id": "forjador_lava",
-    "emoji": "👨‍🏭",
-    "nome": "Forjador de Lava",
-    "tipo": "npc",
-    "raridade": "rara",
-    "weight": 12,
-    "regiaoOrigem": ["vulcao"],
-    "minNivel": 8,
-    "historia": [
-      "O forjador molda metal fundido com as mãos nuas, imune ao calor.",
-      "Ele oferece forjar uma arma em troca de um pouco de ouro."
-    ],
-    "cor": "laranja",
-    "efeito": { "tipo": "item", "slot": "arma", "nomeItem": "Lâmina Vulcânica", "bonus": { "ataque": 6 }, "custoOuro": 25 }
-  },
-  {
-    "id": "obsidiana_flamejante",
-    "emoji": "🖤",
-    "nome": "Obsidiana Flamejante",
-    "tipo": "item",
-    "raridade": "epica",
-    "weight": 8,
-    "regiaoOrigem": ["vulcao"],
-    "minNivel": 9,
-    "historia": ["Um fragmento de obsidiana pulsa com calor próprio, quase vivo em sua mão."],
-    "cor": "amarelo",
-    "efeito": { "tipo": "item", "slot": "acessorio", "nomeItem": "Obsidiana Flamejante", "bonus": { "ataque": 4, "defesa": 2 } }
-  },
-  {
-    "id": "coracao_vulcao",
-    "emoji": "🌋",
-    "nome": "Coração do Vulcão",
-    "tipo": "chefe",
-    "raridade": "lendaria",
-    "weight": 3,
-    "regiaoOrigem": ["vulcao"],
-    "minNivel": 11,
-    "condicao": { "tag": "salamandrasDerrotadas", "minimo": 3 },
-    "historia": [
-      "A criatura de magma desaba, e a montanha inteira parece suspirar aliviada.",
-      "O Coração do Vulcão se estilhaça em fragmentos incandescentes."
-    ],
-    "cor": "vermelho",
-    "efeito": {
-      "tipo": "combate",
-      "vidaInimigo": 120,
-      "ataqueInimigo": 19,
-      "defesaInimigo": 7,
-      "ouroDrop": [55, 90],
-      "expDrop": 85,
-      "itemGarantido": "nucleo_magmatico",
-      "flagFinal": "senhor_do_fogo"
-    }
-  },
-  {
-    "id": "nucleo_magmatico",
-    "emoji": "🔥",
-    "nome": "Núcleo Magmático",
-    "tipo": "artefato",
-    "raridade": "mitica",
-    "weight": 0,
-    "regiaoOrigem": ["vulcao"],
-    "minNivel": 11,
-    "oculta": true,
-    "historia": ["O núcleo pulsa em sua mão como um segundo coração, quente demais para ser confortável."],
-    "cor": "roxo",
-    "efeito": { "tipo": "item", "slot": "acessorio", "nomeItem": "Núcleo Magmático", "bonus": { "ataque": 7, "vidaMax": 25 } }
-  },
-
-  /* ============================================================
-     EXPANSÃO — Região Capital (endgame político, fase 3+)
-     ============================================================ */
-  {
-    "id": "capital_muralhas",
-    "emoji": "🏙",
-    "nome": "Muralhas da Capital",
-    "tipo": "local",
-    "raridade": "rara",
-    "weight": 8,
-    "faseMin": 3,
-    "regiaoOrigem": ["castelo"],
-    "minNivel": 10,
-    "historia": [
-      "A capital se estende além das muralhas, cheia de bandeiras e segredos.",
-      "Guardas observam cada passo seu ao cruzar os portões da capital."
-    ],
-    "cor": "azul",
-    "efeito": { "tipo": "mudar_regiao", "regiao": "capital" },
-    "desbloqueia": ["espiao_real", "conselheiro_real", "guarda_real", "conselho_guerra", "motim_popular", "rainha_usurpada"]
-  },
-  {
-    "id": "espiao_real",
-    "emoji": "🗡",
-    "nome": "Espião da Corte",
-    "tipo": "evento",
-    "raridade": "incomum",
-    "weight": 24,
-    "regiaoOrigem": ["capital"],
-    "minNivel": 10,
-    "historia": [
-      "Um espião troca informações por moedas em um beco escuro.",
-      "Rumores sobre a rainha usurpadora circulam baixinho pela taverna."
-    ],
-    "cor": "roxo",
-    "efeito": { "tipo": "recompensa_leve", "ouro": [8, 16], "exp": 6 }
-  },
-  {
-    "id": "conselheiro_real",
-    "emoji": "📜",
-    "nome": "Conselheiro Real",
-    "tipo": "npc",
-    "raridade": "rara",
-    "weight": 14,
-    "regiaoOrigem": ["capital"],
-    "minNivel": 10,
-    "historia": [
-      "O conselheiro observa você com cautela antes de compartilhar um segredo de estado.",
-      "Ele oferece um pergaminho selado com o brasão real."
-    ],
-    "cor": "laranja",
-    "efeito": { "tipo": "item", "slot": "acessorio", "nomeItem": "Selo Real", "bonus": { "defesa": 3 }, "custoOuro": 20 }
-  },
-  {
-    "id": "guarda_real",
-    "emoji": "🛡",
-    "nome": "Guarda Real",
-    "tipo": "inimigo",
-    "raridade": "rara",
-    "weight": 28,
-    "regiaoOrigem": ["capital"],
-    "minNivel": 10,
-    "historia": [
-      "O guarda real cai de joelhos, a armadura reluzente amassada.",
-      "Você desarma o guarda antes que ele possa soar o alarme."
-    ],
-    "cor": "vermelho",
-    "efeito": {
-      "tipo": "combate",
-      "vidaInimigo": 65,
-      "ataqueInimigo": 15,
-      "defesaInimigo": 7,
-      "ouroDrop": [18, 30],
-      "expDrop": 35
-    }
-  },
-  {
-    "id": "rainha_usurpada",
-    "emoji": "👑",
-    "nome": "Rainha Usurpadora",
-    "tipo": "chefe",
-    "raridade": "mitica",
-    "weight": 2,
-    "faseMin": 4,
-    "regiaoOrigem": ["capital"],
-    "minNivel": 14,
-    "condicao": { "tag": "aliado_do_povo", "minimo": 1 },
-    "historia": [
-      "A coroa rola pelo chão de mármore enquanto a rainha usurpadora cai.",
-      "O trono, finalmente, pertence a quem o povo escolheu."
-    ],
-    "cor": "vermelho",
-    "efeito": {
-      "tipo": "combate",
-      "vidaInimigo": 160,
-      "ataqueInimigo": 23,
-      "defesaInimigo": 10,
-      "ouroDrop": [80, 140],
-      "expDrop": 110,
-      "flagFinal": "libertador"
-    }
-  },
-
-  /* ============================================================
-     EXPANSÃO — Região Abismo (endgame místico, via caverna)
-     ============================================================ */
-  {
-    "id": "abismo_fenda",
-    "emoji": "🕳",
-    "nome": "Fenda do Abismo",
-    "tipo": "local",
-    "raridade": "epica",
-    "weight": 6,
-    "faseMin": 3,
-    "regiaoOrigem": ["caverna"],
-    "minNivel": 11,
-    "historia": [
-      "Uma fenda escura se abre no chão da caverna, exalando um frio que não é natural.",
-      "O silêncio ali é denso demais para ser apenas ausência de som."
-    ],
-    "cor": "roxo",
-    "efeito": { "tipo": "mudar_regiao", "regiao": "abismo" },
-    "desbloqueia": ["horror_abissal", "sussurros_vazio", "cristal_alma", "devorador_abismo", "ultimo_covil", "visao_do_que_podia_ser", "errante_cegado", "olho_infinito"]
-  },
-  {
-    "id": "horror_abissal",
-    "emoji": "👁",
-    "nome": "Horror Abissal",
-    "tipo": "inimigo",
-    "raridade": "epica",
-    "weight": 20,
-    "regiaoOrigem": ["abismo"],
-    "minNivel": 11,
-    "historia": [
-      "A criatura se dissolve em sombras, retornando ao vazio de onde veio.",
-      "Seus muitos olhos se fecham, um a um, até restar apenas escuridão."
-    ],
-    "cor": "vermelho",
-    "sinergiaTag": ["corrupcao"],
-    "efeito": {
-      "tipo": "combate",
-      "vidaInimigo": 90,
-      "ataqueInimigo": 18,
-      "defesaInimigo": 6,
-      "ouroDrop": [30, 50],
-      "expDrop": 55,
-      "contadorTag": "horroresDerrotados"
-    }
-  },
-  {
-    "id": "sussurros_vazio",
-    "emoji": "🌫",
-    "nome": "Sussurros do Vazio",
-    "tipo": "misterio",
-    "raridade": "epica",
-    "weight": 10,
-    "regiaoOrigem": ["abismo"],
-    "minNivel": 11,
-    "historia": [
-      "Vozes sem dono sussurram seu nome em línguas esquecidas.",
-      "O vazio parece observar de volta, com uma curiosidade fria."
-    ],
-    "cor": "roxo",
-    "efeito": { "tipo": "misterio", "resultados": [
-      { "chance": 35, "sub": "item", "slot": "acessorio", "nomeItem": "Fragmento do Vazio Absoluto", "bonus": { "ataque": 5, "defesa": -1 } },
-      { "chance": 30, "sub": "recompensa_leve", "ouro": [20, 35], "exp": 20 },
-      { "chance": 35, "sub": "dano", "vida": 18 }
-    ] }
-  },
-  {
-    "id": "cristal_alma",
-    "emoji": "💠",
-    "nome": "Cristal de Alma",
-    "tipo": "item",
-    "raridade": "lendaria",
-    "weight": 3,
-    "regiaoOrigem": ["abismo"],
-    "minNivel": 12,
-    "historia": ["O cristal reflete não sua imagem, mas quem você poderia ter sido."],
-    "cor": "roxo",
-    "efeito": { "tipo": "item", "slot": "acessorio", "nomeItem": "Cristal de Alma", "bonus": { "vidaMax": 30, "manaMax": 15 } }
-  },
-  {
-    "id": "devorador_abismo",
-    "emoji": "👁‍🗨",
-    "nome": "Devorador do Abismo",
-    "tipo": "chefe",
-    "raridade": "mitica",
-    "weight": 1,
-    "faseMin": 4,
-    "regiaoOrigem": ["abismo"],
-    "minNivel": 15,
-    "condicao": { "tag": "horroresDerrotados", "minimo": 3 },
-    "historia": [
-      "O Devorador se retrai para dentro de si mesmo, colapsando em um ponto de silêncio absoluto.",
-      "O abismo, finalmente, fecha os olhos."
-    ],
-    "cor": "vermelho",
-    "efeito": {
-      "tipo": "combate",
-      "vidaInimigo": 200,
-      "ataqueInimigo": 28,
-      "defesaInimigo": 12,
-      "ouroDrop": [100, 180],
-      "expDrop": 150,
-      "flagFinal": "senhor_do_abismo"
-    }
-  },
-
-  /* ============================================================
-     EXPANSÃO — cartas comuns adicionais e conteúdo único de replay
-     ============================================================ */
-  {
-    "id": "corvo_mensageiro",
-    "emoji": "🐦‍⬛",
-    "nome": "Corvo Mensageiro",
-    "tipo": "evento",
-    "raridade": "comum",
-    "weight": 50,
-    "regiaoOrigem": ["aldeia", "floresta", "montanha", "cemiterio"],
-    "minNivel": 1,
-    "historia": [
-      "Um corvo pousa próximo a você, observando com olhos estranhamente atentos.",
-      "O corvo solta um grito áspero antes de alçar voo novamente.",
-      "Uma pena negra cai aos seus pés quando o corvo se vai."
-    ],
-    "cor": "cinza",
-    "efeito": { "tipo": "recompensa_leve", "exp": 3 }
-  },
-  {
-    "id": "poco_desejos",
-    "emoji": "⛲",
-    "nome": "Poço dos Desejos",
-    "tipo": "misterio",
-    "raridade": "incomum",
-    "weight": 22,
-    "regiaoOrigem": ["aldeia", "ruinas"],
-    "minNivel": 1,
-    "historia": [
-      "Você joga uma moeda no poço antigo e espera.",
-      "A água do poço treme, embora não haja vento."
-    ],
-    "cor": "azul",
-    "efeito": { "tipo": "misterio", "resultados": [
-      { "chance": 45, "sub": "recompensa_leve", "ouro": [4, 10], "exp": 4 },
-      { "chance": 30, "sub": "item", "slot": "consumivel", "cura": 18, "nomeItem": "Água Abençoada" },
-      { "chance": 25, "sub": "dano", "vida": 5 }
-    ] }
-  },
-  {
-    "id": "caravana_mercadores",
-    "emoji": "🐫",
-    "nome": "Caravana de Mercadores",
-    "tipo": "npc",
-    "raridade": "incomum",
-    "weight": 26,
-    "regiaoOrigem": ["deserto", "aldeia", "ruinas"],
-    "minNivel": 2,
-    "historia": [
-      "Uma caravana cruza seu caminho, carregada de especiarias e tecidos raros.",
-      "Os mercadores oferecem um desconto por sua ajuda contra bandidos na estrada."
-    ],
-    "cor": "laranja",
-    "efeito": { "tipo": "item", "slot": "consumivel", "cura": 30, "nomeItem": "Provisões da Caravana", "custoOuro": 8 }
-  },
-  {
-    "id": "javali_selvagem",
-    "emoji": "🐗",
-    "nome": "Javali Selvagem",
-    "tipo": "inimigo",
-    "raridade": "comum",
-    "weight": 55,
-    "regiaoOrigem": ["floresta", "montanha"],
-    "minNivel": 1,
-    "historia": [
-      "O javali carrega contra você, mas erra o golpe final.",
-      "Após uma perseguição breve, o javali é derrotado.",
-      "Você desvia da investida e contra-ataca com precisão."
-    ],
-    "cor": "vermelho",
-    "efeito": {
-      "tipo": "combate",
-      "vidaInimigo": 20,
-      "ataqueInimigo": 6,
-      "defesaInimigo": 2,
-      "ouroDrop": [3, 7],
-      "expDrop": 8
-    }
-  },
-  {
-    "id": "cobra_venenosa",
-    "emoji": "🐍",
-    "nome": "Cobra Venenosa",
-    "tipo": "inimigo",
-    "raridade": "comum",
-    "weight": 48,
-    "regiaoOrigem": ["deserto", "pantano", "floresta"],
-    "minNivel": 1,
-    "historia": [
-      "A cobra ataca rápido, mas você é mais rápido ainda.",
-      "Suas presas se cravam no chão vazio; a cobra não terá uma segunda chance.",
-      "Um golpe certeiro encerra o confronto antes que o veneno importe."
-    ],
-    "cor": "vermelho",
-    "efeito": {
-      "tipo": "combate",
-      "vidaInimigo": 16,
-      "ataqueInimigo": 7,
-      "defesaInimigo": 1,
-      "ouroDrop": [2, 6],
-      "expDrop": 7
-    }
-  },
-  {
-    "id": "ferreiro_ambulante",
-    "emoji": "⚒",
-    "nome": "Ferreiro Ambulante",
-    "tipo": "npc",
-    "raridade": "incomum",
-    "weight": 18,
-    "regiaoOrigem": ["montanha", "deserto", "ruinas"],
-    "minNivel": 3,
-    "historia": [
-      "O ferreiro ambulante afia sua lâmina sobre uma bigorna improvisada.",
-      "Ele oferece reforçar sua armadura em troca de trabalho honesto."
-    ],
-    "cor": "laranja",
-    "efeito": { "tipo": "item", "slot": "armadura", "nomeItem": "Armadura Reforçada", "bonus": { "defesa": 4 }, "custoOuro": 18 }
-  },
-  {
-    "id": "bardo_viajante",
-    "emoji": "🎻",
-    "nome": "Bardo Viajante",
-    "tipo": "npc",
-    "raridade": "incomum",
-    "weight": 22,
-    "regiaoOrigem": ["aldeia", "floresta"],
-    "minNivel": 1,
-    "historia": [
-      "O bardo canta uma balada sobre heróis esquecidos — talvez em breve cante sobre você.",
-      "Uma música alegre levanta seu ânimo antes da próxima jornada."
-    ],
-    "cor": "amarelo",
-    "efeito": { "tipo": "npc", "expChance": 5 }
-  },
-  {
-    "id": "ruinas_biblioteca",
-    "emoji": "📚",
-    "nome": "Biblioteca em Ruínas",
-    "tipo": "misterio",
-    "raridade": "rara",
-    "weight": 14,
-    "regiaoOrigem": ["ruinas", "templo"],
-    "minNivel": 3,
-    "historia": [
-      "Prateleiras desmoronadas escondem tomos antigos, alguns ainda legíveis.",
-      "Poeira de séculos flutua no ar enquanto você folheia páginas frágeis."
-    ],
-    "cor": "roxo",
-    "sinergiaTag": ["caminho_pureza"],
-    "efeito": { "tipo": "misterio", "resultados": [
-      { "chance": 50, "sub": "recompensa_leve", "ouro": [0, 5], "exp": 16 },
-      { "chance": 30, "sub": "item", "slot": "acessorio", "nomeItem": "Grimório Rasgado", "bonus": { "mana": 8 } },
-      { "chance": 20, "sub": "dano", "vida": 6 }
-    ] }
-  },
-  {
-    "id": "espirito_guardiao",
-    "emoji": "🔵",
-    "nome": "Espírito Guardião",
-    "tipo": "npc",
-    "raridade": "rara",
-    "weight": 10,
-    "regiaoOrigem": ["templo", "montanha"],
-    "minNivel": 4,
-    "historia": [
-      "Um espírito translúcido observa você em silêncio, avaliando sua intenção.",
-      "O espírito guardião concede uma bênção a quem se mostra digno."
-    ],
-    "cor": "azul",
-    "efeito": { "tipo": "item", "slot": "acessorio", "nomeItem": "Bênção do Guardião", "bonus": { "defesa": 2, "vidaMax": 10 } }
-  },
-  {
-    "id": "arena_desafio",
-    "emoji": "🏟",
-    "nome": "Arena de Combate",
-    "tipo": "inimigo",
-    "raridade": "rara",
-    "weight": 18,
-    "regiaoOrigem": ["deserto", "capital", "castelo"],
-    "minNivel": 6,
-    "historia": [
-      "A multidão vibra quando seu adversário cai na arena.",
-      "Você ergue os braços em vitória sob o sol escaldante da arena."
-    ],
-    "cor": "vermelho",
-    "sinergiaTag": ["caminho_forca", "estrategista_ofensivo"],
-    "efeito": {
-      "tipo": "combate",
-      "vidaInimigo": 48,
-      "ataqueInimigo": 12,
-      "defesaInimigo": 5,
-      "ouroDrop": [16, 28],
-      "expDrop": 22
-    }
-  },
-  {
-    "id": "oasis_deserto",
-    "emoji": "🌴",
-    "nome": "Oásis Escondido",
-    "tipo": "local",
-    "raridade": "incomum",
-    "weight": 18,
-    "regiaoOrigem": ["deserto"],
-    "minNivel": 4,
-    "historia": [
-      "Água fresca reflete o céu no meio da imensidão árida do deserto.",
-      "Palmeiras oferecem sombra rara em meio às dunas intermináveis."
-    ],
-    "cor": "verde",
-    "efeito": { "tipo": "recompensa_leve", "cura": 30, "exp": 5 }
-  },
-  {
-    "id": "sombra_do_passado",
-    "emoji": "🫥",
-    "nome": "Sombra do Passado",
-    "tipo": "misterio",
-    "raridade": "rara",
-    "weight": 12,
-    "faseMin": 2,
-    "regiaoOrigem": ["cemiterio", "ruinas"],
-    "minNivel": 5,
-    "historia": [
-      "Uma sombra com sua própria forma o observa do outro lado da névoa.",
-      "Por um instante, você vê a si mesmo — ou quem poderia ter se tornado."
-    ],
-    "cor": "roxo",
-    "sinergiaTag": ["corrupcao", "caminho_ganancia"],
-    "efeito": { "tipo": "misterio", "resultados": [
-      { "chance": 40, "sub": "dano", "vida": 14 },
-      { "chance": 35, "sub": "recompensa_leve", "ouro": [12, 22], "exp": 12 },
-      { "chance": 25, "sub": "item", "slot": "acessorio", "nomeItem": "Eco Sombrio", "bonus": { "ataque": 3 } }
-    ] }
-  },
-  {
-    "id": "gigante_pedra",
-    "emoji": "🗿",
-    "nome": "Gigante de Pedra",
-    "tipo": "chefe",
-    "raridade": "epica",
-    "weight": 4,
-    "regiaoOrigem": ["montanha", "caverna"],
-    "minNivel": 7,
-    "historia": [
-      "O gigante de pedra racha ao meio com um estrondo que ecoa pelas montanhas.",
-      "Fragmentos de rocha caem enquanto o gigante finalmente desmorona."
-    ],
-    "cor": "vermelho",
-    "efeito": {
-      "tipo": "combate",
-      "vidaInimigo": 85,
-      "ataqueInimigo": 15,
-      "defesaInimigo": 9,
-      "ouroDrop": [30, 50],
-      "expDrop": 48,
-      "itemGarantido": "nucleo_de_pedra"
-    }
-  },
-  {
-    "id": "nucleo_de_pedra",
-    "emoji": "🪨",
-    "nome": "Núcleo de Pedra",
-    "tipo": "item",
-    "raridade": "epica",
-    "weight": 0,
-    "regiaoOrigem": ["montanha"],
-    "minNivel": 7,
-    "oculta": true,
-    "historia": ["O núcleo é pesado como a própria montanha, mas fortalece cada passo seu."],
-    "cor": "amarelo",
-    "efeito": { "tipo": "item", "slot": "armadura", "nomeItem": "Núcleo de Pedra", "bonus": { "defesa": 6, "velocidade": -1 } }
-  },
-  {
-    "id": "filho_do_viajante",
-    "emoji": "🧒",
-    "nome": "O Filho do Viajante",
-    "tipo": "personagem",
-    "raridade": "rara",
-    "weight": 14,
-    "regiaoOrigem": ["aldeia"],
-    "minNivel": 2,
-    "condicao": { "tag": "caminho_compaixao", "minimo": 1 },
-    "historia": [
-      "Um garoto corre até você. \"Meu pai me falou de um estranho gentil na estrada. Era você, não era?\""
-    ],
-    "cor": "azul",
-    "efeito": { "tipo": "recompensa_leve", "ouro": [10, 15], "exp": 12, "cura": 15 }
-  },
-  {
-    "id": "memoria_eldrin_secreta",
-    "emoji": "🔮",
-    "nome": "O Segredo de Eldrin",
-    "tipo": "personagem",
-    "raridade": "lendaria",
-    "weight": 6,
-    "regiaoOrigem": ["floresta", "aldeia"],
-    "minNivel": 5,
-    "condicao": { "tag": "caminho_pureza", "minimo": 1 },
-    "historia": [
-      "Eldrin finalmente confia em você um segredo guardado por décadas: ele já foi um arquimago, antes de tudo o que perdeu."
-    ],
-    "cor": "roxo",
-    "efeito": { "tipo": "personagem", "personagemId": "eldrin", "relacao": 20, "exp": 25 },
-    "desbloqueia": ["cajado_do_arquimago_caido"]
-  },
-  {
-    "id": "cajado_do_arquimago_caido",
-    "emoji": "🪄",
-    "nome": "Cajado do Arquimago Caído",
-    "tipo": "artefato",
-    "raridade": "lendaria",
-    "weight": 3,
-    "regiaoOrigem": ["floresta"],
-    "minNivel": 5,
-    "historia": ["Eldrin entrega o cajado que jurou nunca mais tocar. \"Use-o melhor do que eu usei.\""],
-    "cor": "roxo",
-    "efeito": { "tipo": "item", "slot": "arma", "nomeItem": "Cajado do Arquimago Caído", "bonus": { "ataque": 5, "defesa": 1 } }
-  },
-  {
-    "id": "lamina_do_juramento",
-    "emoji": "🗡",
-    "nome": "Lâmina do Juramento Sombrio",
-    "tipo": "artefato",
-    "raridade": "lendaria",
-    "weight": 0,
-    "oculta": true,
-    "regiaoOrigem": ["ruinas", "cemiterio", "pantano", "abismo"],
-    "minNivel": 6,
-    "condicao": { "tag": "corrupcao", "minimo": 1 },
-    "historia": ["A lâmina parece sussurrar em uma língua que só quem selou o pacto pode entender."],
-    "cor": "roxo",
-    "efeito": { "tipo": "item", "slot": "arma", "nomeItem": "Lâmina do Juramento Sombrio", "bonus": { "ataque": 8, "velocidade": 1 } }
-  },
-  {
-    "id": "ultimo_covil",
-    "emoji": "🐲",
-    "nome": "O Último Covil",
-    "tipo": "chefe",
-    "raridade": "mitica",
-    "weight": 1,
-    "faseMin": 4,
-    "regiaoOrigem": ["vulcao", "abismo"],
-    "minNivel": 16,
-    "condicao": { "tag": "corrupcao", "minimo": 1 },
-    "historia": [
-      "No covil final, o que resta de sua humanidade decide o resultado da batalha.",
-      "A criatura reconhece em você um reflexo do que ela mesma já foi."
-    ],
-    "cor": "vermelho",
-    "efeito": {
-      "tipo": "combate",
-      "vidaInimigo": 230,
-      "ataqueInimigo": 30,
-      "defesaInimigo": 13,
-      "ouroDrop": [120, 200],
-      "expDrop": 170,
-      "flagFinal": "devorado_pelas_trevas"
-    }
-  },
-  {
-    "id": "visao_do_que_podia_ser",
-    "emoji": "🌌",
-    "nome": "Visão do que Podia Ser",
-    "tipo": "misterio",
-    "raridade": "mitica",
-    "weight": 2,
-    "faseMin": 4,
-    "regiaoOrigem": ["abismo", "templo"],
-    "minNivel": 14,
-    "historia": [
-      "Por um instante, você vislumbra todos os caminhos que não escolheu.",
-      "A visão se desfaz antes que você consiga compreendê-la por completo."
-    ],
-    "cor": "roxo",
-    "efeito": { "tipo": "misterio", "resultados": [
-      { "chance": 40, "sub": "recompensa_leve", "ouro": [30, 50], "exp": 30 },
-      { "chance": 30, "sub": "item", "slot": "acessorio", "nomeItem": "Fragmento de um Futuro Perdido", "bonus": { "ataque": 4, "defesa": 4 } },
-      { "chance": 30, "sub": "dano", "vida": 22 }
-    ] }
-  },
-  {
-    "id": "necromante_iniciante",
-    "emoji": "☠",
-    "nome": "Necromante Iniciante",
-    "tipo": "inimigo",
-    "raridade": "rara",
-    "weight": 16,
-    "regiaoOrigem": ["cemiterio", "pantano"],
-    "minNivel": 5,
-    "historia": [
-      "O necromante perde o controle sobre seus mortos-vivos ao cair derrotado.",
-      "Seus rituais interrompidos desfazem a magia que o mantinha de pé."
-    ],
-    "cor": "vermelho",
-    "efeito": {
-      "tipo": "combate",
-      "vidaInimigo": 40,
-      "ataqueInimigo": 10,
-      "defesaInimigo": 4,
-      "ouroDrop": [10, 20],
-      "expDrop": 20,
-      "contadorTag": "necromantesDerrotados"
-    }
-  },
-  {
-    "id": "circulo_convocacao",
-    "emoji": "⭕",
-    "nome": "Círculo de Convocação",
-    "tipo": "misterio",
-    "raridade": "epica",
-    "weight": 7,
-    "faseMin": 2,
-    "regiaoOrigem": ["cemiterio", "ruinas"],
-    "minNivel": 6,
-    "condicao": { "tag": "necromantesDerrotados", "minimo": 2 },
-    "historia": [
-      "Um círculo de convocação abandonado ainda pulsa com energia residual.",
-      "Símbolos gravados no chão sussurram nomes que você não reconhece."
-    ],
-    "cor": "roxo",
-    "efeito": { "tipo": "misterio", "resultados": [
-      { "chance": 40, "sub": "item", "slot": "acessorio", "nomeItem": "Talismã da Convocação", "bonus": { "mana": 10, "ataque": 2 } },
-      { "chance": 30, "sub": "recompensa_leve", "ouro": [15, 25], "exp": 15 },
-      { "chance": 30, "sub": "dano", "vida": 15 }
-    ] }
-  },
-  {
-    "id": "errante_cegado",
-    "emoji": "🦯",
-    "nome": "Errante Cegado",
-    "tipo": "npc",
-    "raridade": "rara",
-    "weight": 10,
-    "regiaoOrigem": ["abismo", "cemiterio"],
-    "minNivel": 9,
-    "historia": [
-      "O errante perdeu a visão ao olhar para o abismo por tempo demais — mas parece enxergar outra coisa.",
-      "\"Você carrega marcas que ainda não sabe ler\", ele diz, sem olhos para ver."
-    ],
-    "cor": "cinza",
-    "efeito": { "tipo": "item", "slot": "consumivel", "cura": 35, "nomeItem": "Chá do Errante" }
-  },
-  {
-    "id": "olho_infinito",
-    "emoji": "👁",
-    "nome": "Olho do Infinito",
-    "tipo": "artefato",
-    "raridade": "mitica",
-    "weight": 1,
-    "regiaoOrigem": ["abismo"],
-    "minNivel": 13,
-    "historia": ["O olho pisca uma vez em sua mão antes de parar, como se tivesse escolhido você."],
-    "cor": "roxo",
-    "efeito": { "tipo": "item", "slot": "acessorio", "nomeItem": "Olho do Infinito", "bonus": { "ataque": 5, "defesa": 5, "manaMax": 20 } }
-  },
-  {
-    "id": "vento_selvagem",
-    "emoji": "🌬",
-    "nome": "Vento Selvagem",
-    "tipo": "evento",
-    "raridade": "comum",
-    "weight": 50,
-    "regiaoOrigem": ["montanha", "deserto", "floresta"],
-    "minNivel": 1,
-    "historia": [
-      "Um vento forte varre a paisagem, carregando o cheiro de terra distante.",
-      "Folhas e poeira giram ao seu redor antes de tudo se acalmar novamente."
-    ],
-    "cor": "verde",
-    "efeito": { "tipo": "recompensa_leve", "exp": 3 }
-  },
-  {
-    "id": "druida_protetor",
-    "emoji": "🍃",
-    "nome": "Druida Protetor",
-    "tipo": "npc",
-    "raridade": "rara",
-    "weight": 12,
-    "regiaoOrigem": ["floresta"],
-    "minNivel": 3,
-    "historia": [
-      "O druida ergue a mão e a floresta parece responder ao seu gesto.",
-      "Ele observa você com atenção antes de decidir se você merece ajuda."
-    ],
-    "cor": "verde",
-    "sinergiaTag": ["caminho_furtivo"],
-    "efeito": { "tipo": "item", "slot": "acessorio", "nomeItem": "Talismã da Floresta", "bonus": { "velocidade": 2, "defesa": 1 } }
-  },
-  {
-    "id": "torneio_aldeia",
-    "emoji": "🏆",
-    "nome": "Torneio da Aldeia",
-    "tipo": "evento",
-    "raridade": "incomum",
-    "weight": 16,
-    "regiaoOrigem": ["aldeia"],
-    "minNivel": 2,
-    "historia": [
-      "A aldeia organiza um pequeno torneio para celebrar a colheita.",
-      "Crianças torcem enquanto competidores locais se enfrentam por diversão."
-    ],
-    "cor": "amarelo",
-    "sinergiaTag": ["caminho_forca", "estrategista_ofensivo"],
-    "efeito": { "tipo": "recompensa_leve", "ouro": [6, 14], "exp": 8 }
-  },
-  {
-    "id": "grimm_encontro",
-    "emoji": "🦇",
-    "nome": "Grimm, o Caçador",
-    "tipo": "personagem",
-    "raridade": "incomum",
-    "weight": 20,
-    "regiaoOrigem": ["cemiterio", "pantano"],
-    "minNivel": 3,
-    "historia": [
-      "Grimm limpa uma lâmina curva sem sequer olhar para você. \"Se veio atrás de trabalho sujo, fale rápido.\"",
-      "Ele observa a escuridão como quem já não teme mais nada nela."
-    ],
-    "cor": "cinza",
-    "efeito": { "tipo": "personagem", "personagemId": "grimm", "relacao": 8, "exp": 8 },
-    "desbloqueia": ["contrato_grimm"]
-  },
-  {
-    "id": "contrato_grimm",
-    "emoji": "📜",
-    "nome": "Contrato de Grimm",
-    "tipo": "escolha",
-    "raridade": "rara",
-    "weight": 12,
-    "regiaoOrigem": ["cemiterio", "pantano"],
-    "minNivel": 4,
-    "historia": ["Grimm oferece um contrato para caçar algo que ele mesmo prefere evitar."],
-    "cor": "cinza",
-    "efeito": {
-      "tipo": "escolha",
-      "intro": "\"Há algo nos pântanos que nem eu quero caçar sozinho\", diz Grimm. \"Aceita dividir o risco — e o pagamento?\"",
-      "opcoes": [
-        {
-          "id": "aceitar_contrato",
-          "label": "🗡 Aceitar o contrato",
-          "dica": "Trabalho perigoso, mas Grimm reconhece talento.",
-          "historia": ["Vocês caçam juntos em silêncio absoluto. Grimm assente uma vez — o mais próximo que ele chega de um elogio."],
-          "dano": 10,
-          "ouro": [20, 35],
-          "relacao": 14,
-          "personagemId": "grimm",
-          "tag": "caminho_sombrio"
-        },
-        {
-          "id": "recusar_contrato",
-          "label": "🚫 Recusar",
-          "dica": "Sem risco, mas Grimm não esquece.",
-          "historia": ["Grimm guarda o contrato sem dizer nada. Seu silêncio pesa mais do que qualquer insulto."],
-          "relacao": -6,
-          "personagemId": "grimm"
-        }
-      ]
-    }
-  },
-
-  /* ============================================================
-     REDE DE ESTRADAS — conecta todos os terrenos entre si e garante
-     que sempre exista um caminho de volta para a aldeia natal, de
-     qualquer região em que o jogador esteja. Sem isso, a jornada vira
-     uma via de mão única e o jogador fica "preso" longe de casa.
-     ============================================================ */
-  {
-    "id": "estrada_para_aldeia",
-    "emoji": "🏘",
-    "nome": "Estrada de Volta",
-    "tipo": "local",
-    "raridade": "comum",
-    "weight": 16,
-    "inicial": true,
-    "regiaoOrigem": ["floresta", "ruinas", "montanha", "caverna", "templo", "cemiterio", "pantano", "deserto", "castelo", "vulcao", "capital", "abismo"],
-    "minNivel": 1,
-    "historia": [
-      "Uma trilha conhecida aponta de volta para a aldeia natal.",
-      "Você reconhece marcos familiares — o caminho para casa está logo ali.",
-      "Depois de tanto caminhar, a ideia de rever a aldeia parece reconfortante.",
-      "Um velho marco de pedra indica a distância até a aldeia.",
-      "O cheiro de pão fresco, mesmo distante, lembra você de que a aldeia não fica tão longe assim."
-    ],
-    "cor": "azul",
-    "efeito": { "tipo": "mudar_regiao", "regiao": "aldeia" }
-  },
-  {
-    "id": "trilha_vulcao_montanha",
-    "emoji": "🏔",
-    "nome": "Descida do Vulcão",
-    "tipo": "local",
-    "raridade": "comum",
-    "weight": 14,
-    "inicial": true,
-    "regiaoOrigem": ["vulcao"],
-    "minNivel": 8,
-    "historia": [
-      "O ar esfria conforme você desce de volta para as trilhas rochosas da montanha.",
-      "Deixar o calor do vulcão para trás traz um alívio imediato."
-    ],
-    "cor": "azul",
-    "efeito": { "tipo": "mudar_regiao", "regiao": "montanha" }
-  },
-  {
-    "id": "saida_abismo",
-    "emoji": "🧊",
-    "nome": "Saída do Abismo",
-    "tipo": "local",
-    "raridade": "comum",
-    "weight": 14,
-    "inicial": true,
-    "regiaoOrigem": ["abismo"],
-    "minNivel": 11,
-    "historia": [
-      "A fenda se estreita atrás de você conforme retorna à caverna congelada.",
-      "O silêncio do abismo dá lugar ao eco familiar do gelo rachando."
-    ],
-    "cor": "azul",
-    "efeito": { "tipo": "mudar_regiao", "regiao": "caverna" }
-  },
-  {
-    "id": "portao_capital_castelo",
-    "emoji": "🏰",
-    "nome": "Retorno ao Castelo",
-    "tipo": "local",
-    "raridade": "comum",
-    "weight": 14,
-    "inicial": true,
-    "regiaoOrigem": ["capital"],
-    "minNivel": 10,
-    "historia": [
-      "Você deixa as ruas movimentadas da capital e retorna às muralhas do castelo.",
-      "O burburinho da capital fica para trás enquanto os portões do castelo se erguem à frente."
-    ],
-    "cor": "azul",
-    "efeito": { "tipo": "mudar_regiao", "regiao": "castelo" }
-  },
-  {
-    "id": "travessia_deserto_pantano",
-    "emoji": "🌙",
-    "nome": "Travessia das Terras Baixas",
-    "tipo": "local",
-    "raridade": "incomum",
-    "weight": 12,
-    "inicial": true,
-    "regiaoOrigem": ["deserto", "pantano"],
-    "minNivel": 3,
-    "historia": [
-      "A areia dá lugar à lama conforme o terreno muda sob seus pés.",
-      "Um caminho pouco usado conecta as dunas áridas aos pântanos encharcados."
-    ],
-    "cor": "verde",
-    "efeito": { "tipo": "mudar_regiao", "regiao": "pantano" }
-  },
-  {
-    "id": "travessia_pantano_deserto",
-    "emoji": "🏜",
-    "nome": "Rumo às Dunas",
-    "tipo": "local",
-    "raridade": "incomum",
-    "weight": 12,
-    "inicial": true,
-    "regiaoOrigem": ["pantano", "deserto"],
-    "minNivel": 3,
-    "historia": [
-      "A lama seca sob seus pés conforme o pântano dá lugar à areia quente.",
-      "O horizonte se abre em dunas douradas depois da névoa densa do pântano."
-    ],
-    "cor": "laranja",
-    "efeito": { "tipo": "mudar_regiao", "regiao": "deserto" }
-  },
-{
-  "id": "escola_piromancia",
-  "emoji": "🔥",
-  "nome": "Escola de Piromancia",
-  "tipo": "escola",
-  "raridade": "rara",
-  "weight": 8,
-  "regiaoOrigem": [
-    "templo",
-    "ruinas"
-  ],
-  "minNivel": 3,
-  "faseMin": 2,
-  "historia": [
-    "Um piromante itinerante se oferece para lhe ensinar os fundamentos das chamas — avisando, com um sorriso torto, que você vai se queimar algumas vezes no caminho."
-  ],
-  "cor": "vermelho",
-  "efeito": {
-    "tipo": "escola",
-    "escolaId": "piromancia",
-    "bonus": {
-      "ataque": 3
-    }
-  }
-},
-{
-  "id": "escola_necromancia",
-  "emoji": "☠",
-  "nome": "Escola de Necromancia",
-  "tipo": "escola",
-  "raridade": "rara",
-  "weight": 8,
-  "regiaoOrigem": [
-    "cemiterio",
-    "pantano"
-  ],
-  "minNivel": 3,
-  "faseMin": 2,
-  "historia": [
-    "Entre os túmulos, uma voz sem corpo ensina a ouvir os mortos — e, vez ou outra, a se recusar a permanecer quieta diante deles."
-  ],
-  "cor": "roxo",
-  "efeito": {
-    "tipo": "escola",
-    "escolaId": "necromancia",
-    "bonus": {
-      "vidaMax": 15
-    }
-  }
-},
-{
-  "id": "escola_ilusionismo",
-  "emoji": "🌙",
-  "nome": "Escola de Ilusionismo",
-  "tipo": "escola",
-  "raridade": "rara",
-  "weight": 8,
-  "regiaoOrigem": [
-    "floresta",
-    "caverna"
-  ],
-  "minNivel": 3,
-  "faseMin": 2,
-  "historia": [
-    "Uma figura encapuzada desaparece e reaparece três vezes seguidas antes de aceitar lhe ensinar a arte de enganar os olhos."
-  ],
-  "cor": "azul",
-  "efeito": {
-    "tipo": "escola",
-    "escolaId": "ilusionismo",
-    "bonus": {
-      "velocidade": 3
-    }
-  }
-},
-{
-  "id": "escola_elementalismo",
-  "emoji": "⚡",
-  "nome": "Escola de Elementalismo",
-  "tipo": "escola",
-  "raridade": "rara",
-  "weight": 8,
-  "regiaoOrigem": [
-    "montanha",
-    "deserto"
-  ],
-  "minNivel": 3,
-  "faseMin": 2,
-  "historia": [
-    "Um velho elementalista canaliza um raio pela própria mão só para provar que os elementos podem ser domados por quem tem paciência."
-  ],
-  "cor": "azul",
-  "efeito": {
-    "tipo": "escola",
-    "escolaId": "elementalismo",
-    "bonus": {
-      "mana": 20
-    }
-  }
-},
-{
-  "id": "cajado_piromante",
-  "emoji": "🔥",
-  "nome": "Cajado do Piromante",
-  "tipo": "item",
-  "raridade": "epica",
-  "weight": 6,
-  "regiaoOrigem": [
-    "aldeia",
-    "floresta",
-    "montanha",
-    "ruinas",
-    "caverna",
-    "pantano",
-    "deserto",
-    "templo",
-    "cemiterio",
-    "castelo",
-    "vulcao",
-    "capital",
-    "abismo"
-  ],
-  "minNivel": 4,
-  "faseMin": 2,
-  "condicao": {
-    "tag": "escola_piromancia",
-    "minimo": 1
-  },
-  "historia": [
-    "O cajado arde sem se consumir, como se as chamas reconhecessem em você uma das suas."
-  ],
-  "cor": "vermelho",
-  "efeito": {
-    "tipo": "item",
-    "slot": "arma",
-    "nomeItem": "Cajado do Piromante",
-    "bonus": {
-      "ataque": 6,
-      "mana": 10
-    }
-  }
-},
-{
-  "id": "grimorio_necromante",
-  "emoji": "📕",
-  "nome": "Grimório Necromante",
-  "tipo": "item",
-  "raridade": "epica",
-  "weight": 6,
-  "regiaoOrigem": [
-    "aldeia",
-    "floresta",
-    "montanha",
-    "ruinas",
-    "caverna",
-    "pantano",
-    "deserto",
-    "templo",
-    "cemiterio",
-    "castelo",
-    "vulcao",
-    "capital",
-    "abismo"
-  ],
-  "minNivel": 4,
-  "faseMin": 2,
-  "condicao": {
-    "tag": "escola_necromancia",
-    "minimo": 1
-  },
-  "historia": [
-    "As páginas do grimório sussurram nomes que você não reconhece, mas que parecem reconhecer você."
-  ],
-  "cor": "roxo",
-  "efeito": {
-    "tipo": "item",
-    "slot": "acessorio",
-    "nomeItem": "Grimório Necromante",
-    "bonus": {
-      "vidaMax": 20,
-      "defesa": 2
-    }
-  }
-},
-{
-  "id": "espelho_ilusorio",
-  "emoji": "🪞",
-  "nome": "Espelho Ilusório",
-  "tipo": "item",
-  "raridade": "epica",
-  "weight": 6,
-  "regiaoOrigem": [
-    "aldeia",
-    "floresta",
-    "montanha",
-    "ruinas",
-    "caverna",
-    "pantano",
-    "deserto",
-    "templo",
-    "cemiterio",
-    "castelo",
-    "vulcao",
-    "capital",
-    "abismo"
-  ],
-  "minNivel": 4,
-  "faseMin": 2,
-  "condicao": {
-    "tag": "escola_ilusionismo",
-    "minimo": 1
-  },
-  "historia": [
-    "O espelho mostra seu reflexo um instante depois do que deveria — o suficiente para confundir qualquer inimigo."
-  ],
-  "cor": "azul",
-  "efeito": {
-    "tipo": "item",
-    "slot": "acessorio",
-    "nomeItem": "Espelho Ilusório",
-    "bonus": {
+  "classes": [
+    {
+      "id": "mago",
+      "emoji": "🧙",
+      "nome": "Mago",
+      "descricao": "Domina as artes arcanas. Frágil, porém devastador à distância.",
+      "vidaMax": 70,
+      "ataque": 8,
+      "defesa": 2,
       "velocidade": 4,
-      "ataque": 1
+      "manaMax": 50,
+      "ouroInicial": 10
+    },
+    {
+      "id": "guerreiro",
+      "emoji": "⚔",
+      "nome": "Guerreiro",
+      "descricao": "Força bruta e resistência. Prospera no combate corpo a corpo.",
+      "vidaMax": 110,
+      "ataque": 9,
+      "defesa": 7,
+      "velocidade": 3,
+      "manaMax": 10,
+      "ouroInicial": 15
+    },
+    {
+      "id": "arqueiro",
+      "emoji": "🏹",
+      "nome": "Arqueiro",
+      "descricao": "Precisão e agilidade. Ataca antes de ser atacado.",
+      "vidaMax": 85,
+      "ataque": 8,
+      "defesa": 4,
+      "velocidade": 8,
+      "manaMax": 20,
+      "ouroInicial": 12
+    },
+    {
+      "id": "ladino",
+      "emoji": "🗡",
+      "nome": "Ladino",
+      "descricao": "Rápido, furtivo e oportunista. Prefere evitar do que enfrentar.",
+      "vidaMax": 75,
+      "ataque": 7,
+      "defesa": 3,
+      "velocidade": 9,
+      "manaMax": 15,
+      "ouroInicial": 25
+    },
+    {
+      "id": "paladino",
+      "emoji": "🛡",
+      "nome": "Paladino",
+      "descricao": "Guerreiro sagrado. Equilíbrio entre ataque, defesa e fé.",
+      "vidaMax": 100,
+      "ataque": 7,
+      "defesa": 8,
+      "velocidade": 4,
+      "manaMax": 25,
+      "ouroInicial": 10
+    },
+    {
+      "id": "necromante",
+      "emoji": "🌑",
+      "nome": "Necromante",
+      "descricao": "Manipula a morte a seu favor. Poderoso, mas instável.",
+      "vidaMax": 65,
+      "ataque": 9,
+      "defesa": 2,
+      "velocidade": 5,
+      "manaMax": 45,
+      "ouroInicial": 8
+    },
+    {
+      "id": "druida",
+      "emoji": "🍃",
+      "nome": "Druida",
+      "descricao": "Guardião da natureza. Versátil, com afinidade para a floresta.",
+      "vidaMax": 90,
+      "ataque": 6,
+      "defesa": 5,
+      "velocidade": 6,
+      "manaMax": 35,
+      "ouroInicial": 10
+    },
+    {
+      "id": "bardo",
+      "emoji": "🎸",
+      "nome": "Bardo",
+      "descricao": "Usa música e carisma para encantar e sobreviver. Muito rápido e cheio de truques.",
+      "vidaMax": 80,
+      "ataque": 6,
+      "defesa": 4,
+      "velocidade": 9,
+      "manaMax": 40,
+      "ouroInicial": 20
+    },
+    {
+      "id": "monge",
+      "emoji": "🥋",
+      "nome": "Monge",
+      "descricao": "Mestre do combate desarmado. Ágil e resistente, focado no equilíbrio interior.",
+      "vidaMax": 95,
+      "ataque": 8,
+      "defesa": 6,
+      "velocidade": 7,
+      "manaMax": 20,
+      "ouroInicial": 5
     }
-  }
-},
-{
-  "id": "orbe_elemental",
-  "emoji": "🔮",
-  "nome": "Orbe Elemental",
-  "tipo": "item",
-  "raridade": "epica",
-  "weight": 6,
-  "regiaoOrigem": [
-    "aldeia",
-    "floresta",
-    "montanha",
-    "ruinas",
-    "caverna",
-    "pantano",
-    "deserto",
-    "templo",
-    "cemiterio",
-    "castelo",
-    "vulcao",
-    "capital",
-    "abismo"
   ],
-  "minNivel": 4,
-  "faseMin": 2,
-  "condicao": {
-    "tag": "escola_elementalismo",
-    "minimo": 1
-  },
-  "historia": [
-    "Dentro do orbe, fogo, água, terra e ar giram em equilíbrio perfeito, esperando seu comando."
-  ],
-  "cor": "azul",
-  "efeito": {
-    "tipo": "item",
-    "slot": "acessorio",
-    "nomeItem": "Orbe Elemental",
-    "bonus": {
-      "mana": 15,
-      "defesa": 2
+  "characters": [
+    {
+      "id": "eldrin",
+      "emoji": "🧙",
+      "nome": "Eldrin",
+      "titulo": "O Sábio",
+      "personalidade": "Paciente, enigmático, fala por parábolas.",
+      "descricao": "Um velho eremita que já viu impérios nascerem e caírem.",
+      "regiaoOrigem": [
+        "aldeia",
+        "floresta"
+      ]
+    },
+    {
+      "id": "kael",
+      "emoji": "⚔",
+      "nome": "Kael",
+      "titulo": "O Guerreiro",
+      "personalidade": "Direto, orgulhoso, admira coragem em combate.",
+      "descricao": "Um mercenário à procura de uma causa que valha a pena.",
+      "regiaoOrigem": [
+        "aldeia",
+        "montanha"
+      ]
+    },
+    {
+      "id": "lyra",
+      "emoji": "🏹",
+      "nome": "Lyra",
+      "titulo": "A Caçadora",
+      "personalidade": "Independente, arredia, detesta cidades.",
+      "descricao": "Conhece cada trilha da floresta melhor do que seu próprio nome.",
+      "regiaoOrigem": [
+        "floresta"
+      ]
+    },
+    {
+      "id": "seraphina",
+      "emoji": "☀️",
+      "nome": "Seraphina",
+      "titulo": "A Curandeira",
+      "personalidade": "Gentil, devota e pacífica. Repudia a violência desnecessária.",
+      "descricao": "Uma sacerdotisa errante que leva a luz de sua divindade aos feridos.",
+      "regiaoOrigem": [
+        "aldeia",
+        "templo"
+      ]
+    },
+    {
+      "id": "grimm",
+      "emoji": "🦇",
+      "nome": "Grimm",
+      "titulo": "O Caçador",
+      "personalidade": "Sombrio, prático e de poucas palavras.",
+      "descricao": "Um matador de monstros que prefere trabalhar à noite e cobrar adiantado.",
+      "regiaoOrigem": [
+        "cemiterio",
+        "pantano"
+      ]
+    },
+    {
+      "id": "orin",
+      "emoji": "📜",
+      "nome": "Orin",
+      "titulo": "O Cronista",
+      "personalidade": "Obcecado por registrar tudo, cita os próprios livros como se fossem escritura sagrada.",
+      "descricao": "Um velho escriba que atravessa o reino anotando cada lenda antes que se perca para sempre — já encheu mais de cem volumes, e afirma que a sua será a próxima história digna de um capítulo.",
+      "regiaoOrigem": [
+        "aldeia",
+        "ruinas",
+        "templo"
+      ]
+    },
+    {
+      "id": "vessa",
+      "emoji": "🗡️",
+      "nome": "Vessa",
+      "titulo": "A Exilada",
+      "personalidade": "Fria e disciplinada, carrega o peso de uma traição que jura não ter cometido.",
+      "descricao": "Ex-capitã da Guarda Real da Capital, expulsa sob acusações que nunca pôde refutar. Agora vive à margem dos reinos que um dia jurou proteger, tentando decidir se ainda vale a pena salvá-los.",
+      "regiaoOrigem": [
+        "deserto",
+        "castelo",
+        "capital"
+      ]
     }
-  }
-}
-],
-  events: [
-  {
-    "id": "chuva",
-    "emoji": "🌧",
-    "nome": "Chuva",
-    "descricao": "Mais plantas e criaturas da floresta aparecem.",
-    "duracaoTurnos": 4,
-    "chancePorTurno": 6,
-    "modificadores": { "tipo": "floresta", "multiplicador": 1.6 }
-  },
-  {
-    "id": "incendio",
-    "emoji": "🔥",
-    "nome": "Incêndio",
-    "descricao": "Florestas ardem e escasseiam temporariamente.",
-    "duracaoTurnos": 3,
-    "chancePorTurno": 4,
-    "modificadores": { "regiao": "floresta", "multiplicador": 0.4 }
-  },
-  {
-    "id": "eclipse",
-    "emoji": "🌑",
-    "nome": "Eclipse",
-    "descricao": "Mortos-vivos ficam mais fortes e frequentes.",
-    "duracaoTurnos": 3,
-    "chancePorTurno": 4,
-    "modificadores": { "regiao": "cemiterio", "multiplicador": 2.0, "buffInimigoAtaque": 3 }
-  },
-  {
-    "id": "cometa",
-    "emoji": "🌠",
-    "nome": "Cometa",
-    "descricao": "Um cometa cruza o céu, cartas raras se tornam mais prováveis.",
-    "duracaoTurnos": 2,
-    "chancePorTurno": 3,
-    "modificadores": { "raridade": ["rara", "epica", "lendaria", "mitica"], "multiplicador": 2.5 }
-  },
-  {
-    "id": "festival",
-    "emoji": "👑",
-    "nome": "Festival",
-    "descricao": "Mercadores e NPCs aparecem com maior frequência.",
-    "duracaoTurnos": 4,
-    "chancePorTurno": 5,
-    "modificadores": { "tipo": "npc", "multiplicador": 2.0 }
-  },
-  {
-    "id": "praga",
-    "emoji": "☠",
-    "nome": "Praga",
-    "descricao": "Inimigos se tornam mais numerosos e perigosos.",
-    "duracaoTurnos": 3,
-    "chancePorTurno": 4,
-    "modificadores": { "tipo": "inimigo", "multiplicador": 1.7, "buffInimigoAtaque": 2 }
-  },
-  {
-    "id": "tempestade",
-    "emoji": "⚡",
-    "nome": "Tempestade",
-    "descricao": "O caminho fica perigoso; locais raros surgem com mais frequência.",
-    "duracaoTurnos": 3,
-    "chancePorTurno": 4,
-    "modificadores": { "tipo": "local", "multiplicador": 1.5 }
-  },
-  {
-    "id": "lua_cheia",
-    "emoji": "🌕",
-    "nome": "Noite de Lua Cheia",
-    "descricao": "A luz prateada enlouquece as feras. Criaturas noturnas ficam muito mais perigosas.",
-    "duracaoTurnos": 3,
-    "chancePorTurno": 4,
-    "modificadores": { "tipo": "inimigo", "multiplicador": 1.5, "buffInimigoAtaque": 3, "buffInimigoVelocidade": 2 }
-  },
-  {
-    "id": "bencao_divina",
-    "emoji": "🕊️",
-    "nome": "Graça Divina",
-    "descricao": "Uma aura de paz desce sobre o mundo. Encontros amigáveis e curas são mais frequentes.",
-    "duracaoTurnos": 4,
-    "chancePorTurno": 3,
-    "modificadores": { "tipo": "npc", "multiplicador": 2.5 }
-  }
-],
-  endings: [
-  {
-    "id": "morto",
-    "emoji": "💀",
-    "titulo": "Morto",
-    "condicao": "vida",
-    "texto": "Sua jornada termina aqui. O herói cai, mas sua história será lembrada por aqueles que a ouvirem."
-  },
-  {
-    "id": "cacador_de_dragoes",
-    "emoji": "🐉",
-    "titulo": "Caçador de Dragões",
-    "condicao": "flag",
-    "flag": "cacador_de_dragoes",
-    "texto": "Você derrotou o dragão e seu nome ecoará pelas montanhas por gerações."
-  },
-  {
-    "id": "senhor_das_trevas",
-    "emoji": "🌑",
-    "titulo": "Senhor das Trevas",
-    "condicao": "flag",
-    "flag": "senhor_das_trevas",
-    "texto": "Ao derrotar o Rei Lich, você absorveu parte de seu poder sombrio. O mundo agora teme seu nome."
-  },
-  {
-    "id": "rei",
-    "emoji": "👑",
-    "titulo": "Rei",
-    "condicao": "flag",
-    "flag": "rei",
-    "texto": "Com o Cavaleiro Negro derrotado, o castelo se curva diante de você. Uma nova era começa."
-  },
-  {
-    "id": "arquimago",
-    "emoji": "🧙",
-    "titulo": "Arquimago",
-    "condicao": "classe_nivel",
-    "classe": "mago",
-    "nivelMinimo": 35,
-    "texto": "Seu domínio das artes arcanas alcança um nível quase divino. Você se torna uma lenda viva."
-  },
-  {
-    "id": "lenda",
-    "emoji": "👻",
-    "titulo": "Lenda",
-    "condicao": "nivel_geral",
-    "nivelMinimo": 100,
-    "texto": "Sua jornada se torna lenda, contada por gerações ao redor de fogueiras em todo o reino."
-  },
-  {
-    "id": "tirano",
-    "emoji": "☠",
-    "titulo": "Tirano",
-    "condicao": "ouro",
-    "ouroMinimo": 500,
-    "texto": "A riqueza acumulada corrompeu seu coração. Você governa pelo medo, não pelo respeito."
-  },
-  {
-    "id": "flagelo_goblins",
-    "emoji": "👹",
-    "titulo": "Flagelo dos Goblins",
-    "condicao": "flag",
-    "flag": "flagelo_goblins",
-    "texto": "Ao derrotar o Rei Goblin, você desmantelou o império de sucata, trazendo paz definitiva às estradas da região."
-  },
-  {
-    "id": "senhor_do_fogo",
-    "emoji": "🌋",
-    "titulo": "Senhor do Fogo",
-    "condicao": "flag",
-    "flag": "senhor_do_fogo",
-    "texto": "Com o Coração do Vulcão destruído, a montanha reconhece você como seu novo mestre. As chamas obedecem ao seu comando."
-  },
-  {
-    "id": "libertador",
-    "emoji": "👑",
-    "titulo": "Libertador",
-    "condicao": "flag",
-    "flag": "libertador",
-    "texto": "Ao lado do povo, você depôs a rainha usurpadora. As ruas da capital cantam seu nome ao entardecer."
-  },
-  {
-    "id": "senhor_do_abismo",
-    "emoji": "👁‍🗨",
-    "titulo": "Senhor do Abismo",
-    "condicao": "flag",
-    "flag": "senhor_do_abismo",
-    "texto": "O Devorador se rendeu ao vazio, e você permanece — o único ser que já olhou para o abismo e não foi engolido."
-  },
-  {
-    "id": "devorado_pelas_trevas",
-    "emoji": "🐲",
-    "titulo": "Devorado pelas Trevas",
-    "condicao": "flag",
-    "flag": "devorado_pelas_trevas",
-    "texto": "O pacto que você selou tempos atrás cobrou seu preço final. O que resta de você já não é mais completamente humano."
-  }
-
-]
+  ],
+  "cards": [
+    {
+      "id": "aldeia",
+      "emoji": "🏘",
+      "nome": "Aldeia Natal",
+      "tipo": "local",
+      "raridade": "comum",
+      "weight": 10,
+      "inicial": true,
+      "regiaoOrigem": [
+        "aldeia"
+      ],
+      "minNivel": 1,
+      "historia": [
+        "Você contempla mais uma vez sua aldeia natal antes de partir.",
+        "As ruas da aldeia ainda guardam lembranças de sua infância."
+      ],
+      "cor": "azul",
+      "efeito": {
+        "tipo": "mudar_regiao",
+        "regiao": "aldeia"
+      },
+      "desbloqueia": [
+        "mercador",
+        "ferreiro",
+        "estrada_floresta",
+        "eldrin_encontro",
+        "kael_encontro",
+        "pocao_mana",
+        "seraphina_encontro",
+        "resgate_aldeia",
+        "vendedor_ambulante",
+        "corvo_mensageiro",
+        "poco_desejos",
+        "bardo_viajante",
+        "torneio_aldeia",
+        "cajado_piromante",
+        "grimorio_necromante",
+        "espelho_ilusorio",
+        "orbe_elemental",
+        "orin_encontro",
+        "mercenario_rival",
+        "bencao_da_fogueira"
+      ]
+    },
+    {
+      "id": "eldrin_encontro",
+      "emoji": "🧙",
+      "nome": "Eldrin, o Sábio",
+      "tipo": "personagem",
+      "raridade": "incomum",
+      "weight": 26,
+      "regiaoOrigem": [
+        "aldeia"
+      ],
+      "minNivel": 1,
+      "historia": [
+        "Um velho eremita observa você da porta da taverna. \"Vejo em você uma jornada que ainda nem começou de verdade\", diz ele.",
+        "Eldrin ajusta o manto surrado e sorri. \"Poucos param para conversar com um velho tolo. Isso diz algo sobre você.\""
+      ],
+      "cor": "roxo",
+      "efeito": {
+        "tipo": "personagem",
+        "personagemId": "eldrin",
+        "relacao": 8,
+        "exp": 6
+      },
+      "desbloqueia": [
+        "eldrin_ensinamento"
+      ]
+    },
+    {
+      "id": "kael_encontro",
+      "emoji": "⚔",
+      "nome": "Kael, o Guerreiro",
+      "tipo": "personagem",
+      "raridade": "incomum",
+      "weight": 26,
+      "regiaoOrigem": [
+        "aldeia"
+      ],
+      "minNivel": 1,
+      "historia": [
+        "Um mercenário de cicatrizes visíveis mede você com o olhar. \"Não parece grande coisa. Prove-me o contrário.\"",
+        "Kael afia a espada sem tirar os olhos de você. \"Ouvi dizer que a floresta anda perigosa. Bom teste, se você tiver estômago.\""
+      ],
+      "cor": "vermelho",
+      "efeito": {
+        "tipo": "personagem",
+        "personagemId": "kael",
+        "relacao": 8,
+        "exp": 6
+      }
+    },
+    {
+      "id": "eldrin_ensinamento",
+      "emoji": "📖",
+      "nome": "Ensinamento de Eldrin",
+      "tipo": "personagem",
+      "raridade": "rara",
+      "weight": 14,
+      "regiaoOrigem": [
+        "floresta"
+      ],
+      "minNivel": 2,
+      "historia": [
+        "Eldrin reaparece sentado junto a uma fogueira na floresta, como se soubesse exatamente onde encontrá-lo. \"Voltamos a nos ver. Deixe-me lhe ensinar algo útil.\""
+      ],
+      "cor": "roxo",
+      "efeito": {
+        "tipo": "personagem",
+        "personagemId": "eldrin",
+        "relacao": 14,
+        "exp": 18
+      }
+    },
+    {
+      "id": "estrada_floresta",
+      "emoji": "🌲",
+      "nome": "Estrada da Floresta",
+      "tipo": "local",
+      "raridade": "comum",
+      "weight": 30,
+      "inicial": true,
+      "regiaoOrigem": [
+        "aldeia",
+        "floresta"
+      ],
+      "minNivel": 1,
+      "historia": [
+        "Você segue por uma estrada estreita que leva a uma floresta antiga.",
+        "O caminho se estreita entre árvores altas e sombrias."
+      ],
+      "cor": "verde",
+      "efeito": {
+        "tipo": "mudar_regiao",
+        "regiao": "floresta"
+      },
+      "desbloqueia": [
+        "lobo",
+        "veado",
+        "cogumelos",
+        "lenhador",
+        "arvore_anciã",
+        "acampamento",
+        "lyra_encontro",
+        "goblin",
+        "javali_selvagem",
+        "encruzilhada_moral",
+        "druida_protetor",
+        "vento_selvagem",
+        "memoria_eldrin_secreta",
+        "escola_ilusionismo",
+        "goblin_xama",
+        "javali_ancestral"
+      ]
+    },
+    {
+      "id": "lyra_encontro",
+      "emoji": "🏹",
+      "nome": "Lyra, a Caçadora",
+      "tipo": "personagem",
+      "raridade": "incomum",
+      "weight": 26,
+      "regiaoOrigem": [
+        "floresta"
+      ],
+      "minNivel": 1,
+      "historia": [
+        "Uma flecha cravada numa árvore próxima anuncia sua chegada antes de qualquer palavra. \"Está pisando alto demais para quem quer passar despercebido\", diz uma voz entre as folhas.",
+        "Lyra desce de um galho sem fazer ruído algum. \"A floresta fala de você. Ainda não decidi se isso é bom.\""
+      ],
+      "cor": "verde",
+      "efeito": {
+        "tipo": "personagem",
+        "personagemId": "lyra",
+        "relacao": 8,
+        "exp": 6
+      },
+      "desbloqueia": [
+        "oferta_lyra"
+      ]
+    },
+    {
+      "id": "lobo",
+      "emoji": "🐺",
+      "nome": "Lobo",
+      "tipo": "inimigo",
+      "raridade": "comum",
+      "weight": 90,
+      "regiaoOrigem": [
+        "floresta"
+      ],
+      "minNivel": 1,
+      "historia": [
+        "O herói derrotou o lobo com um golpe certeiro.",
+        "O lobo tentou atacar, mas caiu diante da sua arma.",
+        "A batalha foi intensa, porém o herói saiu vitorioso."
+      ],
+      "cor": "vermelho",
+      "efeito": {
+        "tipo": "combate",
+        "vidaInimigo": 18,
+        "ataqueInimigo": 5,
+        "defesaInimigo": 1,
+        "ouroDrop": [
+          2,
+          6
+        ],
+        "expDrop": 8,
+        "contadorTag": "lobosDerrotados"
+      },
+      "desbloqueia": [
+        "rei_dos_lobos"
+      ]
+    },
+    {
+      "id": "veado",
+      "emoji": "🦌",
+      "nome": "Veado",
+      "tipo": "evento",
+      "raridade": "comum",
+      "weight": 60,
+      "regiaoOrigem": [
+        "floresta"
+      ],
+      "minNivel": 1,
+      "historia": [
+        "Um veado cruza seu caminho e desaparece na mata.",
+        "Você observa um veado pastar tranquilamente."
+      ],
+      "cor": "verde",
+      "efeito": {
+        "tipo": "recompensa_leve",
+        "ouro": [
+          0,
+          2
+        ],
+        "exp": 2
+      }
+    },
+    {
+      "id": "cogumelos",
+      "emoji": "🍄",
+      "nome": "Cogumelos Silvestres",
+      "tipo": "item",
+      "raridade": "comum",
+      "weight": 55,
+      "regiaoOrigem": [
+        "floresta",
+        "pantano"
+      ],
+      "minNivel": 1,
+      "historia": [
+        "Você colhe cogumelos que podem ser úteis para poções.",
+        "Cogumelos estranhos crescem na base de uma árvore."
+      ],
+      "cor": "amarelo",
+      "efeito": {
+        "tipo": "item",
+        "slot": "consumivel",
+        "cura": 15,
+        "nomeItem": "Cogumelos Silvestres"
+      }
+    },
+    {
+      "id": "lenhador",
+      "emoji": "🪓",
+      "nome": "Lenhador Perdido",
+      "tipo": "npc",
+      "raridade": "incomum",
+      "weight": 30,
+      "regiaoOrigem": [
+        "floresta"
+      ],
+      "minNivel": 1,
+      "historia": [
+        "Um lenhador perdido agradece sua ajuda e oferece uma recompensa.",
+        "O lenhador compartilha rações em troca de companhia."
+      ],
+      "cor": "laranja",
+      "efeito": {
+        "tipo": "npc",
+        "ouro": [
+          3,
+          8
+        ],
+        "expChance": 5
+      },
+      "desbloqueia": [
+        "machado_lenhador"
+      ]
+    },
+    {
+      "id": "arvore_anciã",
+      "emoji": "🌳",
+      "nome": "Árvore Ancestral",
+      "tipo": "misterio",
+      "raridade": "rara",
+      "weight": 12,
+      "regiaoOrigem": [
+        "floresta"
+      ],
+      "minNivel": 2,
+      "historia": [
+        "A árvore ancestral sussurra segredos antigos ao seu ouvido.",
+        "Você sente uma energia estranha emanar do tronco centenário."
+      ],
+      "cor": "cinza",
+      "efeito": {
+        "tipo": "misterio",
+        "resultados": [
+          {
+            "chance": 50,
+            "sub": "recompensa_leve",
+            "ouro": [
+              5,
+              12
+            ],
+            "exp": 10
+          },
+          {
+            "chance": 30,
+            "sub": "item",
+            "slot": "acessorio",
+            "nomeItem": "Amuleto da Floresta",
+            "bonus": {
+              "mana": 5
+            }
+          },
+          {
+            "chance": 20,
+            "sub": "dano",
+            "vida": 8
+          }
+        ]
+      },
+      "desbloqueia": [
+        "druida_ermitao"
+      ]
+    },
+    {
+      "id": "acampamento",
+      "emoji": "🏕",
+      "nome": "Acampamento Abandonado",
+      "tipo": "local",
+      "raridade": "comum",
+      "weight": 20,
+      "regiaoOrigem": [
+        "floresta",
+        "montanha",
+        "pantano"
+      ],
+      "minNivel": 1,
+      "historia": [
+        "Você descansa junto às cinzas de uma fogueira apagada.",
+        "Um acampamento vazio oferece um breve refúgio."
+      ],
+      "cor": "verde",
+      "efeito": {
+        "tipo": "recompensa_leve",
+        "cura": 20,
+        "exp": 3
+      }
+    },
+    {
+      "id": "rei_dos_lobos",
+      "emoji": "🐺👑",
+      "nome": "Rei dos Lobos",
+      "tipo": "chefe",
+      "raridade": "epica",
+      "weight": 4,
+      "regiaoOrigem": [
+        "floresta"
+      ],
+      "minNivel": 4,
+      "condicao": {
+        "tag": "lobosDerrotados",
+        "minimo": 4
+      },
+      "historia": [
+        "A alcateia toda uiva quando seu líder cai diante de você.",
+        "O Rei dos Lobos reconhece sua força antes de sucumbir."
+      ],
+      "cor": "vermelho",
+      "efeito": {
+        "tipo": "combate",
+        "vidaInimigo": 60,
+        "ataqueInimigo": 12,
+        "defesaInimigo": 4,
+        "ouroDrop": [
+          20,
+          35
+        ],
+        "expDrop": 40,
+        "itemGarantido": "pele_rei_lobos"
+      }
+    },
+    {
+      "id": "bandido",
+      "emoji": "🏹",
+      "nome": "Bandido",
+      "tipo": "inimigo",
+      "raridade": "comum",
+      "weight": 70,
+      "regiaoOrigem": [
+        "floresta",
+        "ruinas",
+        "deserto"
+      ],
+      "minNivel": 1,
+      "historia": [
+        "O bandido foge após levar a pior no confronto.",
+        "Você desarma o bandido antes que ele reaja.",
+        "Um golpe rápido encerra a emboscada do bandido."
+      ],
+      "cor": "vermelho",
+      "efeito": {
+        "tipo": "combate",
+        "vidaInimigo": 22,
+        "ataqueInimigo": 6,
+        "defesaInimigo": 2,
+        "ouroDrop": [
+          4,
+          10
+        ],
+        "expDrop": 14,
+        "contadorTag": "banditosDerrotados"
+      },
+      "desbloqueia": [
+        "guilda_bandidos"
+      ]
+    },
+    {
+      "id": "guilda_bandidos",
+      "emoji": "🏴",
+      "nome": "Guilda dos Bandidos",
+      "tipo": "chefe",
+      "raridade": "epica",
+      "weight": 4,
+      "regiaoOrigem": [
+        "ruinas"
+      ],
+      "minNivel": 5,
+      "condicao": {
+        "tag": "banditosDerrotados",
+        "minimo": 4
+      },
+      "historia": [
+        "O líder da guilda cai, e seus comparsas se dispersam pela noite.",
+        "Você desmantela a guilda que aterrorizava a região."
+      ],
+      "cor": "vermelho",
+      "efeito": {
+        "tipo": "combate",
+        "vidaInimigo": 70,
+        "ataqueInimigo": 13,
+        "defesaInimigo": 5,
+        "ouroDrop": [
+          30,
+          45
+        ],
+        "expDrop": 45,
+        "itemGarantido": "adaga_sombria"
+      }
+    },
+    {
+      "id": "ruinas_entrada",
+      "emoji": "🏛",
+      "nome": "Ruínas Esquecidas",
+      "tipo": "local",
+      "raridade": "incomum",
+      "weight": 20,
+      "inicial": true,
+      "regiaoOrigem": [
+        "floresta",
+        "aldeia",
+        "pantano"
+      ],
+      "minNivel": 2,
+      "historia": [
+        "Pilares quebrados marcam a entrada de ruínas antigas.",
+        "O silêncio das ruínas esconde perigos e tesouros."
+      ],
+      "cor": "azul",
+      "efeito": {
+        "tipo": "mudar_regiao",
+        "regiao": "ruinas"
+      },
+      "desbloqueia": [
+        "esqueleto",
+        "bandido",
+        "tesouro_ruinas",
+        "portal_misterioso",
+        "prisioneiro_masmorra",
+        "ruinas_biblioteca",
+        "orin_biblioteca_perdida",
+        "estatua_rei_esquecido",
+        "registro_da_guilda"
+      ]
+    },
+    {
+      "id": "esqueleto",
+      "emoji": "💀",
+      "nome": "Esqueleto Guardião",
+      "tipo": "inimigo",
+      "raridade": "incomum",
+      "weight": 20,
+      "regiaoOrigem": [
+        "ruinas",
+        "cemiterio"
+      ],
+      "minNivel": 2,
+      "historia": [
+        "Os ossos do guardião se espalham pelo chão de pedra.",
+        "O esqueleto desaba, vencido por sua lâmina."
+      ],
+      "cor": "vermelho",
+      "efeito": {
+        "tipo": "combate",
+        "vidaInimigo": 28,
+        "ataqueInimigo": 7,
+        "defesaInimigo": 4,
+        "ouroDrop": [
+          5,
+          12
+        ],
+        "expDrop": 22
+      }
+    },
+    {
+      "id": "tesouro_ruinas",
+      "emoji": "💰",
+      "nome": "Baú Antigo",
+      "tipo": "item",
+      "raridade": "rara",
+      "weight": 15,
+      "regiaoOrigem": [
+        "ruinas",
+        "caverna"
+      ],
+      "minNivel": 2,
+      "historia": [
+        "Dentro do baú, moedas antigas brilham à meia-luz.",
+        "Você força a fechadura enferrujada e encontra um tesouro."
+      ],
+      "cor": "amarelo",
+      "efeito": {
+        "tipo": "recompensa_leve",
+        "ouro": [
+          15,
+          30
+        ],
+        "exp": 5
+      }
+    },
+    {
+      "id": "portal_misterioso",
+      "emoji": "🌀",
+      "nome": "Portal Instável",
+      "tipo": "misterio",
+      "raridade": "epica",
+      "weight": 6,
+      "regiaoOrigem": [
+        "ruinas",
+        "templo"
+      ],
+      "minNivel": 3,
+      "historia": [
+        "O portal pulsa com uma luz que não pertence a este mundo.",
+        "Você atravessa o portal e sente a realidade se dobrar."
+      ],
+      "cor": "roxo",
+      "efeito": {
+        "tipo": "misterio",
+        "resultados": [
+          {
+            "chance": 40,
+            "sub": "item",
+            "slot": "acessorio",
+            "nomeItem": "Fragmento do Vazio",
+            "bonus": {
+              "ataque": 3
+            }
+          },
+          {
+            "chance": 30,
+            "sub": "recompensa_leve",
+            "ouro": [
+              10,
+              20
+            ],
+            "exp": 15
+          },
+          {
+            "chance": 30,
+            "sub": "dano",
+            "vida": 12
+          }
+        ]
+      }
+    },
+    {
+      "id": "montanha_trilha",
+      "emoji": "🏔",
+      "nome": "Trilha da Montanha",
+      "tipo": "local",
+      "raridade": "incomum",
+      "weight": 25,
+      "inicial": true,
+      "regiaoOrigem": [
+        "floresta",
+        "aldeia",
+        "pantano"
+      ],
+      "minNivel": 3,
+      "historia": [
+        "O ar fica mais frio conforme você sobe a trilha rochosa.",
+        "As montanhas se erguem imponentes à sua frente."
+      ],
+      "cor": "azul",
+      "efeito": {
+        "tipo": "mudar_regiao",
+        "regiao": "montanha"
+      },
+      "desbloqueia": [
+        "aguia",
+        "troll",
+        "caverna_gelo",
+        "dragao",
+        "vulcao_base",
+        "duelo_kael",
+        "ferreiro_ambulante",
+        "gigante_pedra",
+        "escola_elementalismo"
+      ]
+    },
+    {
+      "id": "aguia",
+      "emoji": "🦅",
+      "nome": "Águia Selvagem",
+      "tipo": "evento",
+      "raridade": "comum",
+      "weight": 55,
+      "regiaoOrigem": [
+        "montanha"
+      ],
+      "minNivel": 3,
+      "historia": [
+        "Uma águia sobrevoa em círculos e some entre as nuvens.",
+        "O grito da águia ecoa pelo desfiladeiro."
+      ],
+      "cor": "verde",
+      "efeito": {
+        "tipo": "recompensa_leve",
+        "ouro": [
+          2,
+          5
+        ],
+        "exp": 4
+      }
+    },
+    {
+      "id": "troll",
+      "emoji": "👹",
+      "nome": "Troll da Montanha",
+      "tipo": "inimigo",
+      "raridade": "rara",
+      "weight": 20,
+      "regiaoOrigem": [
+        "montanha"
+      ],
+      "minNivel": 4,
+      "historia": [
+        "O troll desaba com um rugido que ecoa pelas pedras.",
+        "Você esquiva do porrete gigante e contra-ataca."
+      ],
+      "cor": "vermelho",
+      "efeito": {
+        "tipo": "combate",
+        "vidaInimigo": 45,
+        "ataqueInimigo": 10,
+        "defesaInimigo": 5,
+        "ouroDrop": [
+          12,
+          22
+        ],
+        "expDrop": 22
+      }
+    },
+    {
+      "id": "caverna_gelo",
+      "emoji": "🧊",
+      "nome": "Caverna Congelada",
+      "tipo": "local",
+      "raridade": "incomum",
+      "weight": 20,
+      "regiaoOrigem": [
+        "montanha"
+      ],
+      "minNivel": 4,
+      "historia": [
+        "O gelo reflete sua tocha em mil pontos de luz.",
+        "Estalactites de gelo pendem sobre sua cabeça."
+      ],
+      "cor": "azul",
+      "efeito": {
+        "tipo": "mudar_regiao",
+        "regiao": "caverna"
+      },
+      "desbloqueia": [
+        "lobo_branco",
+        "cristal_gelo",
+        "abismo_fenda",
+        "morcego_vampiro",
+        "morcego_rei"
+      ]
+    },
+    {
+      "id": "lobo_branco",
+      "emoji": "🐺❄",
+      "nome": "Lobo Branco",
+      "tipo": "inimigo",
+      "raridade": "incomum",
+      "weight": 35,
+      "regiaoOrigem": [
+        "caverna",
+        "montanha"
+      ],
+      "minNivel": 4,
+      "historia": [
+        "O lobo branco se funde novamente com a neve, derrotado.",
+        "Suas presas geladas não foram páreo para sua defesa."
+      ],
+      "cor": "vermelho",
+      "efeito": {
+        "tipo": "combate",
+        "vidaInimigo": 32,
+        "ataqueInimigo": 8,
+        "defesaInimigo": 3,
+        "ouroDrop": [
+          6,
+          14
+        ],
+        "expDrop": 15
+      }
+    },
+    {
+      "id": "cristal_gelo",
+      "emoji": "💎",
+      "nome": "Cristal de Gelo Eterno",
+      "tipo": "artefato",
+      "raridade": "lendaria",
+      "weight": 3,
+      "regiaoOrigem": [
+        "caverna"
+      ],
+      "minNivel": 6,
+      "historia": [
+        "O cristal pulsa com um frio que fortalece sua vontade.",
+        "Ao tocar o cristal, um poder gélido percorre suas veias."
+      ],
+      "cor": "roxo",
+      "efeito": {
+        "tipo": "item",
+        "slot": "acessorio",
+        "nomeItem": "Cristal de Gelo Eterno",
+        "bonus": {
+          "defesa": 5,
+          "vidaMax": 20
+        }
+      }
+    },
+    {
+      "id": "dragao",
+      "emoji": "🐉",
+      "nome": "Dragão",
+      "tipo": "chefe",
+      "raridade": "mitica",
+      "weight": 2,
+      "regiaoOrigem": [
+        "montanha"
+      ],
+      "minNivel": 12,
+      "condicao": {
+        "itemRequerido": "espada_lendaria"
+      },
+      "historia": [
+        "As chamas do dragão iluminam o céu antes de ele cair.",
+        "Após uma batalha lendária, o dragão finalmente sucumbe."
+      ],
+      "cor": "vermelho",
+      "efeito": {
+        "tipo": "combate",
+        "vidaInimigo": 150,
+        "ataqueInimigo": 22,
+        "defesaInimigo": 10,
+        "ouroDrop": [
+          80,
+          150
+        ],
+        "expDrop": 120,
+        "itemGarantido": "coracao_dragao",
+        "flagFinal": "cacador_de_dragoes"
+      }
+    },
+    {
+      "id": "mercador",
+      "emoji": "👨‍💼",
+      "nome": "Mercador Viajante",
+      "tipo": "npc",
+      "raridade": "comum",
+      "weight": 30,
+      "regiaoOrigem": [
+        "aldeia",
+        "ruinas",
+        "deserto"
+      ],
+      "minNivel": 1,
+      "historia": [
+        "O mercador oferece um bom negócio antes de seguir viagem.",
+        "Você troca algumas moedas por suprimentos úteis."
+      ],
+      "cor": "laranja",
+      "efeito": {
+        "tipo": "item",
+        "slot": "consumivel",
+        "cura": 45,
+        "nomeItem": "Ração de Viagem",
+        "custoOuro": 25
+      }
+    },
+    {
+      "id": "ferreiro",
+      "emoji": "🔨",
+      "nome": "Ferreiro da Aldeia",
+      "tipo": "npc",
+      "raridade": "lendaria",
+      "weight": 3,
+      "regiaoOrigem": [
+        "aldeia"
+      ],
+      "minNivel": 1,
+      "historia": [
+        "O ferreiro forja uma lâmina sob encomenda especialmente para você.",
+        "Faíscas voam enquanto o ferreiro finaliza seu trabalho."
+      ],
+      "cor": "laranja",
+      "efeito": {
+        "tipo": "item",
+        "slot": "arma",
+        "nomeItem": "Espada de Ferro Élfica",
+        "bonus": {
+          "ataque": 9
+        },
+        "custoOuro": 35
+      }
+    },
+    {
+      "id": "machado_lenhador",
+      "emoji": "🪓",
+      "nome": "Machado do Lenhador",
+      "tipo": "item",
+      "raridade": "incomum",
+      "weight": 18,
+      "regiaoOrigem": [
+        "floresta"
+      ],
+      "minNivel": 2,
+      "historia": [
+        "O machado é pesado, mas corta com força brutal.",
+        "Você equipa o machado deixado pelo lenhador."
+      ],
+      "cor": "amarelo",
+      "efeito": {
+        "tipo": "item",
+        "slot": "arma",
+        "nomeItem": "Machado do Lenhador",
+        "bonus": {
+          "ataque": 4,
+          "velocidade": -1
+        }
+      }
+    },
+    {
+      "id": "druida_ermitao",
+      "emoji": "🍃",
+      "nome": "Druida Eremita",
+      "tipo": "npc",
+      "raridade": "rara",
+      "weight": 10,
+      "regiaoOrigem": [
+        "floresta"
+      ],
+      "minNivel": 3,
+      "historia": [
+        "O eremita compartilha um pouco de sua sabedoria ancestral.",
+        "Ervas raras são oferecidas em troca de sua companhia."
+      ],
+      "cor": "laranja",
+      "efeito": {
+        "tipo": "item",
+        "slot": "consumivel",
+        "cura": 40,
+        "nomeItem": "Elixir da Natureza"
+      }
+    },
+    {
+      "id": "pele_rei_lobos",
+      "emoji": "🐺",
+      "nome": "Pele do Rei dos Lobos",
+      "tipo": "item",
+      "raridade": "epica",
+      "weight": 0,
+      "regiaoOrigem": [
+        "floresta"
+      ],
+      "minNivel": 4,
+      "oculta": true,
+      "historia": [
+        "Você veste a pele do Rei dos Lobos como um troféu de guerra."
+      ],
+      "cor": "amarelo",
+      "efeito": {
+        "tipo": "item",
+        "slot": "armadura",
+        "nomeItem": "Pele do Rei dos Lobos",
+        "bonus": {
+          "defesa": 4,
+          "vidaMax": 15
+        }
+      }
+    },
+    {
+      "id": "adaga_sombria",
+      "emoji": "🗡",
+      "nome": "Adaga Sombria",
+      "tipo": "item",
+      "raridade": "epica",
+      "weight": 0,
+      "regiaoOrigem": [
+        "ruinas"
+      ],
+      "minNivel": 5,
+      "oculta": true,
+      "historia": [
+        "A adaga sombria parece sussurrar em sua mão."
+      ],
+      "cor": "amarelo",
+      "efeito": {
+        "tipo": "item",
+        "slot": "arma",
+        "nomeItem": "Adaga Sombria",
+        "bonus": {
+          "ataque": 5,
+          "velocidade": 2
+        }
+      }
+    },
+    {
+      "id": "espada_lendaria",
+      "emoji": "⚔",
+      "nome": "Espada Lendária",
+      "tipo": "artefato",
+      "raridade": "lendaria",
+      "weight": 3,
+      "regiaoOrigem": [
+        "templo",
+        "castelo"
+      ],
+      "minNivel": 8,
+      "historia": [
+        "A espada canta ao sair de sua bainha de pedra.",
+        "Um poder antigo desperta ao empunhar a lâmina lendária."
+      ],
+      "cor": "roxo",
+      "efeito": {
+        "tipo": "item",
+        "slot": "arma",
+        "nomeItem": "Espada Lendária",
+        "bonus": {
+          "ataque": 8,
+          "defesa": 2
+        }
+      }
+    },
+    {
+      "id": "coracao_dragao",
+      "emoji": "❤️‍🔥",
+      "nome": "Coração de Dragão",
+      "tipo": "artefato",
+      "raridade": "mitica",
+      "weight": 0,
+      "regiaoOrigem": [
+        "montanha"
+      ],
+      "minNivel": 12,
+      "oculta": true,
+      "historia": [
+        "O coração do dragão pulsa com um calor sobrenatural em suas mãos."
+      ],
+      "cor": "roxo",
+      "efeito": {
+        "tipo": "item",
+        "slot": "acessorio",
+        "nomeItem": "Coração de Dragão",
+        "bonus": {
+          "ataque": 6,
+          "defesa": 6,
+          "vidaMax": 30
+        }
+      }
+    },
+    {
+      "id": "templo_entrada",
+      "emoji": "⛪",
+      "nome": "Templo Esquecido",
+      "tipo": "local",
+      "raridade": "rara",
+      "weight": 12,
+      "inicial": true,
+      "regiaoOrigem": [
+        "ruinas",
+        "deserto"
+      ],
+      "minNivel": 5,
+      "historia": [
+        "Colunas cobertas de musgo guardam a entrada do templo.",
+        "Um silêncio sagrado paira sobre o templo em ruínas."
+      ],
+      "cor": "azul",
+      "efeito": {
+        "tipo": "mudar_regiao",
+        "regiao": "templo"
+      },
+      "desbloqueia": [
+        "sacerdote_caido",
+        "sumo_sacerdote",
+        "espada_lendaria",
+        "chamado_arcano",
+        "espirito_guardiao",
+        "escola_piromancia",
+        "cronica_dos_reis",
+        "orin_ensinamento"
+      ]
+    },
+    {
+      "id": "sacerdote_caido",
+      "emoji": "👻",
+      "nome": "Sacerdote Caído",
+      "tipo": "inimigo",
+      "raridade": "rara",
+      "weight": 18,
+      "regiaoOrigem": [
+        "templo",
+        "cemiterio"
+      ],
+      "minNivel": 5,
+      "historia": [
+        "O espírito do sacerdote se dissolve em fumaça, enfim em paz.",
+        "Suas orações sombrias não impediram a derrota."
+      ],
+      "cor": "vermelho",
+      "efeito": {
+        "tipo": "combate",
+        "vidaInimigo": 38,
+        "ataqueInimigo": 9,
+        "defesaInimigo": 3,
+        "ouroDrop": [
+          10,
+          18
+        ],
+        "expDrop": 18,
+        "contadorTag": "templosVisitados"
+      }
+    },
+    {
+      "id": "sumo_sacerdote",
+      "emoji": "⛪",
+      "nome": "Sumo Sacerdote",
+      "tipo": "chefe",
+      "raridade": "epica",
+      "weight": 4,
+      "regiaoOrigem": [
+        "templo"
+      ],
+      "minNivel": 7,
+      "condicao": {
+        "tag": "templosVisitados",
+        "minimo": 3
+      },
+      "historia": [
+        "O Sumo Sacerdote se curva, reconhecendo sua fé mais forte.",
+        "A luz do templo se apaga com a queda do Sumo Sacerdote."
+      ],
+      "cor": "vermelho",
+      "efeito": {
+        "tipo": "combate",
+        "vidaInimigo": 80,
+        "ataqueInimigo": 14,
+        "defesaInimigo": 7,
+        "ouroDrop": [
+          35,
+          55
+        ],
+        "expDrop": 50
+      }
+    },
+    {
+      "id": "cemiterio_portao",
+      "emoji": "⚰️",
+      "nome": "Portão do Cemitério",
+      "tipo": "local",
+      "raridade": "incomum",
+      "weight": 20,
+      "inicial": true,
+      "regiaoOrigem": [
+        "ruinas",
+        "pantano"
+      ],
+      "minNivel": 3,
+      "historia": [
+        "Névoa espessa cobre as lápides ao entrar no cemitério.",
+        "Os portões enferrujados rangem ao serem abertos."
+      ],
+      "cor": "cinza",
+      "efeito": {
+        "tipo": "mudar_regiao",
+        "regiao": "cemiterio"
+      },
+      "desbloqueia": [
+        "fantasma",
+        "esqueleto",
+        "rei_lich",
+        "pacto_sombrio",
+        "sombra_do_passado",
+        "necromante_iniciante",
+        "circulo_convocacao",
+        "lamina_do_juramento",
+        "grimm_encontro",
+        "escola_necromancia"
+      ]
+    },
+    {
+      "id": "fantasma",
+      "emoji": "👻",
+      "nome": "Fantasma Errante",
+      "tipo": "inimigo",
+      "raridade": "incomum",
+      "weight": 30,
+      "regiaoOrigem": [
+        "cemiterio",
+        "pantano"
+      ],
+      "minNivel": 3,
+      "historia": [
+        "O fantasma se dissipa com um lamento distante.",
+        "Sua lâmina atravessa o fantasma, que finalmente descansa."
+      ],
+      "cor": "vermelho",
+      "efeito": {
+        "tipo": "combate",
+        "vidaInimigo": 26,
+        "ataqueInimigo": 8,
+        "defesaInimigo": 1,
+        "ouroDrop": [
+          5,
+          10
+        ],
+        "expDrop": 13
+      }
+    },
+    {
+      "id": "rei_lich",
+      "emoji": "👑💀",
+      "nome": "Rei Lich",
+      "tipo": "chefe",
+      "raridade": "mitica",
+      "weight": 2,
+      "regiaoOrigem": [
+        "cemiterio"
+      ],
+      "minNivel": 15,
+      "historia": [
+        "A coroa do Rei Lich se estilhaça ao tocar o chão.",
+        "Um silêncio eterno toma o lugar do poder do Lich."
+      ],
+      "cor": "vermelho",
+      "efeito": {
+        "tipo": "combate",
+        "vidaInimigo": 170,
+        "ataqueInimigo": 24,
+        "defesaInimigo": 9,
+        "ouroDrop": [
+          90,
+          160
+        ],
+        "expDrop": 130,
+        "flagFinal": "senhor_das_trevas"
+      }
+    },
+    {
+      "id": "pantano_entrada",
+      "emoji": "🐊",
+      "nome": "Pântano Nebuloso",
+      "tipo": "local",
+      "raridade": "incomum",
+      "weight": 20,
+      "inicial": true,
+      "regiaoOrigem": [
+        "floresta",
+        "cemiterio"
+      ],
+      "minNivel": 3,
+      "historia": [
+        "O ar úmido do pântano gruda em sua pele.",
+        "Sons estranhos ecoam entre as árvores retorcidas."
+      ],
+      "cor": "azul",
+      "efeito": {
+        "tipo": "mudar_regiao",
+        "regiao": "pantano"
+      },
+      "desbloqueia": [
+        "jacare",
+        "bruxa_pantano",
+        "matriarca_do_pantano"
+      ]
+    },
+    {
+      "id": "jacare",
+      "emoji": "🐊",
+      "nome": "Jacaré Gigante",
+      "tipo": "inimigo",
+      "raridade": "incomum",
+      "weight": 32,
+      "regiaoOrigem": [
+        "pantano"
+      ],
+      "minNivel": 3,
+      "historia": [
+        "O jacaré submerge novamente nas águas turvas, derrotado.",
+        "Suas mandíbulas poderosas não bastaram desta vez."
+      ],
+      "cor": "vermelho",
+      "efeito": {
+        "tipo": "combate",
+        "vidaInimigo": 34,
+        "ataqueInimigo": 9,
+        "defesaInimigo": 4,
+        "ouroDrop": [
+          6,
+          14
+        ],
+        "expDrop": 16,
+        "contadorTag": "jacaresDerrotados"
+      }
+    },
+    {
+      "id": "bruxa_pantano",
+      "emoji": "🧙‍♀️",
+      "nome": "Bruxa do Pântano",
+      "tipo": "npc",
+      "raridade": "rara",
+      "weight": 10,
+      "regiaoOrigem": [
+        "pantano"
+      ],
+      "minNivel": 4,
+      "historia": [
+        "A bruxa oferece uma poção em troca de um pequeno favor.",
+        "Seus olhos verdes brilham enquanto prepara um feitiço para você."
+      ],
+      "cor": "roxo",
+      "efeito": {
+        "tipo": "item",
+        "slot": "consumivel",
+        "cura": 35,
+        "nomeItem": "Poção da Bruxa"
+      }
+    },
+    {
+      "id": "deserto_dunas",
+      "emoji": "🏜",
+      "nome": "Dunas Intermináveis",
+      "tipo": "local",
+      "raridade": "incomum",
+      "weight": 18,
+      "inicial": true,
+      "regiaoOrigem": [
+        "ruinas",
+        "montanha"
+      ],
+      "minNivel": 4,
+      "historia": [
+        "O calor do deserto castiga cada passo dado.",
+        "Dunas se estendem até onde a vista alcança."
+      ],
+      "cor": "azul",
+      "efeito": {
+        "tipo": "mudar_regiao",
+        "regiao": "deserto"
+      },
+      "desbloqueia": [
+        "escorpiao",
+        "mercador",
+        "caravana_mercadores",
+        "cobra_venenosa",
+        "oasis_deserto",
+        "vessa_encontro",
+        "contrabandista",
+        "senhor_das_areias"
+      ]
+    },
+    {
+      "id": "escorpiao",
+      "emoji": "🦂",
+      "nome": "Escorpião Gigante",
+      "tipo": "inimigo",
+      "raridade": "incomum",
+      "weight": 30,
+      "regiaoOrigem": [
+        "deserto"
+      ],
+      "minNivel": 4,
+      "historia": [
+        "O ferrão do escorpião se quebra contra sua defesa.",
+        "Você derrota o escorpião antes que ele ataque de novo."
+      ],
+      "cor": "vermelho",
+      "efeito": {
+        "tipo": "combate",
+        "vidaInimigo": 30,
+        "ataqueInimigo": 9,
+        "defesaInimigo": 3,
+        "ouroDrop": [
+          7,
+          15
+        ],
+        "expDrop": 15,
+        "contadorTag": "escorpioesDerrotados"
+      }
+    },
+    {
+      "id": "castelo_portao",
+      "emoji": "🏰",
+      "nome": "Portões do Castelo",
+      "tipo": "local",
+      "raridade": "rara",
+      "weight": 15,
+      "inicial": true,
+      "regiaoOrigem": [
+        "deserto",
+        "montanha"
+      ],
+      "minNivel": 12,
+      "historia": [
+        "Os portões colossais do castelo se abrem lentamente diante de você.",
+        "Bandeiras esfarrapadas tremulam sobre as muralhas do castelo."
+      ],
+      "cor": "azul",
+      "efeito": {
+        "tipo": "mudar_regiao",
+        "regiao": "castelo"
+      },
+      "desbloqueia": [
+        "cavaleiro_negro",
+        "espada_lendaria",
+        "arena_desafio"
+      ]
+    },
+    {
+      "id": "cavaleiro_negro",
+      "emoji": "🖤",
+      "nome": "Cavaleiro Negro",
+      "tipo": "chefe",
+      "raridade": "epica",
+      "weight": 5,
+      "regiaoOrigem": [
+        "castelo"
+      ],
+      "minNivel": 9,
+      "historia": [
+        "A armadura negra desaba com um estrondo metálico.",
+        "O Cavaleiro Negro se ajoelha, finalmente vencido."
+      ],
+      "cor": "vermelho",
+      "efeito": {
+        "tipo": "combate",
+        "vidaInimigo": 95,
+        "ataqueInimigo": 16,
+        "defesaInimigo": 8,
+        "ouroDrop": [
+          40,
+          70
+        ],
+        "expDrop": 60,
+        "flagFinal": "rei"
+      },
+      "desbloqueia": [
+        "capital_muralhas"
+      ]
+    },
+    {
+      "id": "goblin",
+      "emoji": "👺",
+      "nome": "Goblin Saqueador",
+      "tipo": "inimigo",
+      "raridade": "comum",
+      "weight": 85,
+      "regiaoOrigem": [
+        "floresta",
+        "ruinas",
+        "caverna"
+      ],
+      "minNivel": 1,
+      "historia": [
+        "Um goblin salta de trás de uma rocha balançando uma adaga enferrujada.",
+        "Você surpreende um goblin ocupado demais contando moedas roubadas."
+      ],
+      "cor": "vermelho",
+      "efeito": {
+        "tipo": "combate",
+        "vidaInimigo": 15,
+        "ataqueInimigo": 4,
+        "defesaInimigo": 1,
+        "ouroDrop": [
+          3,
+          9
+        ],
+        "expDrop": 6,
+        "contadorTag": "goblinsDerrotados"
+      },
+      "desbloqueia": [
+        "rei_goblin"
+      ]
+    },
+    {
+      "id": "rei_goblin",
+      "emoji": "👹👑",
+      "nome": "Rei Goblin",
+      "tipo": "chefe",
+      "raridade": "epica",
+      "weight": 5,
+      "regiaoOrigem": [
+        "ruinas",
+        "caverna"
+      ],
+      "minNivel": 3,
+      "condicao": {
+        "tag": "goblinsDerrotados",
+        "minimo": 4
+      },
+      "historia": [
+        "O Rei Goblin levanta de seu trono de sucata, furioso com a ousadia da sua invasão.",
+        "Com um grito estridente, o Rei ordena que você entregue todo o seu ouro. Você puxa a arma."
+      ],
+      "cor": "vermelho",
+      "efeito": {
+        "tipo": "combate",
+        "vidaInimigo": 55,
+        "ataqueInimigo": 10,
+        "defesaInimigo": 4,
+        "ouroDrop": [
+          25,
+          40
+        ],
+        "expDrop": 35,
+        "itemGarantido": "coroa_sucata",
+        "contadorTag": "reisGoblinDerrotados"
+      }
+    },
+    {
+      "id": "coroa_sucata",
+      "emoji": "👑",
+      "nome": "Coroa de Sucata",
+      "tipo": "item",
+      "raridade": "epica",
+      "weight": 10,
+      "regiaoOrigem": [
+        "caverna"
+      ],
+      "minNivel": 3,
+      "oculta": true,
+      "historia": [
+        "Uma coroa feia e torta, mas que emite uma leve magia de proteção."
+      ],
+      "cor": "amarelo",
+      "efeito": {
+        "tipo": "item",
+        "slot": "acessorio",
+        "nomeItem": "Coroa de Sucata",
+        "bonus": {
+          "defesa": 3,
+          "vidaMax": 10
+        }
+      }
+    },
+    {
+      "id": "morcego_vampiro",
+      "emoji": "🦇",
+      "nome": "Morcego Vampiro",
+      "tipo": "inimigo",
+      "raridade": "comum",
+      "weight": 65,
+      "regiaoOrigem": [
+        "caverna",
+        "cemiterio"
+      ],
+      "minNivel": 2,
+      "historia": [
+        "Um chiado ecoa no escuro antes da criatura alada mergulhar em sua direção.",
+        "O morcego tenta cravar as presas em seu pescoço!"
+      ],
+      "cor": "vermelho",
+      "efeito": {
+        "tipo": "combate",
+        "vidaInimigo": 20,
+        "ataqueInimigo": 7,
+        "defesaInimigo": 1,
+        "ouroDrop": [
+          2,
+          6
+        ],
+        "expDrop": 10
+      }
+    },
+    {
+      "id": "pocao_mana",
+      "emoji": "🧪",
+      "nome": "Poção Arcano",
+      "tipo": "item",
+      "raridade": "incomum",
+      "weight": 35,
+      "regiaoOrigem": [
+        "ruinas",
+        "aldeia",
+        "templo"
+      ],
+      "minNivel": 1,
+      "historia": [
+        "O líquido azul brilha fracamente, prometendo restaurar sua energia mágica."
+      ],
+      "cor": "amarelo",
+      "efeito": {
+        "tipo": "item",
+        "slot": "consumivel",
+        "cura": 0,
+        "mana": 30,
+        "nomeItem": "Poção Arcano"
+      }
+    },
+    {
+      "id": "seraphina_encontro",
+      "emoji": "☀️",
+      "nome": "Seraphina, a Curandeira",
+      "tipo": "personagem",
+      "raridade": "incomum",
+      "weight": 32,
+      "regiaoOrigem": [
+        "aldeia",
+        "templo"
+      ],
+      "minNivel": 1,
+      "historia": [
+        "Seraphina termina de enfaixar o braço de um lenhador e se volta para você. 'A luz guia seus passos?'",
+        "Você sente uma aura de paz imediata ao se aproximar da curandeira."
+      ],
+      "cor": "roxo",
+      "efeito": {
+        "tipo": "personagem",
+        "personagemId": "seraphina",
+        "relacao": 10,
+        "exp": 8
+      },
+      "desbloqueia": [
+        "bencao_seraphina"
+      ]
+    },
+    {
+      "id": "bencao_seraphina",
+      "emoji": "✨",
+      "nome": "Bênção da Luz",
+      "tipo": "personagem",
+      "raridade": "rara",
+      "weight": 12,
+      "regiaoOrigem": [
+        "templo",
+        "ruinas"
+      ],
+      "minNivel": 3,
+      "historia": [
+        "Seraphina recita uma prece antiga. Suas feridas se fecham e seu espírito se fortalece."
+      ],
+      "cor": "roxo",
+      "efeito": {
+        "tipo": "personagem",
+        "personagemId": "seraphina",
+        "relacao": 15,
+        "cura": 50
+      }
+    },
+    {
+      "id": "encruzilhada_moral",
+      "emoji": "🛤",
+      "nome": "Viajante Ferido",
+      "tipo": "escolha",
+      "raridade": "incomum",
+      "weight": 30,
+      "regiaoOrigem": [
+        "floresta",
+        "aldeia",
+        "deserto"
+      ],
+      "minNivel": 1,
+      "historia": [
+        "Um viajante ferido pede ajuda à beira do caminho."
+      ],
+      "cor": "azul",
+      "efeito": {
+        "tipo": "escolha",
+        "intro": "Um viajante ferido pede ajuda à beira do caminho. Seus pertences estão espalhados pelo chão — seria fácil levá-los.",
+        "opcoes": [
+          {
+            "id": "ajudar",
+            "label": "🩹 Ajudá-lo a se levantar",
+            "dica": "Custa tempo, mas fortalece seu caráter.",
+            "historia": [
+              "Você enfaixa os ferimentos do viajante. Ele agradece e revela um atalho conhecido só por quem viaja há anos."
+            ],
+            "exp": 6,
+            "statDelta": {
+              "defesa": 1
+            },
+            "tag": "caminho_compaixao"
+          },
+          {
+            "id": "roubar",
+            "label": "🪙 Aproveitar e levar seus pertences",
+            "dica": "Ganho rápido, mas alguém vai lembrar disso.",
+            "historia": [
+              "Você recolhe os pertences do viajante enquanto ele geme de dor. O ouro pesa mais na consciência do que no bolso."
+            ],
+            "ouro": [
+              10,
+              18
+            ],
+            "tag": "caminho_ganancia",
+            "statDelta": {
+              "velocidade": 1
+            }
+          },
+          {
+            "id": "ignorar",
+            "label": "🚶 Seguir seu caminho",
+            "dica": "Sem risco, sem recompensa.",
+            "historia": [
+              "Você segue adiante. O lamento do viajante se perde atrás de você."
+            ],
+            "exp": 1
+          }
+        ]
+      },
+      "desbloqueia": [
+        "filho_do_viajante"
+      ]
+    },
+    {
+      "id": "duelo_kael",
+      "emoji": "⚔",
+      "nome": "O Desafio de Kael",
+      "tipo": "escolha",
+      "raridade": "rara",
+      "weight": 16,
+      "regiaoOrigem": [
+        "montanha",
+        "aldeia"
+      ],
+      "minNivel": 3,
+      "historia": [
+        "Kael crava a espada no chão diante de você e sorri."
+      ],
+      "cor": "vermelho",
+      "efeito": {
+        "tipo": "escolha",
+        "intro": "Kael crava a espada no chão diante de você. \"Chega de conversa. Prove sua força — ou admita que prefere as sombras.\"",
+        "opcoes": [
+          {
+            "id": "aceitar",
+            "label": "⚔ Aceitar o duelo",
+            "dica": "Risco de dano real, mas Kael respeita coragem.",
+            "historia": [
+              "O duelo é breve e brutal. Vocês dois terminam ofegantes, mas Kael estende a mão com um respeito que não existia antes."
+            ],
+            "dano": 12,
+            "statDelta": {
+              "ataque": 2
+            },
+            "relacao": 15,
+            "personagemId": "kael",
+            "tag": "caminho_forca"
+          },
+          {
+            "id": "recusar",
+            "label": "🛡 Recusar com calma",
+            "dica": "Sem dano, mas Kael pode duvidar de você.",
+            "historia": [
+              "Você recusa. Kael solta uma risada seca. \"Covardia ou sabedoria — o tempo dirá.\""
+            ],
+            "relacao": -8,
+            "personagemId": "kael"
+          }
+        ]
+      }
+    },
+    {
+      "id": "oferta_lyra",
+      "emoji": "🏹",
+      "nome": "A Caçada de Lyra",
+      "tipo": "escolha",
+      "raridade": "rara",
+      "weight": 16,
+      "regiaoOrigem": [
+        "floresta"
+      ],
+      "minNivel": 2,
+      "historia": [
+        "Lyra propõe uma caçada silenciosa antes do amanhecer."
+      ],
+      "cor": "verde",
+      "efeito": {
+        "tipo": "escolha",
+        "intro": "Lyra aponta para trilhas mal visíveis na copa das árvores. \"Uma caçada de verdade exige silêncio absoluto. Você tem estômago para isso?\"",
+        "opcoes": [
+          {
+            "id": "seguir",
+            "label": "🌲 Segui-la em silêncio",
+            "dica": "Aprende os métodos dela — ganha velocidade permanente.",
+            "historia": [
+              "Vocês se movem como sombras entre as árvores. Lyra ensina truques que levam anos para se aprender sozinho."
+            ],
+            "statDelta": {
+              "velocidade": 2
+            },
+            "relacao": 12,
+            "personagemId": "lyra",
+            "tag": "caminho_furtivo",
+            "exp": 8
+          },
+          {
+            "id": "distrair",
+            "label": "🔥 Preferir acender uma fogueira e descansar",
+            "dica": "Recupera vida, mas perde a chance com Lyra.",
+            "historia": [
+              "Você prefere o calor da fogueira à trilha gelada. Lyra parte sozinha, sem uma palavra."
+            ],
+            "cura": 25,
+            "relacao": -5,
+            "personagemId": "lyra"
+          }
+        ]
+      }
+    },
+    {
+      "id": "pacto_sombrio",
+      "emoji": "🕯",
+      "nome": "A Voz na Escuridão",
+      "tipo": "escolha",
+      "raridade": "epica",
+      "weight": 8,
+      "faseMin": 2,
+      "regiaoOrigem": [
+        "ruinas",
+        "cemiterio",
+        "pantano"
+      ],
+      "minNivel": 5,
+      "historia": [
+        "Uma voz sussurra promessas de poder no escuro."
+      ],
+      "cor": "roxo",
+      "efeito": {
+        "tipo": "escolha",
+        "intro": "Uma voz sem corpo sussurra no escuro: \"Aceite o que ofereço e nunca mais será fraco. O preço é apenas... um pedaço de quem você é.\"",
+        "opcoes": [
+          {
+            "id": "aceitar_pacto",
+            "label": "🖤 Selar o pacto",
+            "dica": "Poder considerável, mas corrompe permanentemente sua história.",
+            "historia": [
+              "Frio percorre suas veias enquanto o pacto se sela. Você sente mais forte — e mais distante de quem já foi."
+            ],
+            "statDelta": {
+              "ataque": 3,
+              "defesa": -1
+            },
+            "tag": "corrupcao"
+          },
+          {
+            "id": "recusar_pacto",
+            "label": "✨ Recusar e seguir em frente",
+            "dica": "Sem ganho imediato, mas mantém seu caminho limpo.",
+            "historia": [
+              "Você recusa. A voz ri baixinho antes de se dissolver no silêncio. \"Voltarei a perguntar, quando estiver desesperado.\""
+            ],
+            "tag": "caminho_pureza",
+            "exp": 10
+          }
+        ]
+      }
+    },
+    {
+      "id": "resgate_aldeia",
+      "emoji": "🔥",
+      "nome": "A Aldeia em Chamas",
+      "tipo": "escolha",
+      "raridade": "epica",
+      "weight": 6,
+      "faseMin": 2,
+      "regiaoOrigem": [
+        "aldeia"
+      ],
+      "minNivel": 6,
+      "historia": [
+        "Fumaça sobe da aldeia natal enquanto gritos ecoam ao longe."
+      ],
+      "cor": "vermelho",
+      "efeito": {
+        "tipo": "escolha",
+        "intro": "Fumaça sobe da sua aldeia natal. Bandidos saqueiam as casas enquanto os moradores gritam por ajuda.",
+        "opcoes": [
+          {
+            "id": "defender",
+            "label": "⚔ Entrar em combate para defendê-la",
+            "dica": "Perigoso, mas salva vidas e ganha respeito de toda a região.",
+            "historia": [
+              "Você enfrenta os saqueadores em meio às chamas. A aldeia é salva, mas o preço em ferimentos é alto."
+            ],
+            "dano": 20,
+            "ouro": [
+              15,
+              25
+            ],
+            "exp": 20,
+            "tag": "heroi_da_aldeia",
+            "statDelta": {
+              "defesa": 1
+            }
+          },
+          {
+            "id": "evacuar",
+            "label": "🏃 Ajudar os moradores a fugir",
+            "dica": "Mais seguro, menos glorioso.",
+            "historia": [
+              "Você guia os moradores para longe do fogo. Ninguém morre, mas os saqueadores levam tudo que podem."
+            ],
+            "exp": 10,
+            "tag": "protetor_discreto"
+          },
+          {
+            "id": "ignorar_aldeia",
+            "label": "🌑 Seguir viagem sem olhar para trás",
+            "dica": "Sem risco algum — e sem retorno também.",
+            "historia": [
+              "Você segue viagem. A fumaça desaparece no horizonte atrás de você, e algo dentro de você também."
+            ],
+            "tag": "coracao_frio",
+            "statDelta": {
+              "velocidade": 1,
+              "defesa": -1
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "vendedor_ambulante",
+      "emoji": "🎭",
+      "nome": "Vendedor de Segredos",
+      "tipo": "escolha",
+      "raridade": "incomum",
+      "weight": 20,
+      "regiaoOrigem": [
+        "aldeia",
+        "deserto",
+        "ruinas"
+      ],
+      "minNivel": 2,
+      "historia": [
+        "Um vendedor estranho oferece um frasco que 'não deveria existir'."
+      ],
+      "cor": "laranja",
+      "efeito": {
+        "tipo": "escolha",
+        "intro": "\"Este frasco não deveria existir\", diz o vendedor com um sorriso torto. \"Dez moedas, e é seu — sem garantias.\"",
+        "opcoes": [
+          {
+            "id": "comprar",
+            "label": "💰 Comprar o frasco misterioso",
+            "dica": "Pode ser ótimo, pode ser péssimo.",
+            "historia": [
+              "Você bebe o conteúdo. Uma onda de energia percorre seu corpo — o negócio valeu a pena."
+            ],
+            "ouro": [
+              -10,
+              -10
+            ],
+            "statDelta": {
+              "vidaMax": 10
+            },
+            "tag": "colecionador_estranho"
+          },
+          {
+            "id": "recusar_vendedor",
+            "label": "🚫 Recusar educadamente",
+            "dica": "Nenhum risco, nenhuma novidade.",
+            "historia": [
+              "Você recusa. O vendedor dá de ombros e desaparece na multidão como se nunca tivesse existido."
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "prisioneiro_masmorra",
+      "emoji": "⛓",
+      "nome": "Prisioneiro Esquecido",
+      "tipo": "escolha",
+      "raridade": "rara",
+      "weight": 12,
+      "regiaoOrigem": [
+        "ruinas",
+        "castelo",
+        "cemiterio"
+      ],
+      "minNivel": 4,
+      "historia": [
+        "Um prisioneiro encadeado implora por liberdade em uma cela esquecida."
+      ],
+      "cor": "cinza",
+      "efeito": {
+        "tipo": "escolha",
+        "intro": "Um prisioneiro encadeado implora por liberdade. \"Não sou quem dizem que sou. Solte-me e nunca esquecerei.\"",
+        "opcoes": [
+          {
+            "id": "libertar",
+            "label": "🔓 Libertá-lo",
+            "dica": "Um aliado leal — ou um erro caro. Nunca se sabe de verdade.",
+            "historia": [
+              "As correntes caem. O prisioneiro promete retribuir a dívida, onde quer que seus caminhos voltem a se cruzar."
+            ],
+            "tag": "aliado_misterioso",
+            "relacao": 10,
+            "personagemId": "kael"
+          },
+          {
+            "id": "deixar",
+            "label": "🚪 Deixá-lo onde está",
+            "dica": "Mais seguro. Mais frio.",
+            "historia": [
+              "Você tranca a porta novamente. Os gritos diminuem conforme você se afasta pelo corredor."
+            ],
+            "ouro": [
+              5,
+              10
+            ],
+            "tag": "coracao_frio"
+          }
+        ]
+      }
+    },
+    {
+      "id": "conselho_guerra",
+      "emoji": "🏛",
+      "nome": "Conselho de Guerra",
+      "tipo": "escolha",
+      "raridade": "epica",
+      "weight": 5,
+      "faseMin": 3,
+      "regiaoOrigem": [
+        "capital",
+        "castelo"
+      ],
+      "minNivel": 10,
+      "historia": [
+        "Generais discutem estratégias diante de um mapa do reino."
+      ],
+      "cor": "azul",
+      "efeito": {
+        "tipo": "escolha",
+        "intro": "Generais discutem estratégias diante de um mapa do reino. Sua opinião, pela primeira vez, pesa tanto quanto a deles.",
+        "opcoes": [
+          {
+            "id": "ataque_direto",
+            "label": "⚔ Defender um ataque direto",
+            "dica": "Caminho agressivo — favorece builds de combate.",
+            "historia": [
+              "Sua proposta é aceita. Os soldados se preparam para marchar sob um plano ousado que carrega seu nome."
+            ],
+            "statDelta": {
+              "ataque": 2
+            },
+            "tag": "estrategista_ofensivo"
+          },
+          {
+            "id": "cerco_paciente",
+            "label": "🛡 Propor um cerco paciente",
+            "dica": "Caminho defensivo — favorece builds de resistência.",
+            "historia": [
+              "O conselho aprova a cautela. Menos glória, mais vidas poupadas — e você sabe que fez a escolha certa."
+            ],
+            "statDelta": {
+              "defesa": 2
+            },
+            "tag": "estrategista_defensivo"
+          },
+          {
+            "id": "diplomacia",
+            "label": "🕊 Insistir em negociar primeiro",
+            "dica": "Caminho diplomático — abre rotas únicas na capital.",
+            "historia": [
+              "Alguns generais bufam, mas o conselho aceita tentar a paz antes do sangue. Você sente que abriu uma porta que a espada jamais abriria."
+            ],
+            "tag": "diplomata",
+            "exp": 15
+          }
+        ]
+      }
+    },
+    {
+      "id": "motim_popular",
+      "emoji": "🔥",
+      "nome": "Motim nas Ruas",
+      "tipo": "escolha",
+      "raridade": "epica",
+      "weight": 5,
+      "faseMin": 3,
+      "regiaoOrigem": [
+        "capital"
+      ],
+      "minNivel": 11,
+      "historia": [
+        "O povo toma as ruas da capital, exigindo respostas."
+      ],
+      "cor": "vermelho",
+      "efeito": {
+        "tipo": "escolha",
+        "intro": "O povo toma as ruas, exigindo respostas que a coroa se recusa a dar. As chamas das tochas se multiplicam a cada minuto.",
+        "opcoes": [
+          {
+            "id": "apoiar_povo",
+            "label": "✊ Apoiar o povo",
+            "dica": "Constrói o caminho para depor a rainha usurpadora.",
+            "historia": [
+              "Você ergue a voz ao lado do povo. A guarda hesita — pela primeira vez em anos, o medo muda de lado."
+            ],
+            "tag": "aliado_do_povo",
+            "relacao": 10,
+            "personagemId": "kael"
+          },
+          {
+            "id": "conter_motim",
+            "label": "🛡 Ajudar a conter o motim",
+            "dica": "Mantém a ordem, mas afasta possíveis aliados.",
+            "historia": [
+              "Você ajuda a dispersar a multidão. A ordem volta, fria e pesada como antes."
+            ],
+            "ouro": [
+              20,
+              30
+            ],
+            "tag": "leal_a_coroa"
+          }
+        ]
+      }
+    },
+    {
+      "id": "chamado_arcano",
+      "emoji": "🔵",
+      "nome": "O Chamado Arcano",
+      "tipo": "escolha",
+      "raridade": "rara",
+      "weight": 14,
+      "faseMin": 2,
+      "regiaoOrigem": [
+        "templo",
+        "ruinas"
+      ],
+      "minNivel": 5,
+      "condicao": {
+        "classe": "mago"
+      },
+      "historia": [
+        "Runas antigas reagem à sua presença, reconhecendo seu domínio arcano."
+      ],
+      "cor": "roxo",
+      "efeito": {
+        "tipo": "escolha",
+        "intro": "Runas antigas se acendem ao seu redor, reagindo à sua magia como se o reconhecessem de outra vida.",
+        "opcoes": [
+          {
+            "id": "absorver",
+            "label": "🔮 Absorver o poder das runas",
+            "dica": "Grande ganho de mana, mas drena um pouco de vitalidade.",
+            "historia": [
+              "Você absorve as runas. O conhecimento de séculos passa por sua mente em segundos — dolorosos segundos."
+            ],
+            "statDelta": {
+              "manaMax": 15
+            },
+            "dano": 8,
+            "tag": "arcano_profundo"
+          },
+          {
+            "id": "estudar",
+            "label": "📖 Apenas estudá-las com cautela",
+            "dica": "Ganho modesto, sem riscos.",
+            "historia": [
+              "Você copia os símbolos com cuidado, preferindo entender antes de absorver qualquer poder."
+            ],
+            "exp": 14
+          }
+        ]
+      },
+      "sinergiaTag": [
+        "arcano_profundo"
+      ]
+    },
+    {
+      "id": "vulcao_base",
+      "emoji": "🌋",
+      "nome": "Base do Vulcão",
+      "tipo": "local",
+      "raridade": "rara",
+      "weight": 10,
+      "faseMin": 2,
+      "regiaoOrigem": [
+        "montanha"
+      ],
+      "minNivel": 8,
+      "historia": [
+        "O calor se torna insuportável conforme você se aproxima da base do vulcão.",
+        "Rios de lava distante iluminam as rochas em um brilho alaranjado."
+      ],
+      "cor": "vermelho",
+      "efeito": {
+        "tipo": "mudar_regiao",
+        "regiao": "vulcao"
+      },
+      "desbloqueia": [
+        "salamandra_flamejante",
+        "forjador_lava",
+        "obsidiana_flamejante",
+        "coracao_vulcao",
+        "salamandra_matriarca"
+      ]
+    },
+    {
+      "id": "salamandra_flamejante",
+      "emoji": "🦎",
+      "nome": "Salamandra Flamejante",
+      "tipo": "inimigo",
+      "raridade": "rara",
+      "weight": 30,
+      "regiaoOrigem": [
+        "vulcao"
+      ],
+      "minNivel": 8,
+      "historia": [
+        "A salamandra se contorce entre as pedras quentes, finalmente vencida.",
+        "Suas chamas se apagam com um silvo agudo.",
+        "Você esquiva de uma baforada de fogo antes do golpe final."
+      ],
+      "cor": "vermelho",
+      "sinergiaTag": [
+        "caminho_forca"
+      ],
+      "efeito": {
+        "tipo": "combate",
+        "vidaInimigo": 55,
+        "ataqueInimigo": 13,
+        "defesaInimigo": 5,
+        "ouroDrop": [
+          14,
+          26
+        ],
+        "expDrop": 24,
+        "contadorTag": "salamandrasDerrotadas"
+      }
+    },
+    {
+      "id": "forjador_lava",
+      "emoji": "👨‍🏭",
+      "nome": "Forjador de Lava",
+      "tipo": "npc",
+      "raridade": "rara",
+      "weight": 12,
+      "regiaoOrigem": [
+        "vulcao"
+      ],
+      "minNivel": 8,
+      "historia": [
+        "O forjador molda metal fundido com as mãos nuas, imune ao calor.",
+        "Ele oferece forjar uma arma em troca de um pouco de ouro."
+      ],
+      "cor": "laranja",
+      "efeito": {
+        "tipo": "item",
+        "slot": "arma",
+        "nomeItem": "Lâmina Vulcânica",
+        "bonus": {
+          "ataque": 6
+        },
+        "custoOuro": 25
+      }
+    },
+    {
+      "id": "obsidiana_flamejante",
+      "emoji": "🖤",
+      "nome": "Obsidiana Flamejante",
+      "tipo": "item",
+      "raridade": "epica",
+      "weight": 8,
+      "regiaoOrigem": [
+        "vulcao"
+      ],
+      "minNivel": 9,
+      "historia": [
+        "Um fragmento de obsidiana pulsa com calor próprio, quase vivo em sua mão."
+      ],
+      "cor": "amarelo",
+      "efeito": {
+        "tipo": "item",
+        "slot": "acessorio",
+        "nomeItem": "Obsidiana Flamejante",
+        "bonus": {
+          "ataque": 4,
+          "defesa": 2
+        }
+      }
+    },
+    {
+      "id": "coracao_vulcao",
+      "emoji": "🌋",
+      "nome": "Coração do Vulcão",
+      "tipo": "chefe",
+      "raridade": "lendaria",
+      "weight": 3,
+      "regiaoOrigem": [
+        "vulcao"
+      ],
+      "minNivel": 11,
+      "condicao": {
+        "tag": "salamandrasDerrotadas",
+        "minimo": 3
+      },
+      "historia": [
+        "A criatura de magma desaba, e a montanha inteira parece suspirar aliviada.",
+        "O Coração do Vulcão se estilhaça em fragmentos incandescentes."
+      ],
+      "cor": "vermelho",
+      "efeito": {
+        "tipo": "combate",
+        "vidaInimigo": 120,
+        "ataqueInimigo": 19,
+        "defesaInimigo": 7,
+        "ouroDrop": [
+          55,
+          90
+        ],
+        "expDrop": 85,
+        "itemGarantido": "nucleo_magmatico",
+        "flagFinal": "senhor_do_fogo"
+      }
+    },
+    {
+      "id": "nucleo_magmatico",
+      "emoji": "🔥",
+      "nome": "Núcleo Magmático",
+      "tipo": "artefato",
+      "raridade": "mitica",
+      "weight": 0,
+      "regiaoOrigem": [
+        "vulcao"
+      ],
+      "minNivel": 11,
+      "oculta": true,
+      "historia": [
+        "O núcleo pulsa em sua mão como um segundo coração, quente demais para ser confortável."
+      ],
+      "cor": "roxo",
+      "efeito": {
+        "tipo": "item",
+        "slot": "acessorio",
+        "nomeItem": "Núcleo Magmático",
+        "bonus": {
+          "ataque": 7,
+          "vidaMax": 25
+        }
+      }
+    },
+    {
+      "id": "capital_muralhas",
+      "emoji": "🏙",
+      "nome": "Muralhas da Capital",
+      "tipo": "local",
+      "raridade": "rara",
+      "weight": 8,
+      "faseMin": 3,
+      "regiaoOrigem": [
+        "castelo"
+      ],
+      "minNivel": 10,
+      "historia": [
+        "A capital se estende além das muralhas, cheia de bandeiras e segredos.",
+        "Guardas observam cada passo seu ao cruzar os portões da capital."
+      ],
+      "cor": "azul",
+      "efeito": {
+        "tipo": "mudar_regiao",
+        "regiao": "capital"
+      },
+      "desbloqueia": [
+        "espiao_real",
+        "conselheiro_real",
+        "guarda_real",
+        "conselho_guerra",
+        "motim_popular",
+        "rainha_usurpada"
+      ]
+    },
+    {
+      "id": "espiao_real",
+      "emoji": "🗡",
+      "nome": "Espião da Corte",
+      "tipo": "evento",
+      "raridade": "incomum",
+      "weight": 24,
+      "regiaoOrigem": [
+        "capital"
+      ],
+      "minNivel": 10,
+      "historia": [
+        "Um espião troca informações por moedas em um beco escuro.",
+        "Rumores sobre a rainha usurpadora circulam baixinho pela taverna."
+      ],
+      "cor": "roxo",
+      "efeito": {
+        "tipo": "recompensa_leve",
+        "ouro": [
+          8,
+          16
+        ],
+        "exp": 6
+      }
+    },
+    {
+      "id": "conselheiro_real",
+      "emoji": "📜",
+      "nome": "Conselheiro Real",
+      "tipo": "npc",
+      "raridade": "rara",
+      "weight": 14,
+      "regiaoOrigem": [
+        "capital"
+      ],
+      "minNivel": 10,
+      "historia": [
+        "O conselheiro observa você com cautela antes de compartilhar um segredo de estado.",
+        "Ele oferece um pergaminho selado com o brasão real."
+      ],
+      "cor": "laranja",
+      "efeito": {
+        "tipo": "item",
+        "slot": "acessorio",
+        "nomeItem": "Selo Real",
+        "bonus": {
+          "defesa": 3
+        },
+        "custoOuro": 20
+      }
+    },
+    {
+      "id": "guarda_real",
+      "emoji": "🛡",
+      "nome": "Guarda Real",
+      "tipo": "inimigo",
+      "raridade": "rara",
+      "weight": 28,
+      "regiaoOrigem": [
+        "capital"
+      ],
+      "minNivel": 10,
+      "historia": [
+        "O guarda real cai de joelhos, a armadura reluzente amassada.",
+        "Você desarma o guarda antes que ele possa soar o alarme."
+      ],
+      "cor": "vermelho",
+      "efeito": {
+        "tipo": "combate",
+        "vidaInimigo": 65,
+        "ataqueInimigo": 15,
+        "defesaInimigo": 7,
+        "ouroDrop": [
+          18,
+          30
+        ],
+        "expDrop": 35
+      },
+      "elite": true
+    },
+    {
+      "id": "rainha_usurpada",
+      "emoji": "👑",
+      "nome": "Rainha Usurpadora",
+      "tipo": "chefe",
+      "raridade": "mitica",
+      "weight": 2,
+      "faseMin": 4,
+      "regiaoOrigem": [
+        "capital"
+      ],
+      "minNivel": 14,
+      "condicao": {
+        "tag": "aliado_do_povo",
+        "minimo": 1
+      },
+      "historia": [
+        "A coroa rola pelo chão de mármore enquanto a rainha usurpadora cai.",
+        "O trono, finalmente, pertence a quem o povo escolheu."
+      ],
+      "cor": "vermelho",
+      "efeito": {
+        "tipo": "combate",
+        "vidaInimigo": 160,
+        "ataqueInimigo": 23,
+        "defesaInimigo": 10,
+        "ouroDrop": [
+          80,
+          140
+        ],
+        "expDrop": 110,
+        "flagFinal": "libertador"
+      }
+    },
+    {
+      "id": "abismo_fenda",
+      "emoji": "🕳",
+      "nome": "Fenda do Abismo",
+      "tipo": "local",
+      "raridade": "epica",
+      "weight": 6,
+      "faseMin": 3,
+      "regiaoOrigem": [
+        "caverna"
+      ],
+      "minNivel": 11,
+      "historia": [
+        "Uma fenda escura se abre no chão da caverna, exalando um frio que não é natural.",
+        "O silêncio ali é denso demais para ser apenas ausência de som."
+      ],
+      "cor": "roxo",
+      "efeito": {
+        "tipo": "mudar_regiao",
+        "regiao": "abismo"
+      },
+      "desbloqueia": [
+        "horror_abissal",
+        "sussurros_vazio",
+        "cristal_alma",
+        "devorador_abismo",
+        "ultimo_covil",
+        "visao_do_que_podia_ser",
+        "errante_cegado",
+        "olho_infinito"
+      ]
+    },
+    {
+      "id": "horror_abissal",
+      "emoji": "👁",
+      "nome": "Horror Abissal",
+      "tipo": "inimigo",
+      "raridade": "epica",
+      "weight": 20,
+      "regiaoOrigem": [
+        "abismo"
+      ],
+      "minNivel": 11,
+      "historia": [
+        "A criatura se dissolve em sombras, retornando ao vazio de onde veio.",
+        "Seus muitos olhos se fecham, um a um, até restar apenas escuridão."
+      ],
+      "cor": "vermelho",
+      "sinergiaTag": [
+        "corrupcao"
+      ],
+      "efeito": {
+        "tipo": "combate",
+        "vidaInimigo": 90,
+        "ataqueInimigo": 18,
+        "defesaInimigo": 6,
+        "ouroDrop": [
+          30,
+          50
+        ],
+        "expDrop": 55,
+        "contadorTag": "horroresDerrotados"
+      },
+      "elite": true
+    },
+    {
+      "id": "sussurros_vazio",
+      "emoji": "🌫",
+      "nome": "Sussurros do Vazio",
+      "tipo": "misterio",
+      "raridade": "epica",
+      "weight": 10,
+      "regiaoOrigem": [
+        "abismo"
+      ],
+      "minNivel": 11,
+      "historia": [
+        "Vozes sem dono sussurram seu nome em línguas esquecidas.",
+        "O vazio parece observar de volta, com uma curiosidade fria."
+      ],
+      "cor": "roxo",
+      "efeito": {
+        "tipo": "misterio",
+        "resultados": [
+          {
+            "chance": 35,
+            "sub": "item",
+            "slot": "acessorio",
+            "nomeItem": "Fragmento do Vazio Absoluto",
+            "bonus": {
+              "ataque": 5,
+              "defesa": -1
+            }
+          },
+          {
+            "chance": 30,
+            "sub": "recompensa_leve",
+            "ouro": [
+              20,
+              35
+            ],
+            "exp": 20
+          },
+          {
+            "chance": 35,
+            "sub": "dano",
+            "vida": 18
+          }
+        ]
+      }
+    },
+    {
+      "id": "cristal_alma",
+      "emoji": "💠",
+      "nome": "Cristal de Alma",
+      "tipo": "item",
+      "raridade": "lendaria",
+      "weight": 3,
+      "regiaoOrigem": [
+        "abismo"
+      ],
+      "minNivel": 12,
+      "historia": [
+        "O cristal reflete não sua imagem, mas quem você poderia ter sido."
+      ],
+      "cor": "roxo",
+      "efeito": {
+        "tipo": "item",
+        "slot": "acessorio",
+        "nomeItem": "Cristal de Alma",
+        "bonus": {
+          "vidaMax": 30,
+          "manaMax": 15
+        }
+      }
+    },
+    {
+      "id": "devorador_abismo",
+      "emoji": "👁‍🗨",
+      "nome": "Devorador do Abismo",
+      "tipo": "chefe",
+      "raridade": "mitica",
+      "weight": 1,
+      "faseMin": 4,
+      "regiaoOrigem": [
+        "abismo"
+      ],
+      "minNivel": 15,
+      "condicao": {
+        "tag": "horroresDerrotados",
+        "minimo": 3
+      },
+      "historia": [
+        "O Devorador se retrai para dentro de si mesmo, colapsando em um ponto de silêncio absoluto.",
+        "O abismo, finalmente, fecha os olhos."
+      ],
+      "cor": "vermelho",
+      "efeito": {
+        "tipo": "combate",
+        "vidaInimigo": 200,
+        "ataqueInimigo": 28,
+        "defesaInimigo": 12,
+        "ouroDrop": [
+          100,
+          180
+        ],
+        "expDrop": 150,
+        "flagFinal": "senhor_do_abismo"
+      }
+    },
+    {
+      "id": "corvo_mensageiro",
+      "emoji": "🐦‍⬛",
+      "nome": "Corvo Mensageiro",
+      "tipo": "evento",
+      "raridade": "comum",
+      "weight": 50,
+      "regiaoOrigem": [
+        "aldeia",
+        "floresta",
+        "montanha",
+        "cemiterio"
+      ],
+      "minNivel": 1,
+      "historia": [
+        "Um corvo pousa próximo a você, observando com olhos estranhamente atentos.",
+        "O corvo solta um grito áspero antes de alçar voo novamente.",
+        "Uma pena negra cai aos seus pés quando o corvo se vai."
+      ],
+      "cor": "cinza",
+      "efeito": {
+        "tipo": "recompensa_leve",
+        "exp": 3
+      }
+    },
+    {
+      "id": "poco_desejos",
+      "emoji": "⛲",
+      "nome": "Poço dos Desejos",
+      "tipo": "misterio",
+      "raridade": "incomum",
+      "weight": 22,
+      "regiaoOrigem": [
+        "aldeia",
+        "ruinas"
+      ],
+      "minNivel": 1,
+      "historia": [
+        "Você joga uma moeda no poço antigo e espera.",
+        "A água do poço treme, embora não haja vento."
+      ],
+      "cor": "azul",
+      "efeito": {
+        "tipo": "misterio",
+        "resultados": [
+          {
+            "chance": 45,
+            "sub": "recompensa_leve",
+            "ouro": [
+              4,
+              10
+            ],
+            "exp": 4
+          },
+          {
+            "chance": 30,
+            "sub": "item",
+            "slot": "consumivel",
+            "cura": 18,
+            "nomeItem": "Água Abençoada"
+          },
+          {
+            "chance": 25,
+            "sub": "dano",
+            "vida": 5
+          }
+        ]
+      }
+    },
+    {
+      "id": "caravana_mercadores",
+      "emoji": "🐫",
+      "nome": "Caravana de Mercadores",
+      "tipo": "npc",
+      "raridade": "incomum",
+      "weight": 26,
+      "regiaoOrigem": [
+        "deserto",
+        "aldeia",
+        "ruinas"
+      ],
+      "minNivel": 2,
+      "historia": [
+        "Uma caravana cruza seu caminho, carregada de especiarias e tecidos raros.",
+        "Os mercadores oferecem um desconto por sua ajuda contra bandidos na estrada."
+      ],
+      "cor": "laranja",
+      "efeito": {
+        "tipo": "item",
+        "slot": "consumivel",
+        "cura": 30,
+        "nomeItem": "Provisões da Caravana",
+        "custoOuro": 8
+      }
+    },
+    {
+      "id": "javali_selvagem",
+      "emoji": "🐗",
+      "nome": "Javali Selvagem",
+      "tipo": "inimigo",
+      "raridade": "comum",
+      "weight": 55,
+      "regiaoOrigem": [
+        "floresta",
+        "montanha"
+      ],
+      "minNivel": 1,
+      "historia": [
+        "O javali carrega contra você, mas erra o golpe final.",
+        "Após uma perseguição breve, o javali é derrotado.",
+        "Você desvia da investida e contra-ataca com precisão."
+      ],
+      "cor": "vermelho",
+      "efeito": {
+        "tipo": "combate",
+        "vidaInimigo": 20,
+        "ataqueInimigo": 6,
+        "defesaInimigo": 2,
+        "ouroDrop": [
+          3,
+          7
+        ],
+        "expDrop": 8
+      }
+    },
+    {
+      "id": "cobra_venenosa",
+      "emoji": "🐍",
+      "nome": "Cobra Venenosa",
+      "tipo": "inimigo",
+      "raridade": "comum",
+      "weight": 48,
+      "regiaoOrigem": [
+        "deserto",
+        "pantano",
+        "floresta"
+      ],
+      "minNivel": 1,
+      "historia": [
+        "A cobra ataca rápido, mas você é mais rápido ainda.",
+        "Suas presas se cravam no chão vazio; a cobra não terá uma segunda chance.",
+        "Um golpe certeiro encerra o confronto antes que o veneno importe."
+      ],
+      "cor": "vermelho",
+      "efeito": {
+        "tipo": "combate",
+        "vidaInimigo": 16,
+        "ataqueInimigo": 7,
+        "defesaInimigo": 1,
+        "ouroDrop": [
+          2,
+          6
+        ],
+        "expDrop": 7
+      }
+    },
+    {
+      "id": "ferreiro_ambulante",
+      "emoji": "⚒",
+      "nome": "Ferreiro Ambulante",
+      "tipo": "npc",
+      "raridade": "incomum",
+      "weight": 18,
+      "regiaoOrigem": [
+        "montanha",
+        "deserto",
+        "ruinas"
+      ],
+      "minNivel": 3,
+      "historia": [
+        "O ferreiro ambulante afia sua lâmina sobre uma bigorna improvisada.",
+        "Ele oferece reforçar sua armadura em troca de trabalho honesto."
+      ],
+      "cor": "laranja",
+      "efeito": {
+        "tipo": "item",
+        "slot": "armadura",
+        "nomeItem": "Armadura Reforçada",
+        "bonus": {
+          "defesa": 4
+        },
+        "custoOuro": 18
+      }
+    },
+    {
+      "id": "bardo_viajante",
+      "emoji": "🎻",
+      "nome": "Bardo Viajante",
+      "tipo": "npc",
+      "raridade": "incomum",
+      "weight": 22,
+      "regiaoOrigem": [
+        "aldeia",
+        "floresta"
+      ],
+      "minNivel": 1,
+      "historia": [
+        "O bardo canta uma balada sobre heróis esquecidos — talvez em breve cante sobre você.",
+        "Uma música alegre levanta seu ânimo antes da próxima jornada."
+      ],
+      "cor": "amarelo",
+      "efeito": {
+        "tipo": "npc",
+        "expChance": 5
+      }
+    },
+    {
+      "id": "ruinas_biblioteca",
+      "emoji": "📚",
+      "nome": "Biblioteca em Ruínas",
+      "tipo": "misterio",
+      "raridade": "rara",
+      "weight": 14,
+      "regiaoOrigem": [
+        "ruinas",
+        "templo"
+      ],
+      "minNivel": 3,
+      "historia": [
+        "Prateleiras desmoronadas escondem tomos antigos, alguns ainda legíveis.",
+        "Poeira de séculos flutua no ar enquanto você folheia páginas frágeis."
+      ],
+      "cor": "roxo",
+      "sinergiaTag": [
+        "caminho_pureza"
+      ],
+      "efeito": {
+        "tipo": "misterio",
+        "resultados": [
+          {
+            "chance": 50,
+            "sub": "recompensa_leve",
+            "ouro": [
+              0,
+              5
+            ],
+            "exp": 16
+          },
+          {
+            "chance": 30,
+            "sub": "item",
+            "slot": "acessorio",
+            "nomeItem": "Grimório Rasgado",
+            "bonus": {
+              "mana": 8
+            }
+          },
+          {
+            "chance": 20,
+            "sub": "dano",
+            "vida": 6
+          }
+        ]
+      }
+    },
+    {
+      "id": "espirito_guardiao",
+      "emoji": "🔵",
+      "nome": "Espírito Guardião",
+      "tipo": "npc",
+      "raridade": "rara",
+      "weight": 10,
+      "regiaoOrigem": [
+        "templo",
+        "montanha"
+      ],
+      "minNivel": 4,
+      "historia": [
+        "Um espírito translúcido observa você em silêncio, avaliando sua intenção.",
+        "O espírito guardião concede uma bênção a quem se mostra digno."
+      ],
+      "cor": "azul",
+      "efeito": {
+        "tipo": "item",
+        "slot": "acessorio",
+        "nomeItem": "Bênção do Guardião",
+        "bonus": {
+          "defesa": 2,
+          "vidaMax": 10
+        }
+      }
+    },
+    {
+      "id": "arena_desafio",
+      "emoji": "🏟",
+      "nome": "Arena de Combate",
+      "tipo": "inimigo",
+      "raridade": "rara",
+      "weight": 18,
+      "regiaoOrigem": [
+        "deserto",
+        "capital",
+        "castelo"
+      ],
+      "minNivel": 6,
+      "historia": [
+        "A multidão vibra quando seu adversário cai na arena.",
+        "Você ergue os braços em vitória sob o sol escaldante da arena."
+      ],
+      "cor": "vermelho",
+      "sinergiaTag": [
+        "caminho_forca",
+        "estrategista_ofensivo"
+      ],
+      "efeito": {
+        "tipo": "combate",
+        "vidaInimigo": 48,
+        "ataqueInimigo": 12,
+        "defesaInimigo": 5,
+        "ouroDrop": [
+          16,
+          28
+        ],
+        "expDrop": 22
+      },
+      "elite": true
+    },
+    {
+      "id": "oasis_deserto",
+      "emoji": "🌴",
+      "nome": "Oásis Escondido",
+      "tipo": "local",
+      "raridade": "incomum",
+      "weight": 18,
+      "regiaoOrigem": [
+        "deserto"
+      ],
+      "minNivel": 4,
+      "historia": [
+        "Água fresca reflete o céu no meio da imensidão árida do deserto.",
+        "Palmeiras oferecem sombra rara em meio às dunas intermináveis."
+      ],
+      "cor": "verde",
+      "efeito": {
+        "tipo": "recompensa_leve",
+        "cura": 30,
+        "exp": 5
+      }
+    },
+    {
+      "id": "sombra_do_passado",
+      "emoji": "🫥",
+      "nome": "Sombra do Passado",
+      "tipo": "misterio",
+      "raridade": "rara",
+      "weight": 12,
+      "faseMin": 2,
+      "regiaoOrigem": [
+        "cemiterio",
+        "ruinas"
+      ],
+      "minNivel": 5,
+      "historia": [
+        "Uma sombra com sua própria forma o observa do outro lado da névoa.",
+        "Por um instante, você vê a si mesmo — ou quem poderia ter se tornado."
+      ],
+      "cor": "roxo",
+      "sinergiaTag": [
+        "corrupcao",
+        "caminho_ganancia"
+      ],
+      "efeito": {
+        "tipo": "misterio",
+        "resultados": [
+          {
+            "chance": 40,
+            "sub": "dano",
+            "vida": 14
+          },
+          {
+            "chance": 35,
+            "sub": "recompensa_leve",
+            "ouro": [
+              12,
+              22
+            ],
+            "exp": 12
+          },
+          {
+            "chance": 25,
+            "sub": "item",
+            "slot": "acessorio",
+            "nomeItem": "Eco Sombrio",
+            "bonus": {
+              "ataque": 3
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "gigante_pedra",
+      "emoji": "🗿",
+      "nome": "Gigante de Pedra",
+      "tipo": "chefe",
+      "raridade": "epica",
+      "weight": 4,
+      "regiaoOrigem": [
+        "montanha",
+        "caverna"
+      ],
+      "minNivel": 7,
+      "historia": [
+        "O gigante de pedra racha ao meio com um estrondo que ecoa pelas montanhas.",
+        "Fragmentos de rocha caem enquanto o gigante finalmente desmorona."
+      ],
+      "cor": "vermelho",
+      "efeito": {
+        "tipo": "combate",
+        "vidaInimigo": 85,
+        "ataqueInimigo": 15,
+        "defesaInimigo": 9,
+        "ouroDrop": [
+          30,
+          50
+        ],
+        "expDrop": 48,
+        "itemGarantido": "nucleo_de_pedra"
+      }
+    },
+    {
+      "id": "nucleo_de_pedra",
+      "emoji": "🪨",
+      "nome": "Núcleo de Pedra",
+      "tipo": "item",
+      "raridade": "epica",
+      "weight": 0,
+      "regiaoOrigem": [
+        "montanha"
+      ],
+      "minNivel": 7,
+      "oculta": true,
+      "historia": [
+        "O núcleo é pesado como a própria montanha, mas fortalece cada passo seu."
+      ],
+      "cor": "amarelo",
+      "efeito": {
+        "tipo": "item",
+        "slot": "armadura",
+        "nomeItem": "Núcleo de Pedra",
+        "bonus": {
+          "defesa": 6,
+          "velocidade": -1
+        }
+      }
+    },
+    {
+      "id": "filho_do_viajante",
+      "emoji": "🧒",
+      "nome": "O Filho do Viajante",
+      "tipo": "personagem",
+      "raridade": "rara",
+      "weight": 14,
+      "regiaoOrigem": [
+        "aldeia"
+      ],
+      "minNivel": 2,
+      "condicao": {
+        "tag": "caminho_compaixao",
+        "minimo": 1
+      },
+      "historia": [
+        "Um garoto corre até você. \"Meu pai me falou de um estranho gentil na estrada. Era você, não era?\""
+      ],
+      "cor": "azul",
+      "efeito": {
+        "tipo": "recompensa_leve",
+        "ouro": [
+          10,
+          15
+        ],
+        "exp": 12,
+        "cura": 15
+      }
+    },
+    {
+      "id": "memoria_eldrin_secreta",
+      "emoji": "🔮",
+      "nome": "O Segredo de Eldrin",
+      "tipo": "personagem",
+      "raridade": "lendaria",
+      "weight": 6,
+      "regiaoOrigem": [
+        "floresta",
+        "aldeia"
+      ],
+      "minNivel": 5,
+      "condicao": {
+        "tag": "caminho_pureza",
+        "minimo": 1
+      },
+      "historia": [
+        "Eldrin finalmente confia em você um segredo guardado por décadas: ele já foi um arquimago, antes de tudo o que perdeu."
+      ],
+      "cor": "roxo",
+      "efeito": {
+        "tipo": "personagem",
+        "personagemId": "eldrin",
+        "relacao": 20,
+        "exp": 25
+      },
+      "desbloqueia": [
+        "cajado_do_arquimago_caido"
+      ]
+    },
+    {
+      "id": "cajado_do_arquimago_caido",
+      "emoji": "🪄",
+      "nome": "Cajado do Arquimago Caído",
+      "tipo": "artefato",
+      "raridade": "lendaria",
+      "weight": 3,
+      "regiaoOrigem": [
+        "floresta"
+      ],
+      "minNivel": 5,
+      "historia": [
+        "Eldrin entrega o cajado que jurou nunca mais tocar. \"Use-o melhor do que eu usei.\""
+      ],
+      "cor": "roxo",
+      "efeito": {
+        "tipo": "item",
+        "slot": "arma",
+        "nomeItem": "Cajado do Arquimago Caído",
+        "bonus": {
+          "ataque": 5,
+          "defesa": 1
+        }
+      }
+    },
+    {
+      "id": "lamina_do_juramento",
+      "emoji": "🗡",
+      "nome": "Lâmina do Juramento Sombrio",
+      "tipo": "artefato",
+      "raridade": "lendaria",
+      "weight": 0,
+      "oculta": true,
+      "regiaoOrigem": [
+        "ruinas",
+        "cemiterio",
+        "pantano",
+        "abismo"
+      ],
+      "minNivel": 6,
+      "condicao": {
+        "tag": "corrupcao",
+        "minimo": 1
+      },
+      "historia": [
+        "A lâmina parece sussurrar em uma língua que só quem selou o pacto pode entender."
+      ],
+      "cor": "roxo",
+      "efeito": {
+        "tipo": "item",
+        "slot": "arma",
+        "nomeItem": "Lâmina do Juramento Sombrio",
+        "bonus": {
+          "ataque": 8,
+          "velocidade": 1
+        }
+      }
+    },
+    {
+      "id": "ultimo_covil",
+      "emoji": "🐲",
+      "nome": "O Último Covil",
+      "tipo": "chefe",
+      "raridade": "mitica",
+      "weight": 1,
+      "faseMin": 4,
+      "regiaoOrigem": [
+        "vulcao",
+        "abismo"
+      ],
+      "minNivel": 16,
+      "condicao": {
+        "tag": "corrupcao",
+        "minimo": 1
+      },
+      "historia": [
+        "No covil final, o que resta de sua humanidade decide o resultado da batalha.",
+        "A criatura reconhece em você um reflexo do que ela mesma já foi."
+      ],
+      "cor": "vermelho",
+      "efeito": {
+        "tipo": "combate",
+        "vidaInimigo": 230,
+        "ataqueInimigo": 30,
+        "defesaInimigo": 13,
+        "ouroDrop": [
+          120,
+          200
+        ],
+        "expDrop": 170,
+        "flagFinal": "devorado_pelas_trevas"
+      }
+    },
+    {
+      "id": "visao_do_que_podia_ser",
+      "emoji": "🌌",
+      "nome": "Visão do que Podia Ser",
+      "tipo": "misterio",
+      "raridade": "mitica",
+      "weight": 2,
+      "faseMin": 4,
+      "regiaoOrigem": [
+        "abismo",
+        "templo"
+      ],
+      "minNivel": 14,
+      "historia": [
+        "Por um instante, você vislumbra todos os caminhos que não escolheu.",
+        "A visão se desfaz antes que você consiga compreendê-la por completo."
+      ],
+      "cor": "roxo",
+      "efeito": {
+        "tipo": "misterio",
+        "resultados": [
+          {
+            "chance": 40,
+            "sub": "recompensa_leve",
+            "ouro": [
+              30,
+              50
+            ],
+            "exp": 30
+          },
+          {
+            "chance": 30,
+            "sub": "item",
+            "slot": "acessorio",
+            "nomeItem": "Fragmento de um Futuro Perdido",
+            "bonus": {
+              "ataque": 4,
+              "defesa": 4
+            }
+          },
+          {
+            "chance": 30,
+            "sub": "dano",
+            "vida": 22
+          }
+        ]
+      }
+    },
+    {
+      "id": "necromante_iniciante",
+      "emoji": "☠",
+      "nome": "Necromante Iniciante",
+      "tipo": "inimigo",
+      "raridade": "rara",
+      "weight": 16,
+      "regiaoOrigem": [
+        "cemiterio",
+        "pantano"
+      ],
+      "minNivel": 5,
+      "historia": [
+        "O necromante perde o controle sobre seus mortos-vivos ao cair derrotado.",
+        "Seus rituais interrompidos desfazem a magia que o mantinha de pé."
+      ],
+      "cor": "vermelho",
+      "efeito": {
+        "tipo": "combate",
+        "vidaInimigo": 40,
+        "ataqueInimigo": 10,
+        "defesaInimigo": 4,
+        "ouroDrop": [
+          10,
+          20
+        ],
+        "expDrop": 20,
+        "contadorTag": "necromantesDerrotados"
+      },
+      "elite": true
+    },
+    {
+      "id": "circulo_convocacao",
+      "emoji": "⭕",
+      "nome": "Círculo de Convocação",
+      "tipo": "misterio",
+      "raridade": "epica",
+      "weight": 7,
+      "faseMin": 2,
+      "regiaoOrigem": [
+        "cemiterio",
+        "ruinas"
+      ],
+      "minNivel": 6,
+      "condicao": {
+        "tag": "necromantesDerrotados",
+        "minimo": 2
+      },
+      "historia": [
+        "Um círculo de convocação abandonado ainda pulsa com energia residual.",
+        "Símbolos gravados no chão sussurram nomes que você não reconhece."
+      ],
+      "cor": "roxo",
+      "efeito": {
+        "tipo": "misterio",
+        "resultados": [
+          {
+            "chance": 40,
+            "sub": "item",
+            "slot": "acessorio",
+            "nomeItem": "Talismã da Convocação",
+            "bonus": {
+              "mana": 10,
+              "ataque": 2
+            }
+          },
+          {
+            "chance": 30,
+            "sub": "recompensa_leve",
+            "ouro": [
+              15,
+              25
+            ],
+            "exp": 15
+          },
+          {
+            "chance": 30,
+            "sub": "dano",
+            "vida": 15
+          }
+        ]
+      }
+    },
+    {
+      "id": "errante_cegado",
+      "emoji": "🦯",
+      "nome": "Errante Cegado",
+      "tipo": "npc",
+      "raridade": "rara",
+      "weight": 10,
+      "regiaoOrigem": [
+        "abismo",
+        "cemiterio"
+      ],
+      "minNivel": 9,
+      "historia": [
+        "O errante perdeu a visão ao olhar para o abismo por tempo demais — mas parece enxergar outra coisa.",
+        "\"Você carrega marcas que ainda não sabe ler\", ele diz, sem olhos para ver."
+      ],
+      "cor": "cinza",
+      "efeito": {
+        "tipo": "item",
+        "slot": "consumivel",
+        "cura": 35,
+        "nomeItem": "Chá do Errante"
+      }
+    },
+    {
+      "id": "olho_infinito",
+      "emoji": "👁",
+      "nome": "Olho do Infinito",
+      "tipo": "artefato",
+      "raridade": "mitica",
+      "weight": 1,
+      "regiaoOrigem": [
+        "abismo"
+      ],
+      "minNivel": 13,
+      "historia": [
+        "O olho pisca uma vez em sua mão antes de parar, como se tivesse escolhido você."
+      ],
+      "cor": "roxo",
+      "efeito": {
+        "tipo": "item",
+        "slot": "acessorio",
+        "nomeItem": "Olho do Infinito",
+        "bonus": {
+          "ataque": 5,
+          "defesa": 5,
+          "manaMax": 20
+        }
+      }
+    },
+    {
+      "id": "vento_selvagem",
+      "emoji": "🌬",
+      "nome": "Vento Selvagem",
+      "tipo": "evento",
+      "raridade": "comum",
+      "weight": 50,
+      "regiaoOrigem": [
+        "montanha",
+        "deserto",
+        "floresta"
+      ],
+      "minNivel": 1,
+      "historia": [
+        "Um vento forte varre a paisagem, carregando o cheiro de terra distante.",
+        "Folhas e poeira giram ao seu redor antes de tudo se acalmar novamente."
+      ],
+      "cor": "verde",
+      "efeito": {
+        "tipo": "recompensa_leve",
+        "exp": 3
+      }
+    },
+    {
+      "id": "druida_protetor",
+      "emoji": "🍃",
+      "nome": "Druida Protetor",
+      "tipo": "npc",
+      "raridade": "rara",
+      "weight": 12,
+      "regiaoOrigem": [
+        "floresta"
+      ],
+      "minNivel": 3,
+      "historia": [
+        "O druida ergue a mão e a floresta parece responder ao seu gesto.",
+        "Ele observa você com atenção antes de decidir se você merece ajuda."
+      ],
+      "cor": "verde",
+      "sinergiaTag": [
+        "caminho_furtivo"
+      ],
+      "efeito": {
+        "tipo": "item",
+        "slot": "acessorio",
+        "nomeItem": "Talismã da Floresta",
+        "bonus": {
+          "velocidade": 2,
+          "defesa": 1
+        }
+      }
+    },
+    {
+      "id": "torneio_aldeia",
+      "emoji": "🏆",
+      "nome": "Torneio da Aldeia",
+      "tipo": "evento",
+      "raridade": "incomum",
+      "weight": 16,
+      "regiaoOrigem": [
+        "aldeia"
+      ],
+      "minNivel": 2,
+      "historia": [
+        "A aldeia organiza um pequeno torneio para celebrar a colheita.",
+        "Crianças torcem enquanto competidores locais se enfrentam por diversão."
+      ],
+      "cor": "amarelo",
+      "sinergiaTag": [
+        "caminho_forca",
+        "estrategista_ofensivo"
+      ],
+      "efeito": {
+        "tipo": "recompensa_leve",
+        "ouro": [
+          6,
+          14
+        ],
+        "exp": 8
+      }
+    },
+    {
+      "id": "grimm_encontro",
+      "emoji": "🦇",
+      "nome": "Grimm, o Caçador",
+      "tipo": "personagem",
+      "raridade": "incomum",
+      "weight": 20,
+      "regiaoOrigem": [
+        "cemiterio",
+        "pantano"
+      ],
+      "minNivel": 3,
+      "historia": [
+        "Grimm limpa uma lâmina curva sem sequer olhar para você. \"Se veio atrás de trabalho sujo, fale rápido.\"",
+        "Ele observa a escuridão como quem já não teme mais nada nela."
+      ],
+      "cor": "cinza",
+      "efeito": {
+        "tipo": "personagem",
+        "personagemId": "grimm",
+        "relacao": 8,
+        "exp": 8
+      },
+      "desbloqueia": [
+        "contrato_grimm"
+      ]
+    },
+    {
+      "id": "contrato_grimm",
+      "emoji": "📜",
+      "nome": "Contrato de Grimm",
+      "tipo": "escolha",
+      "raridade": "rara",
+      "weight": 12,
+      "regiaoOrigem": [
+        "cemiterio",
+        "pantano"
+      ],
+      "minNivel": 4,
+      "historia": [
+        "Grimm oferece um contrato para caçar algo que ele mesmo prefere evitar."
+      ],
+      "cor": "cinza",
+      "efeito": {
+        "tipo": "escolha",
+        "intro": "\"Há algo nos pântanos que nem eu quero caçar sozinho\", diz Grimm. \"Aceita dividir o risco — e o pagamento?\"",
+        "opcoes": [
+          {
+            "id": "aceitar_contrato",
+            "label": "🗡 Aceitar o contrato",
+            "dica": "Trabalho perigoso, mas Grimm reconhece talento.",
+            "historia": [
+              "Vocês caçam juntos em silêncio absoluto. Grimm assente uma vez — o mais próximo que ele chega de um elogio."
+            ],
+            "dano": 10,
+            "ouro": [
+              20,
+              35
+            ],
+            "relacao": 14,
+            "personagemId": "grimm",
+            "tag": "caminho_sombrio"
+          },
+          {
+            "id": "recusar_contrato",
+            "label": "🚫 Recusar",
+            "dica": "Sem risco, mas Grimm não esquece.",
+            "historia": [
+              "Grimm guarda o contrato sem dizer nada. Seu silêncio pesa mais do que qualquer insulto."
+            ],
+            "relacao": -6,
+            "personagemId": "grimm"
+          }
+        ]
+      }
+    },
+    {
+      "id": "estrada_para_aldeia",
+      "emoji": "🏘",
+      "nome": "Estrada de Volta",
+      "tipo": "local",
+      "raridade": "comum",
+      "weight": 16,
+      "inicial": true,
+      "regiaoOrigem": [
+        "floresta",
+        "ruinas",
+        "montanha",
+        "caverna",
+        "templo",
+        "cemiterio",
+        "pantano",
+        "deserto",
+        "castelo",
+        "vulcao",
+        "capital",
+        "abismo"
+      ],
+      "minNivel": 1,
+      "historia": [
+        "Uma trilha conhecida aponta de volta para a aldeia natal.",
+        "Você reconhece marcos familiares — o caminho para casa está logo ali.",
+        "Depois de tanto caminhar, a ideia de rever a aldeia parece reconfortante.",
+        "Um velho marco de pedra indica a distância até a aldeia.",
+        "O cheiro de pão fresco, mesmo distante, lembra você de que a aldeia não fica tão longe assim."
+      ],
+      "cor": "azul",
+      "efeito": {
+        "tipo": "mudar_regiao",
+        "regiao": "aldeia"
+      }
+    },
+    {
+      "id": "trilha_vulcao_montanha",
+      "emoji": "🏔",
+      "nome": "Descida do Vulcão",
+      "tipo": "local",
+      "raridade": "comum",
+      "weight": 14,
+      "inicial": true,
+      "regiaoOrigem": [
+        "vulcao"
+      ],
+      "minNivel": 8,
+      "historia": [
+        "O ar esfria conforme você desce de volta para as trilhas rochosas da montanha.",
+        "Deixar o calor do vulcão para trás traz um alívio imediato."
+      ],
+      "cor": "azul",
+      "efeito": {
+        "tipo": "mudar_regiao",
+        "regiao": "montanha"
+      }
+    },
+    {
+      "id": "saida_abismo",
+      "emoji": "🧊",
+      "nome": "Saída do Abismo",
+      "tipo": "local",
+      "raridade": "comum",
+      "weight": 14,
+      "inicial": true,
+      "regiaoOrigem": [
+        "abismo"
+      ],
+      "minNivel": 11,
+      "historia": [
+        "A fenda se estreita atrás de você conforme retorna à caverna congelada.",
+        "O silêncio do abismo dá lugar ao eco familiar do gelo rachando."
+      ],
+      "cor": "azul",
+      "efeito": {
+        "tipo": "mudar_regiao",
+        "regiao": "caverna"
+      }
+    },
+    {
+      "id": "portao_capital_castelo",
+      "emoji": "🏰",
+      "nome": "Retorno ao Castelo",
+      "tipo": "local",
+      "raridade": "comum",
+      "weight": 14,
+      "inicial": true,
+      "regiaoOrigem": [
+        "capital"
+      ],
+      "minNivel": 10,
+      "historia": [
+        "Você deixa as ruas movimentadas da capital e retorna às muralhas do castelo.",
+        "O burburinho da capital fica para trás enquanto os portões do castelo se erguem à frente."
+      ],
+      "cor": "azul",
+      "efeito": {
+        "tipo": "mudar_regiao",
+        "regiao": "castelo"
+      }
+    },
+    {
+      "id": "travessia_deserto_pantano",
+      "emoji": "🌙",
+      "nome": "Travessia das Terras Baixas",
+      "tipo": "local",
+      "raridade": "incomum",
+      "weight": 12,
+      "inicial": true,
+      "regiaoOrigem": [
+        "deserto",
+        "pantano"
+      ],
+      "minNivel": 3,
+      "historia": [
+        "A areia dá lugar à lama conforme o terreno muda sob seus pés.",
+        "Um caminho pouco usado conecta as dunas áridas aos pântanos encharcados."
+      ],
+      "cor": "verde",
+      "efeito": {
+        "tipo": "mudar_regiao",
+        "regiao": "pantano"
+      }
+    },
+    {
+      "id": "travessia_pantano_deserto",
+      "emoji": "🏜",
+      "nome": "Rumo às Dunas",
+      "tipo": "local",
+      "raridade": "incomum",
+      "weight": 12,
+      "inicial": true,
+      "regiaoOrigem": [
+        "pantano",
+        "deserto"
+      ],
+      "minNivel": 3,
+      "historia": [
+        "A lama seca sob seus pés conforme o pântano dá lugar à areia quente.",
+        "O horizonte se abre em dunas douradas depois da névoa densa do pântano."
+      ],
+      "cor": "laranja",
+      "efeito": {
+        "tipo": "mudar_regiao",
+        "regiao": "deserto"
+      }
+    },
+    {
+      "id": "escola_piromancia",
+      "emoji": "🔥",
+      "nome": "Escola de Piromancia",
+      "tipo": "escola",
+      "raridade": "rara",
+      "weight": 8,
+      "regiaoOrigem": [
+        "templo",
+        "ruinas"
+      ],
+      "minNivel": 3,
+      "faseMin": 2,
+      "historia": [
+        "Um piromante itinerante se oferece para lhe ensinar os fundamentos das chamas — avisando, com um sorriso torto, que você vai se queimar algumas vezes no caminho."
+      ],
+      "cor": "vermelho",
+      "efeito": {
+        "tipo": "escola",
+        "escolaId": "piromancia",
+        "bonus": {
+          "ataque": 3
+        }
+      }
+    },
+    {
+      "id": "escola_necromancia",
+      "emoji": "☠",
+      "nome": "Escola de Necromancia",
+      "tipo": "escola",
+      "raridade": "rara",
+      "weight": 8,
+      "regiaoOrigem": [
+        "cemiterio",
+        "pantano"
+      ],
+      "minNivel": 3,
+      "faseMin": 2,
+      "historia": [
+        "Entre os túmulos, uma voz sem corpo ensina a ouvir os mortos — e, vez ou outra, a se recusar a permanecer quieta diante deles."
+      ],
+      "cor": "roxo",
+      "efeito": {
+        "tipo": "escola",
+        "escolaId": "necromancia",
+        "bonus": {
+          "vidaMax": 15
+        }
+      }
+    },
+    {
+      "id": "escola_ilusionismo",
+      "emoji": "🌙",
+      "nome": "Escola de Ilusionismo",
+      "tipo": "escola",
+      "raridade": "rara",
+      "weight": 8,
+      "regiaoOrigem": [
+        "floresta",
+        "caverna"
+      ],
+      "minNivel": 3,
+      "faseMin": 2,
+      "historia": [
+        "Uma figura encapuzada desaparece e reaparece três vezes seguidas antes de aceitar lhe ensinar a arte de enganar os olhos."
+      ],
+      "cor": "azul",
+      "efeito": {
+        "tipo": "escola",
+        "escolaId": "ilusionismo",
+        "bonus": {
+          "velocidade": 3
+        }
+      }
+    },
+    {
+      "id": "escola_elementalismo",
+      "emoji": "⚡",
+      "nome": "Escola de Elementalismo",
+      "tipo": "escola",
+      "raridade": "rara",
+      "weight": 8,
+      "regiaoOrigem": [
+        "montanha",
+        "deserto"
+      ],
+      "minNivel": 3,
+      "faseMin": 2,
+      "historia": [
+        "Um velho elementalista canaliza um raio pela própria mão só para provar que os elementos podem ser domados por quem tem paciência."
+      ],
+      "cor": "azul",
+      "efeito": {
+        "tipo": "escola",
+        "escolaId": "elementalismo",
+        "bonus": {
+          "mana": 20
+        }
+      }
+    },
+    {
+      "id": "cajado_piromante",
+      "emoji": "🔥",
+      "nome": "Cajado do Piromante",
+      "tipo": "item",
+      "raridade": "epica",
+      "weight": 6,
+      "regiaoOrigem": [
+        "aldeia",
+        "floresta",
+        "montanha",
+        "ruinas",
+        "caverna",
+        "pantano",
+        "deserto",
+        "templo",
+        "cemiterio",
+        "castelo",
+        "vulcao",
+        "capital",
+        "abismo"
+      ],
+      "minNivel": 4,
+      "faseMin": 2,
+      "condicao": {
+        "tag": "escola_piromancia",
+        "minimo": 1
+      },
+      "historia": [
+        "O cajado arde sem se consumir, como se as chamas reconhecessem em você uma das suas."
+      ],
+      "cor": "vermelho",
+      "efeito": {
+        "tipo": "item",
+        "slot": "arma",
+        "nomeItem": "Cajado do Piromante",
+        "bonus": {
+          "ataque": 6,
+          "mana": 10
+        }
+      }
+    },
+    {
+      "id": "grimorio_necromante",
+      "emoji": "📕",
+      "nome": "Grimório Necromante",
+      "tipo": "item",
+      "raridade": "epica",
+      "weight": 6,
+      "regiaoOrigem": [
+        "aldeia",
+        "floresta",
+        "montanha",
+        "ruinas",
+        "caverna",
+        "pantano",
+        "deserto",
+        "templo",
+        "cemiterio",
+        "castelo",
+        "vulcao",
+        "capital",
+        "abismo"
+      ],
+      "minNivel": 4,
+      "faseMin": 2,
+      "condicao": {
+        "tag": "escola_necromancia",
+        "minimo": 1
+      },
+      "historia": [
+        "As páginas do grimório sussurram nomes que você não reconhece, mas que parecem reconhecer você."
+      ],
+      "cor": "roxo",
+      "efeito": {
+        "tipo": "item",
+        "slot": "acessorio",
+        "nomeItem": "Grimório Necromante",
+        "bonus": {
+          "vidaMax": 20,
+          "defesa": 2
+        }
+      }
+    },
+    {
+      "id": "espelho_ilusorio",
+      "emoji": "🪞",
+      "nome": "Espelho Ilusório",
+      "tipo": "item",
+      "raridade": "epica",
+      "weight": 6,
+      "regiaoOrigem": [
+        "aldeia",
+        "floresta",
+        "montanha",
+        "ruinas",
+        "caverna",
+        "pantano",
+        "deserto",
+        "templo",
+        "cemiterio",
+        "castelo",
+        "vulcao",
+        "capital",
+        "abismo"
+      ],
+      "minNivel": 4,
+      "faseMin": 2,
+      "condicao": {
+        "tag": "escola_ilusionismo",
+        "minimo": 1
+      },
+      "historia": [
+        "O espelho mostra seu reflexo um instante depois do que deveria — o suficiente para confundir qualquer inimigo."
+      ],
+      "cor": "azul",
+      "efeito": {
+        "tipo": "item",
+        "slot": "acessorio",
+        "nomeItem": "Espelho Ilusório",
+        "bonus": {
+          "velocidade": 4,
+          "ataque": 1
+        }
+      }
+    },
+    {
+      "id": "orbe_elemental",
+      "emoji": "🔮",
+      "nome": "Orbe Elemental",
+      "tipo": "item",
+      "raridade": "epica",
+      "weight": 6,
+      "regiaoOrigem": [
+        "aldeia",
+        "floresta",
+        "montanha",
+        "ruinas",
+        "caverna",
+        "pantano",
+        "deserto",
+        "templo",
+        "cemiterio",
+        "castelo",
+        "vulcao",
+        "capital",
+        "abismo"
+      ],
+      "minNivel": 4,
+      "faseMin": 2,
+      "condicao": {
+        "tag": "escola_elementalismo",
+        "minimo": 1
+      },
+      "historia": [
+        "Dentro do orbe, fogo, água, terra e ar giram em equilíbrio perfeito, esperando seu comando."
+      ],
+      "cor": "azul",
+      "efeito": {
+        "tipo": "item",
+        "slot": "acessorio",
+        "nomeItem": "Orbe Elemental",
+        "bonus": {
+          "mana": 15,
+          "defesa": 2
+        }
+      }
+    },
+    {
+      "id": "orin_encontro",
+      "emoji": "📜",
+      "nome": "Orin, o Cronista",
+      "tipo": "personagem",
+      "raridade": "incomum",
+      "weight": 22,
+      "regiaoOrigem": [
+        "aldeia"
+      ],
+      "minNivel": 1,
+      "historia": [
+        "Um velho de dedos manchados de tinta anota algo num caderno enorme só de ver você passar. \"Herói, mercenário, ou só mais um tolo de sorte? O tempo dirá — e eu vou escrever.\"",
+        "Orin fecha o caderno com um estalo satisfeito. \"Toda grande história começa com alguém que ainda não sabe que é o protagonista.\""
+      ],
+      "cor": "azul",
+      "efeito": {
+        "tipo": "personagem",
+        "personagemId": "orin",
+        "relacao": 8,
+        "exp": 6
+      },
+      "desbloqueia": [
+        "orin_biblioteca_perdida",
+        "cronica_dos_reis"
+      ]
+    },
+    {
+      "id": "orin_biblioteca_perdida",
+      "emoji": "📚",
+      "nome": "A Biblioteca que Orin Procura",
+      "tipo": "misterio",
+      "raridade": "rara",
+      "weight": 12,
+      "regiaoOrigem": [
+        "ruinas"
+      ],
+      "minNivel": 2,
+      "historia": [
+        "Orin reaparece entre as colunas quebradas das ruínas, seguindo um mapa desenhado à mão. \"Diz a lenda que a última biblioteca do Reino Partido está enterrada aqui — antes que o castelo caísse, os arquivos foram escondidos, não queimados.\""
+      ],
+      "cor": "azul",
+      "efeito": {
+        "tipo": "misterio",
+        "resultados": [
+          {
+            "chance": 40,
+            "sub": "exp",
+            "exp": 14,
+            "ouro": 0
+          },
+          {
+            "chance": 35,
+            "sub": "item",
+            "nomeItem": "Fragmento de Crônica Antiga",
+            "bonus": {
+              "mana": 6
+            },
+            "slot": "acessorio"
+          },
+          {
+            "chance": 25,
+            "sub": "dano",
+            "vida": 9
+          }
+        ]
+      }
+    },
+    {
+      "id": "cronica_dos_reis",
+      "emoji": "👑",
+      "nome": "A Crônica dos Reis Partidos",
+      "tipo": "misterio",
+      "raridade": "rara",
+      "weight": 10,
+      "regiaoOrigem": [
+        "templo"
+      ],
+      "minNivel": 3,
+      "historia": [
+        "Nas paredes internas do templo, Orin encontra um mural quase apagado. \"Antes de haver Castelo e Capital, havia um único reino. A coroa se partiu quando dois irmãos discordaram sobre quem deveria usá-la — um ficou com as muralhas, o outro fundou a cidade nova. Ainda estamos vivendo a briga deles.\""
+      ],
+      "cor": "roxo",
+      "efeito": {
+        "tipo": "misterio",
+        "resultados": [
+          {
+            "chance": 45,
+            "sub": "exp",
+            "exp": 18,
+            "ouro": 0
+          },
+          {
+            "chance": 30,
+            "sub": "recompensa_leve",
+            "ouro": [
+              10,
+              20
+            ],
+            "exp": 5
+          },
+          {
+            "chance": 25,
+            "sub": "dano",
+            "vida": 10
+          }
+        ]
+      }
+    },
+    {
+      "id": "orin_ensinamento",
+      "emoji": "🖋",
+      "nome": "O Capítulo que Orin Escreveu",
+      "tipo": "personagem",
+      "raridade": "epica",
+      "weight": 6,
+      "regiaoOrigem": [
+        "aldeia",
+        "ruinas",
+        "templo"
+      ],
+      "minNivel": 4,
+      "condicao": {
+        "tag": "relOrin",
+        "minimo": 1
+      },
+      "historia": [
+        "Orin mostra a você uma página recém-escrita — o seu próprio nome, em tinta ainda fresca. \"Todo herói precisa saber que já está sendo lembrado antes mesmo de terminar a jornada. Isso muda a forma como se decide.\""
+      ],
+      "cor": "azul",
+      "efeito": {
+        "tipo": "personagem",
+        "personagemId": "orin",
+        "relacao": 15,
+        "exp": 20,
+        "tag": "relOrin"
+      }
+    },
+    {
+      "id": "vessa_encontro",
+      "emoji": "🗡️",
+      "nome": "Vessa, a Exilada",
+      "tipo": "personagem",
+      "raridade": "incomum",
+      "weight": 20,
+      "regiaoOrigem": [
+        "deserto"
+      ],
+      "minNivel": 3,
+      "historia": [
+        "Uma mulher de armadura descascada pela areia observa você de longe, mão pousada no cabo da espada por hábito, não por ameaça. \"Ninguém vem ao deserto por escolha. O que te expulsou de casa?\"",
+        "Vessa não baixa a guarda enquanto fala. \"Fui capitã da guarda da Capital. Fui expulsa por um crime que não cometi. Perdoe se não confio fácil.\""
+      ],
+      "cor": "amarelo",
+      "efeito": {
+        "tipo": "personagem",
+        "personagemId": "vessa",
+        "relacao": 8,
+        "exp": 8,
+        "tag": "relVessa"
+      },
+      "desbloqueia": [
+        "vessa_juramento"
+      ]
+    },
+    {
+      "id": "vessa_juramento",
+      "emoji": "⚖",
+      "nome": "O Juramento de Vessa",
+      "tipo": "escolha",
+      "raridade": "rara",
+      "weight": 10,
+      "regiaoOrigem": [
+        "deserto",
+        "castelo"
+      ],
+      "minNivel": 4,
+      "historia": [
+        "Vessa parece prestes a contar algo que carrega há muito tempo."
+      ],
+      "cor": "amarelo",
+      "efeito": {
+        "tipo": "escolha",
+        "intro": "Vessa finalmente conta a história completa: foi acusada de traição por um conselheiro que queria seu posto, e a rainha usurpadora assinou o exílio sem sequer ouvi-la. \"Ainda tenho aliados dentro dos muros. Você me ajudaria a provar minha inocência — ou isso é problema demais para carregar?\"",
+        "opcoes": [
+          {
+            "id": "apoiar_vessa",
+            "label": "🤝 Jurar ajudá-la a limpar seu nome",
+            "dica": "Fortalece seu laço com Vessa e com quem mais sofre sob a rainha usurpadora.",
+            "historia": [
+              "Você aceita o juramento. Vessa aperta sua mão com força suficiente para doer — o primeiro sinal de que ela confia em alguém depois de muito tempo."
+            ],
+            "exp": 10,
+            "tag": "aliado_do_povo",
+            "statDelta": {
+              "defesa": 1
+            }
+          },
+          {
+            "id": "recusar_vessa",
+            "label": "🚶 Dizer que essa guerra não é sua",
+            "dica": "Sem risco, mas Vessa segue sozinha — e mais amarga.",
+            "historia": [
+              "Você recusa. Vessa assente, sem surpresa. \"Justo. Foi o que todos fizeram.\" Ela se vira e volta a olhar para as dunas."
+            ],
+            "exp": 2
+          }
+        ]
+      },
+      "desbloqueia": [
+        "vessa_duelo"
+      ]
+    },
+    {
+      "id": "vessa_duelo",
+      "emoji": "⚔️",
+      "nome": "O Treino de Vessa",
+      "tipo": "inimigo",
+      "raridade": "rara",
+      "weight": 12,
+      "regiaoOrigem": [
+        "deserto",
+        "castelo"
+      ],
+      "minNivel": 5,
+      "condicao": {
+        "tag": "relVessa",
+        "minimo": 1
+      },
+      "historia": [
+        "Vessa baixa a espada, ofegante, e sorri pela primeira vez desde que se conheceram. \"Nada mal. A Capital vai se arrepender de ter perdido você também, se continuar assim.\"",
+        "Você vence o combate de treino. \"Ainda tenho muito a te ensinar\", diz Vessa, guardando a lâmina."
+      ],
+      "cor": "amarelo",
+      "efeito": {
+        "tipo": "combate",
+        "vidaInimigo": 38,
+        "ataqueInimigo": 9,
+        "defesaInimigo": 5,
+        "ouroDrop": [
+          8,
+          16
+        ],
+        "expDrop": 22,
+        "itemGarantido": "medalha_da_exilada"
+      },
+      "elite": true
+    },
+    {
+      "id": "estatua_rei_esquecido",
+      "emoji": "🗿",
+      "nome": "A Estátua do Rei Esquecido",
+      "tipo": "misterio",
+      "raridade": "rara",
+      "weight": 10,
+      "regiaoOrigem": [
+        "ruinas"
+      ],
+      "minNivel": 2,
+      "historia": [
+        "O nome gravado na base da estátua foi raspado de propósito, séculos atrás. Alguém quis muito que este rei fosse esquecido — e quase conseguiu."
+      ],
+      "cor": "cinza",
+      "efeito": {
+        "tipo": "misterio",
+        "resultados": [
+          {
+            "chance": 40,
+            "sub": "exp",
+            "exp": 10,
+            "ouro": 0
+          },
+          {
+            "chance": 30,
+            "sub": "item",
+            "nomeItem": "Moeda de um Reino Extinto",
+            "bonus": {
+              "defesa": 1
+            },
+            "slot": "acessorio"
+          },
+          {
+            "chance": 30,
+            "sub": "dano",
+            "vida": 8
+          }
+        ]
+      }
+    },
+    {
+      "id": "mural_da_capital",
+      "emoji": "🏙",
+      "nome": "O Mural da Fundação",
+      "tipo": "misterio",
+      "raridade": "incomum",
+      "weight": 14,
+      "regiaoOrigem": [
+        "capital"
+      ],
+      "minNivel": 8,
+      "historia": [
+        "Um mural imenso cobre a praça central: o irmão mais novo do Reino Partido erguendo os primeiros muros da Capital, prometendo governar 'sem coroa, sem sangue, sem mentiras'. A tinta já está rachando em vários pontos — assim como a promessa."
+      ],
+      "cor": "amarelo",
+      "efeito": {
+        "tipo": "misterio",
+        "resultados": [
+          {
+            "chance": 40,
+            "sub": "exp",
+            "exp": 16,
+            "ouro": 0
+          },
+          {
+            "chance": 30,
+            "sub": "recompensa_leve",
+            "ouro": [
+              12,
+              22
+            ],
+            "exp": 4
+          },
+          {
+            "chance": 30,
+            "sub": "dano",
+            "vida": 10
+          }
+        ]
+      }
+    },
+    {
+      "id": "diario_de_soldado",
+      "emoji": "📔",
+      "nome": "Diário de um Soldado do Castelo",
+      "tipo": "item",
+      "raridade": "incomum",
+      "weight": 14,
+      "regiaoOrigem": [
+        "castelo"
+      ],
+      "minNivel": 8,
+      "historia": [
+        "As últimas páginas não falam de batalha, mas de fome. \"O Cavaleiro Negro não nos derrotou\", escreveu o soldado. \"Ele só chegou depois que já tínhamos perdido para outra coisa.\""
+      ],
+      "cor": "cinza",
+      "efeito": {
+        "tipo": "item",
+        "slot": "consumivel",
+        "cura": 20,
+        "nomeItem": "Diário de um Soldado do Castelo"
+      }
+    },
+    {
+      "id": "inscricao_abissal",
+      "emoji": "👁",
+      "nome": "Inscrição no Limiar do Abismo",
+      "tipo": "misterio",
+      "raridade": "epica",
+      "weight": 5,
+      "regiaoOrigem": [
+        "abismo"
+      ],
+      "minNivel": 12,
+      "faseMin": 3,
+      "historia": [
+        "As palavras estão em nenhuma língua que você reconhece, mas de algum jeito você as entende assim mesmo: 'Não caímos aqui. Nós escolhemos. E você também vai escolher.'"
+      ],
+      "cor": "roxo",
+      "efeito": {
+        "tipo": "misterio",
+        "resultados": [
+          {
+            "chance": 35,
+            "sub": "item",
+            "nomeItem": "Fragmento de Verdade Abissal",
+            "bonus": {
+              "mana": 12,
+              "ataque": 2
+            },
+            "slot": "acessorio"
+          },
+          {
+            "chance": 30,
+            "sub": "exp",
+            "exp": 25,
+            "ouro": 0
+          },
+          {
+            "chance": 35,
+            "sub": "dano",
+            "vida": 20
+          }
+        ]
+      }
+    },
+    {
+      "id": "tumulo_sem_nome",
+      "emoji": "🪦",
+      "nome": "O Túmulo Sem Nome",
+      "tipo": "misterio",
+      "raridade": "rara",
+      "weight": 10,
+      "regiaoOrigem": [
+        "cemiterio"
+      ],
+      "minNivel": 4,
+      "historia": [
+        "Uma lápide lisa, sem inscrição, mais bem cuidada que qualquer outra ao redor. Alguém ainda visita este túmulo — e não quer que ninguém saiba de quem é."
+      ],
+      "cor": "cinza",
+      "efeito": {
+        "tipo": "misterio",
+        "resultados": [
+          {
+            "chance": 40,
+            "sub": "exp",
+            "exp": 12,
+            "ouro": 0
+          },
+          {
+            "chance": 30,
+            "sub": "item",
+            "nomeItem": "Flor Seca Deixada no Túmulo",
+            "bonus": {
+              "vidaMax": 8
+            },
+            "slot": "acessorio"
+          },
+          {
+            "chance": 30,
+            "sub": "dano",
+            "vida": 12
+          }
+        ]
+      }
+    },
+    {
+      "id": "registro_da_guilda",
+      "emoji": "📋",
+      "nome": "Registro da Guilda dos Bandidos",
+      "tipo": "misterio",
+      "raridade": "incomum",
+      "weight": 14,
+      "regiaoOrigem": [
+        "ruinas"
+      ],
+      "minNivel": 2,
+      "historia": [
+        "Um livro-caixa cuidadosamente mantido lista nomes, dívidas e ameaças em letra clara. No verso da última página: 'ninguém nasce bandido — a gente só para de ter escolha em algum momento.'"
+      ],
+      "cor": "vermelho",
+      "efeito": {
+        "tipo": "misterio",
+        "resultados": [
+          {
+            "chance": 45,
+            "sub": "ouro",
+            "ouro": [
+              8,
+              18
+            ]
+          },
+          {
+            "chance": 30,
+            "sub": "exp",
+            "exp": 10,
+            "ouro": 0
+          },
+          {
+            "chance": 25,
+            "sub": "dano",
+            "vida": 7
+          }
+        ]
+      }
+    },
+    {
+      "id": "mercenario_rival",
+      "emoji": "🤺",
+      "nome": "Mercenário Rival",
+      "tipo": "inimigo",
+      "raridade": "incomum",
+      "weight": 26,
+      "regiaoOrigem": [
+        "aldeia",
+        "floresta"
+      ],
+      "minNivel": 2,
+      "historia": [
+        "O outro mercenário cospe sangue e ri. \"Nada pessoal. Só queria ver se você era tão bom quanto dizem por aí.\"",
+        "Ele se rende antes do golpe final. \"Beba comigo depois. Ganhei respeito por você, não dinheiro.\""
+      ],
+      "cor": "vermelho",
+      "efeito": {
+        "tipo": "combate",
+        "vidaInimigo": 26,
+        "ataqueInimigo": 8,
+        "defesaInimigo": 3,
+        "ouroDrop": [
+          6,
+          14
+        ],
+        "expDrop": 13
+      },
+      "elite": true
+    },
+    {
+      "id": "contrabandista",
+      "emoji": "🎒",
+      "nome": "Contrabandista do Deserto",
+      "tipo": "npc",
+      "raridade": "rara",
+      "weight": 12,
+      "regiaoOrigem": [
+        "deserto",
+        "ruinas"
+      ],
+      "minNivel": 3,
+      "historia": [
+        "\"Não pergunto de onde você vem, você não pergunta de onde isso veio\", diz o contrabandista, abrindo o casaco cheio de bugigangas raras.",
+        "Ele fecha o negócio com um aperto de mão rápido demais para parecer legal — mas os itens são reais."
+      ],
+      "cor": "amarelo",
+      "efeito": {
+        "tipo": "item",
+        "slot": "consumivel",
+        "cura": 30,
+        "nomeItem": "Ração de Contrabando",
+        "custoOuro": 12
+      }
+    },
+    {
+      "id": "lobo_alfa",
+      "emoji": "🐺",
+      "nome": "Lobo Alfa",
+      "tipo": "inimigo",
+      "raridade": "rara",
+      "weight": 16,
+      "regiaoOrigem": [
+        "floresta"
+      ],
+      "minNivel": 3,
+      "historia": [
+        "O lobo alfa recua para as sombras, ferido, levando consigo o que restou de sua alcateia.",
+        "Maior e mais cicatrizado que qualquer lobo comum, ele ainda assim reconhece a hora de fugir."
+      ],
+      "cor": "vermelho",
+      "efeito": {
+        "tipo": "combate",
+        "vidaInimigo": 36,
+        "ataqueInimigo": 9,
+        "defesaInimigo": 3,
+        "ouroDrop": [
+          7,
+          15
+        ],
+        "expDrop": 17,
+        "contadorTag": "lobosDerrotados"
+      },
+      "elite": true
+    },
+    {
+      "id": "espectro_da_torre",
+      "emoji": "🏚",
+      "nome": "Espectro da Torre",
+      "tipo": "inimigo",
+      "raridade": "rara",
+      "weight": 12,
+      "regiaoOrigem": [
+        "castelo"
+      ],
+      "minNivel": 8,
+      "historia": [
+        "O espectro se desfaz em névoa, ainda vestindo a armadura de um guarda que nunca soube que o castelo já havia caído.",
+        "\"Finalmente\", ele sussurra, antes de se dissipar de vez."
+      ],
+      "cor": "vermelho",
+      "efeito": {
+        "tipo": "combate",
+        "vidaInimigo": 62,
+        "ataqueInimigo": 13,
+        "defesaInimigo": 6,
+        "ouroDrop": [
+          16,
+          28
+        ],
+        "expDrop": 32
+      },
+      "elite": true
+    },
+    {
+      "id": "cristaleira",
+      "emoji": "💎",
+      "nome": "Cristaleira da Caverna",
+      "tipo": "npc",
+      "raridade": "rara",
+      "weight": 10,
+      "regiaoOrigem": [
+        "caverna"
+      ],
+      "minNivel": 4,
+      "historia": [
+        "Ela vive sozinha entre os cristais há tanto tempo que já não lembra o próprio nome — só o valor de cada pedra que lapida.",
+        "\"Isso aqui\", diz, entregando um cristal talhado, \"guarda frio o bastante pra parar um coração apressado.\""
+      ],
+      "cor": "azul",
+      "efeito": {
+        "tipo": "item",
+        "slot": "acessorio",
+        "nomeItem": "Cristal Lapidado",
+        "bonus": {
+          "defesa": 2,
+          "mana": 8
+        },
+        "custoOuro": 18
+      }
+    },
+    {
+      "id": "bencao_da_fogueira",
+      "emoji": "🔥",
+      "nome": "Bênção da Fogueira",
+      "tipo": "misterio",
+      "raridade": "comum",
+      "weight": 22,
+      "regiaoOrigem": [
+        "aldeia"
+      ],
+      "minNivel": 1,
+      "historia": [
+        "À noite, alguém deixou uma fogueira acesa perto da estrada só para quem precisasse de um lugar quente."
+      ],
+      "cor": "amarelo",
+      "efeito": {
+        "tipo": "misterio",
+        "resultados": [
+          {
+            "chance": 55,
+            "sub": "recompensa_leve",
+            "cura": 18,
+            "exp": 3
+          },
+          {
+            "chance": 30,
+            "sub": "exp",
+            "exp": 8,
+            "ouro": 0
+          },
+          {
+            "chance": 15,
+            "sub": "dano",
+            "vida": 5
+          }
+        ]
+      }
+    },
+    {
+      "id": "matriarca_do_pantano",
+      "emoji": "🐸👑",
+      "nome": "Matriarca do Pântano",
+      "tipo": "chefe",
+      "raridade": "epica",
+      "weight": 4,
+      "regiaoOrigem": [
+        "pantano"
+      ],
+      "minNivel": 6,
+      "condicao": {
+        "tag": "jacaresDerrotados",
+        "minimo": 3
+      },
+      "historia": [
+        "A Matriarca afunda de volta nas águas escuras, e o pântano inteiro parece exalar novamente.",
+        "Com sua guardiã derrotada, os jacarés do pântano recuam para as profundezas."
+      ],
+      "cor": "vermelho",
+      "efeito": {
+        "tipo": "combate",
+        "vidaInimigo": 70,
+        "ataqueInimigo": 13,
+        "defesaInimigo": 6,
+        "ouroDrop": [
+          22,
+          38
+        ],
+        "expDrop": 40,
+        "itemGarantido": "escamas_da_matriarca"
+      }
+    },
+    {
+      "id": "escamas_da_matriarca",
+      "emoji": "🐸",
+      "nome": "Escamas da Matriarca",
+      "tipo": "item",
+      "raridade": "epica",
+      "weight": 0,
+      "regiaoOrigem": [
+        "pantano"
+      ],
+      "minNivel": 6,
+      "oculta": true,
+      "historia": [
+        "As escamas ainda pulsam com um leve verde luminescente, adaptando-se ao seu corpo."
+      ],
+      "cor": "amarelo",
+      "efeito": {
+        "tipo": "item",
+        "slot": "armadura",
+        "nomeItem": "Escamas da Matriarca",
+        "bonus": {
+          "defesa": 5,
+          "velocidade": 1
+        }
+      }
+    },
+    {
+      "id": "senhor_das_areias",
+      "emoji": "🏜👑",
+      "nome": "Senhor das Areias",
+      "tipo": "chefe",
+      "raridade": "epica",
+      "weight": 4,
+      "regiaoOrigem": [
+        "deserto"
+      ],
+      "minNivel": 8,
+      "condicao": {
+        "tag": "escorpioesDerrotados",
+        "minimo": 3
+      },
+      "historia": [
+        "A tempestade de areia que envolvia o Senhor se dissipa assim que ele cai.",
+        "Enterrado sob as dunas que um dia comandou, o Senhor das Areias enfim descansa."
+      ],
+      "cor": "vermelho",
+      "efeito": {
+        "tipo": "combate",
+        "vidaInimigo": 78,
+        "ataqueInimigo": 15,
+        "defesaInimigo": 7,
+        "ouroDrop": [
+          26,
+          45
+        ],
+        "expDrop": 46,
+        "itemGarantido": "aguilhao_dourado"
+      }
+    },
+    {
+      "id": "aguilhao_dourado",
+      "emoji": "🏹",
+      "nome": "Aguilhão Dourado",
+      "tipo": "item",
+      "raridade": "epica",
+      "weight": 0,
+      "regiaoOrigem": [
+        "deserto"
+      ],
+      "minNivel": 8,
+      "oculta": true,
+      "historia": [
+        "A ponta dourada da lança ainda guarda o calor do deserto."
+      ],
+      "cor": "amarelo",
+      "efeito": {
+        "tipo": "item",
+        "slot": "arma",
+        "nomeItem": "Aguilhão Dourado",
+        "bonus": {
+          "ataque": 6,
+          "velocidade": 2
+        }
+      }
+    },
+    {
+      "id": "medalha_da_exilada",
+      "emoji": "🎖",
+      "nome": "Medalha da Exilada",
+      "tipo": "item",
+      "raridade": "rara",
+      "weight": 0,
+      "regiaoOrigem": [
+        "deserto",
+        "castelo"
+      ],
+      "minNivel": 5,
+      "oculta": true,
+      "historia": [
+        "Vessa insiste para que você fique com a medalha. \"Ela não significa nada pra Capital. Pra mim, significa tudo.\""
+      ],
+      "cor": "amarelo",
+      "efeito": {
+        "tipo": "item",
+        "slot": "acessorio",
+        "nomeItem": "Medalha da Exilada",
+        "bonus": {
+          "ataque": 2,
+          "defesa": 2
+        }
+      }
+    },
+    {
+      "id": "goblin_xama",
+      "emoji": "🔮",
+      "nome": "Xamã Goblin",
+      "tipo": "inimigo",
+      "raridade": "rara",
+      "weight": 14,
+      "elite": true,
+      "regiaoOrigem": [
+        "floresta",
+        "ruinas",
+        "caverna"
+      ],
+      "minNivel": 3,
+      "historia": [
+        "O xamã lança um último feitiço fraco antes de cair, seu totem se despedaçando no chão.",
+        "Símbolos rabiscados brilham e se apagam quando o xamã goblin é derrotado."
+      ],
+      "cor": "vermelho",
+      "efeito": {
+        "tipo": "combate",
+        "vidaInimigo": 30,
+        "ataqueInimigo": 9,
+        "defesaInimigo": 3,
+        "ouroDrop": [
+          8,
+          16
+        ],
+        "expDrop": 16,
+        "contadorTag": "goblinsDerrotados"
+      }
+    },
+    {
+      "id": "javali_ancestral",
+      "emoji": "🐗",
+      "nome": "Javali Ancestral",
+      "tipo": "inimigo",
+      "raridade": "rara",
+      "weight": 14,
+      "elite": true,
+      "regiaoOrigem": [
+        "floresta",
+        "montanha"
+      ],
+      "minNivel": 4,
+      "historia": [
+        "Presas mais longas que qualquer javali comum — este sobreviveu a muitas caçadas antes desta.",
+        "O javali ancestral finalmente tomba, e a floresta ao redor parece prender a respiração."
+      ],
+      "cor": "vermelho",
+      "efeito": {
+        "tipo": "combate",
+        "vidaInimigo": 42,
+        "ataqueInimigo": 11,
+        "defesaInimigo": 4,
+        "ouroDrop": [
+          9,
+          18
+        ],
+        "expDrop": 19
+      }
+    },
+    {
+      "id": "morcego_rei",
+      "emoji": "🦇",
+      "nome": "Morcego Rei",
+      "tipo": "inimigo",
+      "raridade": "rara",
+      "weight": 12,
+      "elite": true,
+      "regiaoOrigem": [
+        "caverna",
+        "cemiterio"
+      ],
+      "minNivel": 5,
+      "historia": [
+        "Maior que qualquer morcego comum, suas asas cobrem a caverna inteira em sombra ao cair.",
+        "O Morcego Rei solta um guincho agudo que ecoa pela caverna antes de finalmente sucumbir."
+      ],
+      "cor": "vermelho",
+      "efeito": {
+        "tipo": "combate",
+        "vidaInimigo": 38,
+        "ataqueInimigo": 10,
+        "defesaInimigo": 3,
+        "ouroDrop": [
+          9,
+          17
+        ],
+        "expDrop": 18
+      }
+    },
+    {
+      "id": "salamandra_matriarca",
+      "emoji": "🦎",
+      "nome": "Salamandra Matriarca",
+      "tipo": "inimigo",
+      "raridade": "epica",
+      "weight": 10,
+      "elite": true,
+      "regiaoOrigem": [
+        "vulcao"
+      ],
+      "minNivel": 9,
+      "historia": [
+        "As chamas da Matriarca se extinguem com um silvo grave; o calor da caverna diminui um pouco.",
+        "Escamas incandescentes esfriam lentamente enquanto a Salamandra Matriarca é derrotada."
+      ],
+      "cor": "vermelho",
+      "sinergiaTag": [
+        "caminho_forca"
+      ],
+      "efeito": {
+        "tipo": "combate",
+        "vidaInimigo": 80,
+        "ataqueInimigo": 17,
+        "defesaInimigo": 7,
+        "ouroDrop": [
+          20,
+          34
+        ],
+        "expDrop": 36,
+        "contadorTag": "salamandrasDerrotadas"
+      }
+    }
+  ],
+  "events": [
+    {
+      "id": "chuva",
+      "emoji": "🌧",
+      "nome": "Chuva",
+      "descricao": "Mais plantas e criaturas da floresta aparecem.",
+      "duracaoTurnos": 4,
+      "chancePorTurno": 6,
+      "modificadores": {
+        "tipo": "floresta",
+        "multiplicador": 1.6
+      }
+    },
+    {
+      "id": "incendio",
+      "emoji": "🔥",
+      "nome": "Incêndio",
+      "descricao": "Florestas ardem e escasseiam temporariamente.",
+      "duracaoTurnos": 3,
+      "chancePorTurno": 4,
+      "modificadores": {
+        "regiao": "floresta",
+        "multiplicador": 0.4
+      }
+    },
+    {
+      "id": "eclipse",
+      "emoji": "🌑",
+      "nome": "Eclipse",
+      "descricao": "Mortos-vivos ficam mais fortes e frequentes.",
+      "duracaoTurnos": 3,
+      "chancePorTurno": 4,
+      "modificadores": {
+        "regiao": "cemiterio",
+        "multiplicador": 2,
+        "buffInimigoAtaque": 3
+      }
+    },
+    {
+      "id": "cometa",
+      "emoji": "🌠",
+      "nome": "Cometa",
+      "descricao": "Um cometa cruza o céu, cartas raras se tornam mais prováveis.",
+      "duracaoTurnos": 2,
+      "chancePorTurno": 3,
+      "modificadores": {
+        "raridade": [
+          "rara",
+          "epica",
+          "lendaria",
+          "mitica"
+        ],
+        "multiplicador": 2.5
+      }
+    },
+    {
+      "id": "festival",
+      "emoji": "👑",
+      "nome": "Festival",
+      "descricao": "Mercadores e NPCs aparecem com maior frequência.",
+      "duracaoTurnos": 4,
+      "chancePorTurno": 5,
+      "modificadores": {
+        "tipo": "npc",
+        "multiplicador": 2
+      }
+    },
+    {
+      "id": "praga",
+      "emoji": "☠",
+      "nome": "Praga",
+      "descricao": "Inimigos se tornam mais numerosos e perigosos.",
+      "duracaoTurnos": 3,
+      "chancePorTurno": 4,
+      "modificadores": {
+        "tipo": "inimigo",
+        "multiplicador": 1.7,
+        "buffInimigoAtaque": 2
+      }
+    },
+    {
+      "id": "tempestade",
+      "emoji": "⚡",
+      "nome": "Tempestade",
+      "descricao": "O caminho fica perigoso; locais raros surgem com mais frequência.",
+      "duracaoTurnos": 3,
+      "chancePorTurno": 4,
+      "modificadores": {
+        "tipo": "local",
+        "multiplicador": 1.5
+      }
+    },
+    {
+      "id": "lua_cheia",
+      "emoji": "🌕",
+      "nome": "Noite de Lua Cheia",
+      "descricao": "A luz prateada enlouquece as feras. Criaturas noturnas ficam muito mais perigosas.",
+      "duracaoTurnos": 3,
+      "chancePorTurno": 4,
+      "modificadores": {
+        "tipo": "inimigo",
+        "multiplicador": 1.5,
+        "buffInimigoAtaque": 3,
+        "buffInimigoVelocidade": 2
+      }
+    },
+    {
+      "id": "bencao_divina",
+      "emoji": "🕊️",
+      "nome": "Graça Divina",
+      "descricao": "Uma aura de paz desce sobre o mundo. Encontros amigáveis e curas são mais frequentes.",
+      "duracaoTurnos": 4,
+      "chancePorTurno": 3,
+      "modificadores": {
+        "tipo": "npc",
+        "multiplicador": 2.5
+      }
+    }
+  ],
+  "endings": [
+    {
+      "id": "morto",
+      "emoji": "💀",
+      "titulo": "Morto",
+      "condicao": "vida",
+      "texto": "Sua jornada termina aqui. O herói cai, mas sua história será lembrada por aqueles que a ouvirem."
+    },
+    {
+      "id": "cacador_de_dragoes",
+      "emoji": "🐉",
+      "titulo": "Caçador de Dragões",
+      "condicao": "flag",
+      "flag": "cacador_de_dragoes",
+      "texto": "Você derrotou o dragão e seu nome ecoará pelas montanhas por gerações."
+    },
+    {
+      "id": "senhor_das_trevas",
+      "emoji": "🌑",
+      "titulo": "Senhor das Trevas",
+      "condicao": "flag",
+      "flag": "senhor_das_trevas",
+      "texto": "Ao derrotar o Rei Lich, você absorveu parte de seu poder sombrio. O mundo agora teme seu nome."
+    },
+    {
+      "id": "rei",
+      "emoji": "👑",
+      "titulo": "Rei",
+      "condicao": "flag",
+      "flag": "rei",
+      "texto": "Com o Cavaleiro Negro derrotado, o castelo se curva diante de você. Uma nova era começa."
+    },
+    {
+      "id": "arquimago",
+      "emoji": "🧙",
+      "titulo": "Arquimago",
+      "condicao": "classe_nivel",
+      "classe": "mago",
+      "nivelMinimo": 35,
+      "texto": "Seu domínio das artes arcanas alcança um nível quase divino. Você se torna uma lenda viva."
+    },
+    {
+      "id": "lenda",
+      "emoji": "👻",
+      "titulo": "Lenda",
+      "condicao": "nivel_geral",
+      "nivelMinimo": 100,
+      "texto": "Sua jornada se torna lenda, contada por gerações ao redor de fogueiras em todo o reino."
+    },
+    {
+      "id": "tirano",
+      "emoji": "☠",
+      "titulo": "Tirano",
+      "condicao": "ouro",
+      "ouroMinimo": 500,
+      "texto": "A riqueza acumulada corrompeu seu coração. Você governa pelo medo, não pelo respeito."
+    },
+    {
+      "id": "senhor_do_fogo",
+      "emoji": "🌋",
+      "titulo": "Senhor do Fogo",
+      "condicao": "flag",
+      "flag": "senhor_do_fogo",
+      "texto": "Com o Coração do Vulcão destruído, a montanha reconhece você como seu novo mestre. As chamas obedecem ao seu comando."
+    },
+    {
+      "id": "libertador",
+      "emoji": "👑",
+      "titulo": "Libertador",
+      "condicao": "flag",
+      "flag": "libertador",
+      "texto": "Ao lado do povo, você depôs a rainha usurpadora. As ruas da capital cantam seu nome ao entardecer."
+    },
+    {
+      "id": "senhor_do_abismo",
+      "emoji": "👁‍🗨",
+      "titulo": "Senhor do Abismo",
+      "condicao": "flag",
+      "flag": "senhor_do_abismo",
+      "texto": "O Devorador se rendeu ao vazio, e você permanece — o único ser que já olhou para o abismo e não foi engolido."
+    },
+    {
+      "id": "devorado_pelas_trevas",
+      "emoji": "🐲",
+      "titulo": "Devorado pelas Trevas",
+      "condicao": "flag",
+      "flag": "devorado_pelas_trevas",
+      "texto": "O pacto que você selou tempos atrás cobrou seu preço final. O que resta de você já não é mais completamente humano."
+    }
+  ]
 };

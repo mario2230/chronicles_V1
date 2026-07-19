@@ -504,6 +504,41 @@ body.weather-praga footer.cards { border-top-color: #4ADE80; }
   50% { filter: brightness(1.15); }
 }
 
+/* inimigos especiais: mesma "energia" visual de um chefe, mas sem encerrar
+   a run — reforça que é um combate marcante, não o fim da jornada. */
+.game-card.card-elite { border-color: var(--cor-laranja); }
+.card-elite-tag {
+  align-self: flex-start;
+  font-size: 0.58rem;
+  color: var(--cor-laranja);
+  border: 1px solid var(--cor-laranja);
+  padding: 2px 6px;
+  border-radius: 5px;
+  font-weight: 700;
+}
+
+/* chefes que de fato encerram a aventura (flagFinal) ganham um aviso claro
+   ANTES do jogador clicar — reaching them nunca deve parecer um bug, e sim
+   uma escolha consciente de seguir para o clímax daquele caminho. */
+.game-card.card-final {
+  border-color: var(--cor-vermelho) !important;
+  animation: cardFloat 4.5s ease-in-out infinite, finalPulse 1.4s ease-in-out infinite;
+}
+@keyframes finalPulse {
+  0%, 100% { box-shadow: 0 0 14px -2px rgba(248,113,113,0.35); }
+  50% { box-shadow: 0 0 26px 2px rgba(248,113,113,0.65); }
+}
+.card-final-tag {
+  align-self: flex-start;
+  font-size: 0.58rem;
+  color: #fff;
+  background: var(--cor-vermelho);
+  padding: 2px 6px;
+  border-radius: 5px;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+}
+
 .card-particle {
   position: fixed;
   width: 6px;
@@ -938,6 +973,104 @@ body.weather-corrupcao #weatherLayer {
   transition: filter .15s;
 }
 .btn-primary:hover { filter: brightness(1.1); }
+
+.btn-secondary {
+  width: 100%;
+  background: transparent;
+  color: var(--text-dim);
+  border: 1px solid var(--border);
+  padding: 12px;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all .15s;
+  margin-top: 8px;
+}
+.btn-secondary:hover { border-color: var(--text-dim); color: var(--text); }
+
+/* ---------- PONTO SEM VOLTA ---------- */
+.boss-warning-box { max-width: 460px; border-color: var(--cor-vermelho); }
+.boss-warning-actions { display: flex; flex-direction: column; }
+
+/* ---------- COMBATE EM TURNOS ---------- */
+body.in-battle header.top button:not(.battle-btn) {
+  pointer-events: none;
+  opacity: 0.35;
+}
+.battle-overlay { z-index: 200; }
+.battle-box {
+  max-width: 480px;
+  border-color: var(--secondary);
+  box-shadow: 0 0 40px rgba(168,85,247,0.18);
+}
+.battle-enemy { text-align: center; margin-bottom: 14px; }
+.battle-emoji {
+  font-size: 3.2rem;
+  filter: drop-shadow(0 0 16px rgba(248,113,113,0.35));
+  animation: battleIdle 2.4s ease-in-out infinite;
+}
+@keyframes battleIdle { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+.battle-name { font-weight: 800; font-size: 1.05rem; margin: 4px 0 10px; }
+.battle-bar { height: 10px; }
+.battle-hp-num { font-size: 0.68rem; color: var(--text-dim); margin-top: 4px; }
+
+.battle-log {
+  background: #0d0d0d;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin: 14px 0;
+  min-height: 84px;
+  max-height: 130px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 4px;
+}
+.battle-log-line { font-size: 0.76rem; color: var(--text-dim); line-height: 1.5; }
+.battle-log-line:first-child { color: var(--text); }
+
+.battle-hero { margin-bottom: 16px; }
+.battle-hero-top { display: flex; justify-content: space-between; font-size: 0.78rem; margin-bottom: 6px; font-weight: 600; }
+
+.battle-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.battle-item-menu { grid-template-columns: 1fr; }
+.battle-btn {
+  border: 1px solid var(--border);
+  background: var(--card);
+  color: var(--text);
+  border-radius: 10px;
+  padding: 12px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all .15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+.battle-btn:hover { transform: translateY(-2px); }
+.battle-btn.atacar:hover { border-color: var(--cor-vermelho); color: var(--cor-vermelho); }
+.battle-btn.defender:hover { border-color: var(--cor-azul); color: var(--cor-azul); }
+.battle-btn.item:hover { border-color: var(--cor-amarelo); color: var(--cor-amarelo); }
+.battle-btn.fugir:hover { border-color: var(--text-dim); }
+.battle-btn.item-btn { justify-content: space-between; }
+.battle-btn.voltar-btn { background: transparent; }
+.item-qty { color: var(--primary); font-weight: 800; }
+.battle-end-note {
+  text-align: center;
+  font-size: 1.1rem;
+  font-weight: 800;
+  padding: 16px 0 4px;
+}
+
+/* ---------- MOCHILA ---------- */
+.inv-item { align-items: center; }
+.inv-item-actionable { cursor: pointer; transition: all .15s; justify-content: space-between; }
+.inv-item-actionable:hover { border-color: var(--primary); background: #151515; }
+.inv-swap-hint { font-size: 0.62rem; color: var(--primary); white-space: nowrap; }
 
 /* ---------- SCROLLBARS ---------- */
 ::-webkit-scrollbar { width: 6px; }
