@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chronicles</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="app">
+
+  <header class="top">
+    <h1>⚜ CHRONICLES</h1>
+    <div class="seed-tag">
+      <span id="seedDisplay">seed: ---</span>
+      <button id="btnCodex">📖 Códice</button>
+      <button id="btnNewGame">Nova Aventura</button>
+    </div>
+  </header>
+
+  <main class="panels">
+    <section class="panel" id="heroPanel">
+      <h2>Herói</h2>
+      <div id="heroContent"></div>
+    </section>
+
+    <section class="panel tree-panel" id="treePanel">
+      <h2 style="align-self:flex-start;">Árvore da Jornada</h2>
+      <div id="treeContent" style="width:100%; display:flex; flex-direction:column; align-items:center;"></div>
+    </section>
+
+    <section class="panel" id="storyPanel">
+      <h2>História</h2>
+      <div id="storyContent"></div>
+    </section>
+  </main>
+
+  <footer class="cards" id="cardsFooter"></footer>
+</div>
+
+<div id="weatherLayer"></div>
+<div id="modalRoot"></div>
+
+<script src="data.js"></script>
+<script src="game.js"></script>
+</body>
+</html>
