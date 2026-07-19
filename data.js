@@ -683,7 +683,7 @@ const GAME_DATA = {
     "nome": "Mercador Viajante",
     "tipo": "npc",
     "raridade": "comum",
-    "weight": 40,
+    "weight": 30,
     "regiaoOrigem": ["aldeia", "ruinas", "deserto"],
     "minNivel": 1,
     "historia": [
