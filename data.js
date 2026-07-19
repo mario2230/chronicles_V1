@@ -1339,7 +1339,7 @@ const GAME_DATA = {
     "emoji": "☠",
     "titulo": "Tirano",
     "condicao": "ouro",
-    "ouroMinimo": 300,
+    "ouroMinimo": 500,
     "texto": "A riqueza acumulada corrompeu seu coração. Você governa pelo medo, não pelo respeito."
   },
   {
