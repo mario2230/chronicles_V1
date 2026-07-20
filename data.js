@@ -209,7 +209,7 @@ const GAME_DATA = {
       raridade: "comum",
       weight: 10,
       inicial: true,
-      regiaoOrigem: ["aldeia"],
+      regiaoOrigem: ["aldeia", "caverna"],
       minNivel: 1,
       historia: [
         "Você contempla mais uma vez sua aldeia natal antes de partir.",
@@ -502,7 +502,7 @@ const GAME_DATA = {
       tipo: "local",
       raridade: "comum",
       weight: 20,
-      regiaoOrigem: ["floresta", "montanha", "pantano"],
+      regiaoOrigem: ["floresta", "montanha", "pantano", "caverna"],
       minNivel: 1,
       historia: [
         "Você descansa junto às cinzas de uma fogueira apagada.",
@@ -1443,9 +1443,9 @@ const GAME_DATA = {
       cor: "vermelho",
       efeito: {
         tipo: "combate",
-        vidaInimigo: 255,
+        vidaInimigo: 155,
         ataqueInimigo: 15,
-        defesaInimigo: 3,
+        defesaInimigo: 10,
         ouroDrop: [25, 40],
         expDrop: 35,
         itemGarantido: "coroa_sucata",
