@@ -4085,6 +4085,7 @@ const GAME_DATA = {
         "templo",
         "abismo",
         "deserto",
+        "caverna"
       ],
       minNivel: 8,
       historia: [
