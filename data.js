@@ -241,6 +241,8 @@ const GAME_DATA = {
         "orin_encontro",
         "mercenario_rival",
         "bencao_da_fogueira",
+        "arquearia_torneio",
+        "forja_ferreiro",
       ],
     },
     {
@@ -342,6 +344,8 @@ const GAME_DATA = {
         "escola_ilusionismo",
         "goblin_xama",
         "javali_ancestral",
+        "arquearia_torneio",
+        "lobo_alfa",
       ],
     },
     {
@@ -626,6 +630,7 @@ const GAME_DATA = {
         "orin_biblioteca_perdida",
         "estatua_rei_esquecido",
         "registro_da_guilda",
+        "arrombamento_cofre",
       ],
     },
     {
@@ -740,6 +745,7 @@ const GAME_DATA = {
         "ferreiro_ambulante",
         "gigante_pedra",
         "escola_elementalismo",
+        "arquearia_caca",
       ],
     },
     {
@@ -809,6 +815,7 @@ const GAME_DATA = {
         "abismo_fenda",
         "morcego_vampiro",
         "morcego_rei",
+        "cristaleira",
       ],
     },
     {
@@ -1183,6 +1190,7 @@ const GAME_DATA = {
         "lamina_do_juramento",
         "grimm_encontro",
         "escola_necromancia",
+        "tumulo_sem_nome",
       ],
     },
     {
@@ -1326,6 +1334,7 @@ const GAME_DATA = {
         "vessa_encontro",
         "contrabandista",
         "senhor_das_areias",
+        "persuasao_mercador",
       ],
     },
     {
@@ -1371,7 +1380,7 @@ const GAME_DATA = {
         tipo: "mudar_regiao",
         regiao: "castelo",
       },
-      desbloqueia: ["cavaleiro_negro", "espada_lendaria", "arena_desafio"],
+      desbloqueia: ["cavaleiro_negro", "espada_lendaria", "arena_desafio", "arrombamento_portao", "diario_de_soldado", "espectro_da_torre"],
     },
     {
       id: "cavaleiro_negro",
@@ -2059,6 +2068,7 @@ const GAME_DATA = {
         "obsidiana_flamejante",
         "coracao_vulcao",
         "salamandra_matriarca",
+        "forja_vulcanica",
       ],
     },
     {
@@ -2213,6 +2223,8 @@ const GAME_DATA = {
         "conselho_guerra",
         "motim_popular",
         "rainha_usurpada",
+        "persuasao_conselho",
+        "mural_da_capital",
       ],
     },
     {
@@ -2340,6 +2352,7 @@ const GAME_DATA = {
         "visao_do_que_podia_ser",
         "errante_cegado",
         "olho_infinito",
+        "inscricao_abissal",
       ],
     },
     {
@@ -4495,6 +4508,336 @@ const GAME_DATA = {
         contadorTag: "salamandrasDerrotadas",
       },
     },
+{
+  "id": "item_aljava",
+  "emoji": "🏹",
+  "nome": "Aljava Reforçada",
+  "tipo": "item",
+  "raridade": "rara",
+  "weight": 1,
+  "regiaoOrigem": [
+    "floresta",
+    "montanha"
+  ],
+  "minNivel": 1,
+  "historia": [
+    "Uma aljava de couro grosso, ainda cheirando a resina — feita para quem não erra duas vezes seguidas."
+  ],
+  "cor": "amarelo",
+  "efeito": {
+    "tipo": "item",
+    "slot": "arma",
+    "nomeItem": "Aljava Reforçada",
+    "bonus": {
+      "ataque": 3,
+      "velocidade": 2
+    }
+  }
+},
+{
+  "id": "item_ferramentas_mestre",
+  "emoji": "🗝",
+  "nome": "Ferramentas de Mestre",
+  "tipo": "item",
+  "raridade": "rara",
+  "weight": 1,
+  "regiaoOrigem": [
+    "ruinas",
+    "castelo"
+  ],
+  "minNivel": 1,
+  "historia": [
+    "Um estojo de gazuas e limas tão bem cuidado que parece ter sido passado de mestre a aprendiz por gerações."
+  ],
+  "cor": "azul",
+  "efeito": {
+    "tipo": "item",
+    "slot": "acessorio",
+    "nomeItem": "Ferramentas de Mestre",
+    "bonus": {
+      "velocidade": 2,
+      "defesa": 2
+    }
+  }
+},
+{
+  "id": "item_martelo_forja",
+  "emoji": "🔨",
+  "nome": "Martelo da Forja",
+  "tipo": "item",
+  "raridade": "rara",
+  "weight": 1,
+  "regiaoOrigem": [
+    "aldeia",
+    "vulcao"
+  ],
+  "minNivel": 1,
+  "historia": [
+    "O cabo ainda está quente. Foi temperado por alguém que sabia exatamente a hora certa de parar de bater."
+  ],
+  "cor": "vermelho",
+  "efeito": {
+    "tipo": "item",
+    "slot": "arma",
+    "nomeItem": "Martelo da Forja",
+    "bonus": {
+      "ataque": 4,
+      "defesa": 1
+    }
+  }
+},
+{
+  "id": "item_colar_orador",
+  "emoji": "🗣",
+  "nome": "Colar do Orador",
+  "tipo": "item",
+  "raridade": "rara",
+  "weight": 1,
+  "regiaoOrigem": [
+    "deserto",
+    "capital"
+  ],
+  "minNivel": 1,
+  "historia": [
+    "Um pingente simples, gasto de tanto ser segurado enquanto seu dono escolhia as próximas palavras com cuidado."
+  ],
+  "cor": "roxo",
+  "efeito": {
+    "tipo": "item",
+    "slot": "acessorio",
+    "nomeItem": "Colar do Orador",
+    "bonus": {
+      "mana": 8,
+      "ataque": 1
+    }
+  }
+},
+{
+  "id": "arquearia_torneio",
+  "emoji": "🎯",
+  "nome": "Torneio de Tiro ao Alvo",
+  "tipo": "evento",
+  "raridade": "incomum",
+  "weight": 18,
+  "regiaoOrigem": [
+    "floresta"
+  ],
+  "minNivel": 1,
+  "historia": [
+    "Caçadores locais armaram um pequeno torneio à beira da estrada, apostando moedas em quem acerta mais alvos.",
+    "\"Vamos ver do que você é feito\", diz o organizador, apontando para a fileira de alvos de palha."
+  ],
+  "cor": "verde",
+  "efeito": {
+    "tipo": "minigame",
+    "jogo": "arquearia",
+    "ouroBase": [
+      8,
+      18
+    ],
+    "expBase": 10,
+    "itemPossivel": "item_aljava",
+    "custoFalha": 4
+  }
+},
+{
+  "id": "arquearia_caca",
+  "emoji": "🦅",
+  "nome": "Caça às Águias-Sombra",
+  "tipo": "evento",
+  "raridade": "rara",
+  "weight": 12,
+  "regiaoOrigem": [
+    "montanha"
+  ],
+  "minNivel": 3,
+  "historia": [
+    "Um bando de aves rápidas circula sobre o penhasco — abatê-las evitaria que atacassem viajantes mais à frente.",
+    "O vento forte torna cada disparo uma aposta."
+  ],
+  "cor": "azul",
+  "efeito": {
+    "tipo": "minigame",
+    "jogo": "arquearia",
+    "ouroBase": [
+      12,
+      24
+    ],
+    "expBase": 16,
+    "itemPossivel": "item_aljava",
+    "custoFalha": 6
+  }
+},
+{
+  "id": "arrombamento_cofre",
+  "emoji": "🔐",
+  "nome": "Cofre Trancado das Ruínas",
+  "tipo": "evento",
+  "raridade": "rara",
+  "weight": 14,
+  "regiaoOrigem": [
+    "ruinas"
+  ],
+  "minNivel": 2,
+  "historia": [
+    "Um cofre de metal enferrujado, com uma fechadura de símbolos entalhados que parece exigir uma ordem exata.",
+    "Cada símbolo range ao ser tocado — um erro pode travar o mecanismo de vez."
+  ],
+  "cor": "cinza",
+  "efeito": {
+    "tipo": "minigame",
+    "jogo": "arrombamento",
+    "ouroBase": [
+      14,
+      26
+    ],
+    "expBase": 14,
+    "itemPossivel": "item_ferramentas_mestre",
+    "custoFalha": 5
+  }
+},
+{
+  "id": "arrombamento_portao",
+  "emoji": "🚪",
+  "nome": "Portão Selado do Castelo",
+  "tipo": "evento",
+  "raridade": "epica",
+  "weight": 6,
+  "regiaoOrigem": [
+    "castelo"
+  ],
+  "minNivel": 8,
+  "historia": [
+    "O mecanismo do portão foi projetado para confundir qualquer um que não conhecesse o brasão real de cor.",
+    "Um clique errado e barras de ferro descem sobre a passagem — melhor acertar de primeira."
+  ],
+  "cor": "cinza",
+  "efeito": {
+    "tipo": "minigame",
+    "jogo": "arrombamento",
+    "ouroBase": [
+      22,
+      40
+    ],
+    "expBase": 24,
+    "itemPossivel": "item_ferramentas_mestre",
+    "custoFalha": 10
+  }
+},
+{
+  "id": "forja_ferreiro",
+  "emoji": "⚒",
+  "nome": "Desafio do Ferreiro",
+  "tipo": "evento",
+  "raridade": "incomum",
+  "weight": 18,
+  "regiaoOrigem": [
+    "aldeia"
+  ],
+  "minNivel": 1,
+  "historia": [
+    "O ferreiro da aldeia te entrega um martelo. \"Bata na hora certa e eu te dou algo digno de uso. Erre, e é só metal desperdiçado.\"",
+    "A bigorna já está quente, esperando o primeiro golpe."
+  ],
+  "cor": "vermelho",
+  "efeito": {
+    "tipo": "minigame",
+    "jogo": "forja",
+    "ouroBase": [
+      6,
+      14
+    ],
+    "expBase": 10,
+    "itemPossivel": "item_martelo_forja",
+    "custoFalha": 3
+  }
+},
+{
+  "id": "forja_vulcanica",
+  "emoji": "🌋",
+  "nome": "Forja Vulcânica",
+  "tipo": "evento",
+  "raridade": "epica",
+  "weight": 8,
+  "regiaoOrigem": [
+    "vulcao"
+  ],
+  "minNivel": 10,
+  "faseMin": 3,
+  "historia": [
+    "O calor da lava próxima torna cada golpe mais arriscado — errar o momento certo pode custar mais que o metal.",
+    "Um ferreiro anão trabalha ao seu lado sem se queimar, guiando seus golpes com um aceno de cabeça."
+  ],
+  "cor": "vermelho",
+  "efeito": {
+    "tipo": "minigame",
+    "jogo": "forja",
+    "ouroBase": [
+      18,
+      32
+    ],
+    "expBase": 22,
+    "itemPossivel": "item_martelo_forja",
+    "custoFalha": 8
+  }
+},
+{
+  "id": "persuasao_mercador",
+  "emoji": "🎭",
+  "nome": "Negociação no Deserto",
+  "tipo": "evento",
+  "raridade": "incomum",
+  "weight": 16,
+  "regiaoOrigem": [
+    "deserto"
+  ],
+  "minNivel": 2,
+  "historia": [
+    "Um mercador nômade recusa seu primeiro preço com um sorriso. \"Vamos ver se você sabe mesmo negociar.\"",
+    "Ele cruza os braços, esperando sua próxima jogada."
+  ],
+  "cor": "roxo",
+  "efeito": {
+    "tipo": "minigame",
+    "jogo": "persuasao",
+    "ouroBase": [
+      10,
+      20
+    ],
+    "expBase": 12,
+    "itemPossivel": "item_colar_orador",
+    "custoFalha": 4
+  }
+},
+{
+  "id": "persuasao_conselho",
+  "emoji": "🏛",
+  "nome": "Debate no Conselho da Capital",
+  "tipo": "evento",
+  "raridade": "epica",
+  "weight": 6,
+  "regiaoOrigem": [
+    "capital"
+  ],
+  "minNivel": 10,
+  "faseMin": 3,
+  "historia": [
+    "Os conselheiros da Capital escutam em silêncio, prontos para desmontar qualquer argumento fraco.",
+    "Uma palavra errada aqui pode custar mais do que ouro."
+  ],
+  "cor": "roxo",
+  "efeito": {
+    "tipo": "minigame",
+    "jogo": "persuasao",
+    "ouroBase": [
+      20,
+      36
+    ],
+    "expBase": 26,
+    "itemPossivel": "item_colar_orador",
+    "custoFalha": 9
+  }
+},
   ],
   events: [
     {

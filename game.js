@@ -172,6 +172,7 @@ function novoEstado(classeId, seed) {
     seenLines: {},
     faseAnunciada: 1,
     battle: null,
+    minigame: null,
   };
 }
 
@@ -1209,8 +1210,340 @@ function finalizarBatalha() {
 /* ============================================================
    AÇÕES DO JOGADOR
    ============================================================ */
+/* ============================================================
+   MINI GAMES — desafios curtos (10–20s) que quebram o ritmo da
+   gameplay sem substituir a narrativa. Ao terminar, o turno continua
+   exatamente como qualquer outra carta (mesmo fluxo de tickGlobalEvent
+   → checkEndings → drawThreeCards). Recompensas escalam por "tier"
+   (excelente/bom/regular/fracasso), nunca travam a história — mesmo um
+   fracasso apenas segue para o próximo evento, às vezes com um pequeno custo.
+   ============================================================ */
+const MINIGAME_MULT = { excelente: 1.6, bom: 1.15, regular: 0.7, fracasso: 0.25 };
+const MINIGAME_ROTULO = {
+  excelente: "🌟 Excelente!",
+  bom: "✔ Bom resultado.",
+  regular: "➖ Resultado regular.",
+  fracasso: "✖ Não saiu como planejado.",
+};
+
+function iniciarMinigame(card, alternativas) {
+  document.querySelectorAll(".game-card").forEach((el) => (el.style.pointerEvents = "none"));
+  const clickedEl = document.querySelector(`.game-card[data-id="${card.id}"]`);
+  if (clickedEl) clickedEl.classList.add("leaving");
+
+  state.turno++;
+  checkFaseTransition();
+
+  state.minigame = { card, alternativas, jogo: card.efeito.jogo, timers: [] };
+  document.body.classList.add("in-minigame");
+  renderMinigameModal();
+}
+
+function mgTimer(fn, ms) {
+  const id = setTimeout(fn, ms);
+  if (state.minigame) state.minigame.timers.push(id);
+  return id;
+}
+function mgInterval(fn, ms) {
+  const id = setInterval(fn, ms);
+  if (state.minigame) state.minigame.timers.push(id);
+  return id;
+}
+
+function renderMinigameModal() {
+  const jogo = state.minigame.jogo;
+  const root = document.getElementById("modalRoot");
+  root.innerHTML = `<div class="modal-overlay"><div class="modal-box minigame-box" id="minigameBox"></div></div>`;
+  const box = document.getElementById("minigameBox");
+  const setups = {
+    arquearia: setupArquearia,
+    arrombamento: setupArrombamento,
+    forja: setupForja,
+    persuasao: setupPersuasao,
+  };
+  (setups[jogo] || (() => finalizarMinigame("regular")))(box);
+}
+
+function finalizarMinigame(tier) {
+  const mg = state.minigame;
+  if (!mg) return;
+  mg.timers.forEach((id) => { clearTimeout(id); clearInterval(id); });
+
+  const { card, alternativas } = mg;
+  const ef = card.efeito;
+  const mult = MINIGAME_MULT[tier] || 0.5;
+
+  addTreeNode(card, alternativas);
+
+  const ouroBase = ef.ouroBase ? rndInt(ef.ouroBase[0], ef.ouroBase[1]) : 0;
+  const ouro = Math.round(ouroBase * mult);
+  const exp = Math.round((ef.expBase || 0) * mult);
+  if (ouro > 0) state.hero.ouro += ouro;
+  if (exp > 0) ganharExp(exp);
+
+  let sufixo = ` (${MINIGAME_ROTULO[tier]}`;
+  sufixo += ouro ? ` +${ouro} ouro` : "";
+  sufixo += exp ? ` +${exp} exp` : "";
+  sufixo += ")";
+
+  if ((tier === "excelente" || tier === "bom") && ef.itemPossivel) {
+    const chance = tier === "excelente" ? 0.85 : 0.4;
+    if (rnd() < chance) {
+      const itemCard = DATA.cards.find((c) => c.id === ef.itemPossivel);
+      if (itemCard) {
+        obterItem(itemCard);
+        sufixo += ` Você também ganhou ${itemCard.efeito.nomeItem || itemCard.nome}.`;
+      }
+    }
+  }
+  if (tier === "fracasso" && ef.custoFalha) {
+    const perda = Math.max(0, Math.min(state.hero.vida - 1, ef.custoFalha));
+    if (perda > 0) {
+      state.hero.vida -= perda;
+      sufixo += ` (-${perda} vida)`;
+    }
+  }
+
+  addStory(`${pickStoryLine(card)}${sufixo}`, card.cor);
+  if (ef.contadorTag) state.tags[ef.contadorTag] = (state.tags[ef.contadorTag] || 0) + 1;
+
+  document.body.classList.remove("in-minigame");
+  document.getElementById("modalRoot").innerHTML = "";
+  state.minigame = null;
+
+  tickGlobalEvent();
+  const ending = checkEndings();
+  if (ending) {
+    state.gameOver = true;
+    renderAll();
+    showEndingModal(ending);
+    return;
+  }
+  drawThreeCards();
+  renderAll();
+}
+
+// ---------- 🎯 Arquearia: acertar alvos em movimento ----------
+function setupArquearia(box) {
+  const DURACAO = 9000;
+  let hits = 0;
+  let misses = 0;
+  const inicio = Date.now();
+
+  box.innerHTML = `
+    <h2>🎯 Arquearia</h2>
+    <p class="sub">Clique nos alvos assim que surgirem. Você tem 9 segundos.</p>
+    <div class="mg-hud"><span id="mgScore">Acertos: 0</span><span id="mgTime">9.0s</span></div>
+    <div class="mg-field" id="mgField"></div>`;
+
+  const field = document.getElementById("mgField");
+  const scoreEl = document.getElementById("mgScore");
+  const timeEl = document.getElementById("mgTime");
+
+  function spawnAlvo() {
+    if (!state.minigame) return;
+    field.innerHTML = "";
+    const alvo = document.createElement("div");
+    alvo.className = "mg-target";
+    alvo.textContent = "🎯";
+    alvo.style.left = `${rndInt(4, 88)}%`;
+    alvo.style.top = `${rndInt(8, 72)}%`;
+    alvo.addEventListener("click", () => {
+      hits++;
+      scoreEl.textContent = `Acertos: ${hits}`;
+      alvo.remove();
+      spawnAlvo();
+    });
+    field.appendChild(alvo);
+    mgTimer(() => {
+      if (alvo.parentNode) { misses++; alvo.remove(); spawnAlvo(); }
+    }, 900);
+  }
+  spawnAlvo();
+
+  mgInterval(() => {
+    const restante = Math.max(0, DURACAO - (Date.now() - inicio));
+    timeEl.textContent = `${(restante / 1000).toFixed(1)}s`;
+    if (restante <= 0) {
+      let tier = "fracasso";
+      if (hits >= 7) tier = "excelente";
+      else if (hits >= 5) tier = "bom";
+      else if (hits >= 2) tier = "regular";
+      finalizarMinigame(tier);
+    }
+  }, 100);
+}
+
+// ---------- 🔐 Arrombamento: memorizar e repetir a sequência ----------
+function setupArrombamento(box) {
+  const SIMBOLOS = ["🔺", "🔷", "⭐", "🔶", "⬛"];
+  let estagio = 0; // estágios completos
+  const MAX_ESTAGIOS = 3;
+
+  box.innerHTML = `
+    <h2>🔐 Arrombamento</h2>
+    <p class="sub">Observe a sequência, depois repita clicando na mesma ordem.</p>
+    <div class="mg-hud"><span id="mgScore">Etapa: 1 / ${MAX_ESTAGIOS}</span></div>
+    <div class="mg-locksymbols" id="mgSymbols"></div>
+    <div class="mg-status" id="mgStatus">Memorize...</div>`;
+
+  const symHost = document.getElementById("mgSymbols");
+  const statusEl = document.getElementById("mgStatus");
+  const scoreEl = document.getElementById("mgScore");
+
+  symHost.innerHTML = SIMBOLOS.map((s, i) => `<div class="mg-symbol" data-i="${i}">${s}</div>`).join("");
+  const symEls = [...symHost.querySelectorAll(".mg-symbol")];
+
+  function rodada() {
+    const tamanho = 2 + estagio; // cresce a cada etapa
+    const seq = Array.from({ length: tamanho }, () => rndInt(0, SIMBOLOS.length - 1));
+    let i = 0;
+    statusEl.textContent = "Memorize...";
+    symEls.forEach((el) => (el.style.pointerEvents = "none"));
+
+    function mostrarProximo() {
+      if (i >= seq.length) {
+        mgTimer(() => {
+          statusEl.textContent = "Sua vez! Repita a sequência.";
+          symEls.forEach((el) => (el.style.pointerEvents = "auto"));
+          aguardarInput(seq);
+        }, 400);
+        return;
+      }
+      const el = symEls[seq[i]];
+      el.classList.add("lit");
+      mgTimer(() => {
+        el.classList.remove("lit");
+        i++;
+        mgTimer(mostrarProximo, 220);
+      }, 480);
+    }
+    mgTimer(mostrarProximo, 500);
+  }
+
+  function aguardarInput(seq) {
+    let progresso = 0;
+    symEls.forEach((el) => {
+      const handler = () => {
+        if (parseInt(el.dataset.i) === seq[progresso]) {
+          el.classList.add("correct");
+          mgTimer(() => el.classList.remove("correct"), 250);
+          progresso++;
+          if (progresso === seq.length) {
+            symEls.forEach((e) => (e.onclick = null, e.style.pointerEvents = "none"));
+            estagio++;
+            scoreEl.textContent = `Etapa: ${Math.min(estagio + 1, MAX_ESTAGIOS)} / ${MAX_ESTAGIOS}`;
+            if (estagio >= MAX_ESTAGIOS) {
+              statusEl.textContent = "Fechadura aberta!";
+              mgTimer(() => finalizarMinigame("excelente"), 500);
+            } else {
+              mgTimer(rodada, 700);
+            }
+          }
+        } else {
+          el.classList.add("wrong");
+          symEls.forEach((e) => (e.onclick = null, e.style.pointerEvents = "none"));
+          statusEl.textContent = "Ordem errada...";
+          const tier = estagio >= 2 ? "bom" : estagio >= 1 ? "regular" : "fracasso";
+          mgTimer(() => finalizarMinigame(tier), 600);
+        }
+      };
+      el.onclick = handler;
+    });
+  }
+
+  rodada();
+}
+
+// ---------- ⚒ Forja: acertar o momento certo do golpe ----------
+function setupForja(box) {
+  const TOTAL_GOLPES = 3;
+  let golpe = 0;
+  let somaPrecisao = 0;
+  let pos = 0;
+  let dir = 1;
+
+  box.innerHTML = `
+    <h2>⚒ Forja</h2>
+    <p class="sub">Clique em "Bater!" quando o marcador estiver na zona quente.</p>
+    <div class="mg-hud"><span id="mgScore">Golpe: 1 / ${TOTAL_GOLPES}</span></div>
+    <div class="mg-forgebar"><div class="mg-forgezone"></div><div class="mg-forgemarker" id="mgMarker"></div></div>
+    <button class="btn-primary" id="mgHitBtn">🔨 Bater!</button>`;
+
+  const marker = document.getElementById("mgMarker");
+  const scoreEl = document.getElementById("mgScore");
+  const btn = document.getElementById("mgHitBtn");
+
+  mgInterval(() => {
+    pos += dir * 3.2;
+    if (pos >= 100) { pos = 100; dir = -1; }
+    if (pos <= 0) { pos = 0; dir = 1; }
+    marker.style.left = `${pos}%`;
+  }, 16);
+
+  btn.addEventListener("click", () => {
+    // zona quente fica entre 42% e 58% — precisão = distância até o centro (50%)
+    const dist = Math.abs(pos - 50);
+    const precisao = Math.max(0, 1 - dist / 50);
+    somaPrecisao += precisao;
+    golpe++;
+    scoreEl.textContent = `Golpe: ${Math.min(golpe + 1, TOTAL_GOLPES)} / ${TOTAL_GOLPES}`;
+    marker.classList.add(precisao > 0.75 ? "mg-hit-great" : precisao > 0.4 ? "mg-hit-ok" : "mg-hit-bad");
+    mgTimer(() => marker.classList.remove("mg-hit-great", "mg-hit-ok", "mg-hit-bad"), 300);
+
+    if (golpe >= TOTAL_GOLPES) {
+      btn.disabled = true;
+      const media = somaPrecisao / TOTAL_GOLPES;
+      let tier = "fracasso";
+      if (media > 0.8) tier = "excelente";
+      else if (media > 0.55) tier = "bom";
+      else if (media > 0.3) tier = "regular";
+      mgTimer(() => finalizarMinigame(tier), 400);
+    }
+  });
+}
+
+// ---------- 🎭 Persuasão: escolher a melhor resposta sob pressão ----------
+function setupPersuasao(box) {
+  const OPCOES = [
+    { texto: "Apelar à razão e aos fatos.", qualidade: "excelente" },
+    { texto: "Oferecer algo em troca.", qualidade: "bom" },
+    { texto: "Insistir e elevar a voz.", qualidade: "regular" },
+  ].sort(() => rnd() - 0.5);
+
+  let resolvido = false;
+  const DURACAO = 6000;
+  const inicio = Date.now();
+
+  box.innerHTML = `
+    <h2>🎭 Persuasão</h2>
+    <p class="sub">Escolha sua abordagem antes que o tempo acabe.</p>
+    <div class="mg-timerbar"><div class="mg-timerfill" id="mgTimerFill"></div></div>
+    <div class="mg-choices" id="mgChoices">
+      ${OPCOES.map((o, i) => `<button class="mg-choice-btn" data-i="${i}">${o.texto}</button>`).join("")}
+    </div>`;
+
+  const fill = document.getElementById("mgTimerFill");
+  document.getElementById("mgChoices").querySelectorAll(".mg-choice-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      if (resolvido) return;
+      resolvido = true;
+      finalizarMinigame(OPCOES[parseInt(btn.dataset.i)].qualidade);
+    });
+  });
+
+  mgInterval(() => {
+    const restante = Math.max(0, DURACAO - (Date.now() - inicio));
+    fill.style.width = `${(restante / DURACAO) * 100}%`;
+    if (restante <= 0 && !resolvido) {
+      resolvido = true;
+      finalizarMinigame("fracasso");
+    }
+  }, 50);
+}
+
 function onCardClick(cardId) {
-  if (state.gameOver || state.battle) return;
+  if (state.gameOver || state.battle || state.minigame) return;
   const card = state.currentCards.find((c) => c.id === cardId);
   if (!card) return;
   const alternativas = state.currentCards.filter((c) => c.id !== cardId);
@@ -1228,6 +1561,11 @@ function onCardClick(cardId) {
 
   if (card.efeito.tipo === "escolha") {
     showChoiceModal(card, alternativas);
+    return;
+  }
+
+  if (card.efeito.tipo === "minigame") {
+    iniciarMinigame(card, alternativas);
     return;
   }
 
@@ -1572,12 +1910,14 @@ function renderCards() {
     .map((c) => {
       const isNew = !state.tree.some((n) => n.nome === c.nome);
       const isEscolha = c.efeito && c.efeito.tipo === "escolha";
+      const isMinigame = c.efeito && c.efeito.tipo === "minigame";
       const isFinal = !!(c.efeito && c.efeito.flagFinal);
       const desc = isEscolha ? (c.efeito.intro || c.historia[0]) : c.historia[0];
       const preview = buildCardPreview(c);
       const classes = [
         "game-card", "entering", `card-rarity-${c.raridade}`,
         isEscolha ? "card-escolha" : "",
+        isMinigame ? "card-minigame" : "",
         c.elite ? "card-elite" : "",
         isFinal ? "card-final" : "",
       ].filter(Boolean).join(" ");
@@ -1589,6 +1929,7 @@ function renderCards() {
         </div>
         ${isNew ? '<span class="card-new">NOVO</span>' : ""}
         ${isEscolha ? '<span class="card-choice-tag">💬 Decisão</span>' : ""}
+        ${isMinigame ? '<span class="card-minigame-tag">⚡ Desafio</span>' : ""}
         ${c.elite ? '<span class="card-elite-tag">⚔ Especial</span>' : ""}
         ${isFinal ? '<span class="card-final-tag">⚠ Ponto Sem Volta</span>' : ""}
         <div class="card-name">${c.nome}</div>
@@ -1629,7 +1970,7 @@ function renderAll() {
   renderCards();
   renderEventBanner();
   applyWeather();
-  if (!state.battle) saveGame();
+  if (!state.battle && !state.minigame) saveGame();
 }
 
 /* ============================================================
@@ -1887,6 +2228,7 @@ function loadGame() {
     if (!state.hero.escolas) state.hero.escolas = [];
     if (!state.hero.inventario) state.hero.inventario = [];
     state.battle = null; // nunca retoma no meio de uma batalha após recarregar a página
+    state.minigame = null; // idem para mini-games
     return true;
   } catch (e) {
     return false;
@@ -1905,25 +2247,60 @@ function startGame(classeId, seed) {
 }
 
 document.getElementById("btnNewGame").addEventListener("click", () => {
-  if (state && state.battle) return; // trava de segurança: nunca durante uma batalha
+  if (state && (state.battle || state.minigame)) return; // trava de segurança: nunca durante uma batalha ou mini-game
   localStorage.removeItem("chronicles_save");
   document.getElementById("modalRoot").innerHTML = "";
   showClassSelectModal();
 });
 
 document.getElementById("btnCodex").addEventListener("click", () => {
-  if (!state || state.battle) return;
+  if (!state || state.battle || state.minigame) return;
   showCodexModal();
 });
 
 document.getElementById("btnInventory").addEventListener("click", () => {
-  if (!state || state.battle) return;
+  if (!state || state.battle || state.minigame) return;
   showInventoryModal();
 });
+
+// Interface Viva: partículas ambiente que rodam o tempo todo, com ou sem
+// clima ativo — a tela nunca deve parecer parada (GDD "Melhoria Geral da
+// Interface"). Baixa frequência de propósito, pra não competir visualmente
+// com o clima de verdade quando ele estiver ativo.
+function spawnFirefly() {
+  const ri = (a, b) => Math.floor(Math.random() * (b - a + 1)) + a;
+  const el = document.createElement("div");
+  el.className = "firefly";
+  el.style.left = `${ri(2, 96)}vw`;
+  el.style.top = `${ri(30, 92)}vh`;
+  el.style.setProperty("--dx", `${ri(-40, 40)}px`);
+  el.style.setProperty("--dy", `${ri(-60, -10)}px`);
+  el.style.setProperty("--dx2", `${ri(-60, 60)}px`);
+  el.style.setProperty("--dy2", `${ri(-140, -60)}px`);
+  el.style.animationDuration = `${ri(7, 12)}s`;
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 12000);
+}
+function spawnDustMote() {
+  const ri = (a, b) => Math.floor(Math.random() * (b - a + 1)) + a;
+  const el = document.createElement("div");
+  el.className = "dust-mote";
+  el.style.left = `${ri(0, 100)}vw`;
+  el.style.top = "100vh";
+  el.style.animationDuration = `${ri(14, 24)}s`;
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 24000);
+}
+function startAmbientParticles() {
+  setInterval(spawnFirefly, 2600);
+  setInterval(spawnDustMote, 1800);
+}
 
 (async function init() {
   const ok = await loadData();
   if (!ok) return;
+
+  startAmbientParticles();
 
   if (loadGame() && !state.gameOver) {
     renderAll();

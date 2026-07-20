@@ -483,6 +483,21 @@ body.weather-praga footer.cards { border-top-color: #4ADE80; }
   border-radius: 5px;
   font-weight: 700;
 }
+.game-card.card-minigame { border-color: #f59e0b; box-shadow: 0 0 0 1px rgba(245,158,11,0.25); }
+.card-minigame-tag {
+  align-self: flex-start;
+  font-size: 0.58rem;
+  color: #f59e0b;
+  border: 1px solid #f59e0b;
+  padding: 2px 6px;
+  border-radius: 5px;
+  font-weight: 700;
+  animation: mgTagPulse 1.6s ease-in-out infinite;
+}
+@keyframes mgTagPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.55; }
+}
 @keyframes cardFloat {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-3px); }
@@ -1143,4 +1158,174 @@ body.in-battle header.top button:not(.battle-btn) {
 
 .music-btn:active{
     transform:scale(.95);
+}
+/* ============================================================
+   MINI GAMES — desafios curtos e visuais que quebram o ritmo normal
+   de "ler + escolher carta" (GDD: Melhoria Geral da Interface).
+   ============================================================ */
+body.in-minigame .game-card { pointer-events: none; }
+
+.minigame-box { text-align: center; }
+
+.mg-hud {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.78rem;
+  color: var(--text-dim);
+  margin-bottom: 12px;
+  font-weight: 700;
+}
+
+/* 🎯 arquearia */
+.mg-field {
+  position: relative;
+  height: 200px;
+  border-radius: 14px;
+  background: radial-gradient(circle at 50% 30%, rgba(34,197,94,0.08), transparent 70%);
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+.mg-target {
+  position: absolute;
+  font-size: 2rem;
+  cursor: pointer;
+  transform: translate(-50%, -50%);
+  animation: mgTargetPop 0.18s ease;
+  filter: drop-shadow(0 0 6px rgba(248,113,113,0.5));
+  user-select: none;
+}
+.mg-target:hover { transform: translate(-50%, -50%) scale(1.15); }
+@keyframes mgTargetPop {
+  from { transform: translate(-50%, -50%) scale(0.4); opacity: 0; }
+  to { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+}
+
+/* 🔐 arrombamento */
+.mg-locksymbols {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin: 18px 0;
+}
+.mg-symbol {
+  width: 54px;
+  height: 54px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+  border-radius: 12px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition: transform .1s ease, border-color .15s ease, background .15s ease;
+}
+.mg-symbol.lit { border-color: var(--primary); background: rgba(6,182,212,0.18); transform: scale(1.1); }
+.mg-symbol.correct { border-color: var(--cor-verde, #22c55e); background: rgba(34,197,94,0.22); }
+.mg-symbol.wrong { border-color: var(--cor-vermelho, #f87171); background: rgba(248,113,113,0.22); }
+.mg-status { font-size: 0.82rem; color: var(--text-dim); min-height: 1.2em; }
+
+/* ⚒ forja */
+.mg-forgebar {
+  position: relative;
+  height: 22px;
+  border-radius: 999px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  margin: 20px 0;
+  overflow: hidden;
+}
+.mg-forgezone {
+  position: absolute;
+  left: 42%;
+  width: 16%;
+  height: 100%;
+  background: rgba(245, 158, 11, 0.35);
+}
+.mg-forgemarker {
+  position: absolute;
+  top: -3px;
+  left: 0;
+  width: 4px;
+  height: 28px;
+  background: var(--primary);
+  border-radius: 2px;
+  box-shadow: 0 0 8px var(--primary);
+}
+.mg-forgemarker.mg-hit-great { background: #22c55e; box-shadow: 0 0 14px #22c55e; }
+.mg-forgemarker.mg-hit-ok { background: #f59e0b; box-shadow: 0 0 14px #f59e0b; }
+.mg-forgemarker.mg-hit-bad { background: #f87171; box-shadow: 0 0 14px #f87171; }
+
+/* 🎭 persuasão */
+.mg-timerbar {
+  height: 6px;
+  border-radius: 999px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  overflow: hidden;
+  margin-bottom: 18px;
+}
+.mg-timerfill {
+  height: 100%;
+  width: 100%;
+  background: linear-gradient(90deg, var(--secondary), var(--primary));
+  transition: width 0.05s linear;
+}
+.mg-choices { display: flex; flex-direction: column; gap: 10px; }
+.mg-choice-btn {
+  padding: 12px 16px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text);
+  font-size: 0.85rem;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color .15s ease, transform .1s ease;
+}
+.mg-choice-btn:hover { border-color: var(--primary); transform: translateX(2px); }
+
+/* ---------- Interface Viva: partículas ambiente permanentes ---------- */
+#weatherLayer.ambient::before,
+#weatherLayer.ambient::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 5;
+}
+.firefly {
+  position: fixed;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #f5d58b;
+  box-shadow: 0 0 8px 2px rgba(245,213,139,0.8);
+  pointer-events: none;
+  z-index: 6;
+  animation: fireflyDrift linear infinite;
+  opacity: 0;
+}
+@keyframes fireflyDrift {
+  0% { opacity: 0; transform: translate(0, 0); }
+  10% { opacity: .9; }
+  50% { transform: translate(var(--dx, 40px), var(--dy, -60px)); }
+  90% { opacity: .7; }
+  100% { opacity: 0; transform: translate(var(--dx2, -20px), var(--dy2, -120px)); }
+}
+.dust-mote {
+  position: fixed;
+  width: 2px;
+  height: 2px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.35);
+  pointer-events: none;
+  z-index: 4;
+  animation: dustFloat linear infinite;
+}
+@keyframes dustFloat {
+  0% { transform: translateY(0) translateX(0); opacity: 0; }
+  15% { opacity: .5; }
+  85% { opacity: .3; }
+  100% { transform: translateY(-100vh) translateX(20px); opacity: 0; }
 }
