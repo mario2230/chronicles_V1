@@ -1063,6 +1063,65 @@ body.weather-corrupcao #weatherLayer {
 }
 .btn-secondary:hover { border-color: var(--text-dim); color: var(--text); }
 
+/* ---------- TELA INICIAL ---------- */
+.title-box {
+  max-width: 480px;
+  text-align: center;
+  background: radial-gradient(circle at 50% -10%, rgba(168,85,247,0.10), transparent 55%), var(--card);
+}
+.title-logo {
+  font-size: 3rem;
+  margin-bottom: 4px;
+  filter: drop-shadow(0 0 18px rgba(0,229,255,0.35));
+}
+.title-heading {
+  font-size: 1.8rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  margin: 0 0 10px;
+  background: linear-gradient(90deg, var(--primary), var(--secondary));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.title-tagline {
+  margin-bottom: 22px;
+}
+.title-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 26px;
+}
+.title-actions .btn-secondary { margin-top: 0; }
+
+.title-history {
+  border-top: 1px solid var(--border);
+  padding-top: 16px;
+  text-align: left;
+}
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 260px;
+  overflow-y: auto;
+}
+.history-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #101010;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 8px 10px;
+}
+.history-emoji { font-size: 1.4rem; flex-shrink: 0; }
+.history-info { flex: 1; min-width: 0; }
+.history-title { font-weight: 700; font-size: 0.82rem; }
+.history-meta { font-size: 0.68rem; color: var(--text-dim); margin-top: 2px; }
+.history-date { font-size: 0.62rem; color: var(--text-dim); flex-shrink: 0; white-space: nowrap; }
+
 /* ---------- PONTO SEM VOLTA ---------- */
 .boss-warning-box { max-width: 460px; border-color: var(--cor-vermelho); }
 .boss-warning-actions { display: flex; flex-direction: column; }

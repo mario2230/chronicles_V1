@@ -2095,6 +2095,81 @@ function renderAll() {
 /* ============================================================
    MODAIS
    ============================================================ */
+/* ============================================================
+   TELA INICIAL
+   Primeira coisa que o jogador vê ao abrir o jogo (ou ao voltar pelo botão
+   de menu). Mostra se há uma aventura em andamento para continuar, um
+   atalho para começar uma nova, e as últimas conquistas registradas.
+   ============================================================ */
+function peekSave() {
+  try {
+    const raw = localStorage.getItem("chronicles_save");
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (parsed.gameOver) return null;
+    return parsed;
+  } catch (e) {
+    return null;
+  }
+}
+
+function showTitleScreen() {
+  const root = document.getElementById("modalRoot");
+  const save = peekSave();
+  const historico = getRunHistory().slice(0, 6);
+
+  root.innerHTML = `
+    <div class="modal-overlay title-overlay">
+      <div class="modal-box title-box">
+        <div class="title-logo">⚜</div>
+        <h1 class="title-heading">CHRONICLES</h1>
+        <p class="sub title-tagline">Uma aventura procedural onde cada escolha reescreve a história.</p>
+
+        <div class="title-actions">
+          ${save ? `<button class="btn-primary" id="btnContinueTitle">▶ Continuar — ${save.hero.nome} (Nv. ${save.hero.nivel})</button>` : ""}
+          <button class="${save ? "btn-secondary" : "btn-primary"}" id="btnNewTitle">✨ Nova Aventura</button>
+        </div>
+
+        <div class="title-history">
+          <div class="hero-section-title" style="text-align:center;">🏆 Últimas Conquistas</div>
+          ${
+            historico.length
+              ? `<div class="history-list">
+                  ${historico
+                    .map(
+                      (h) => `
+                    <div class="history-item">
+                      <span class="history-emoji">${h.endingEmoji}</span>
+                      <div class="history-info">
+                        <div class="history-title">${h.endingTitulo}</div>
+                        <div class="history-meta">${h.classeEmoji} ${h.heroNome} · Nv.${h.nivel} · ${h.turno} turnos · ${h.ouro} ouro</div>
+                      </div>
+                      <span class="history-date">${new Date(h.data).toLocaleDateString("pt-BR")}</span>
+                    </div>`
+                    )
+                    .join("")}
+                </div>`
+              : `<p class="empty-note" style="text-align:center;">Nenhuma aventura concluída ainda — suas conquistas vão aparecer aqui.</p>`
+          }
+        </div>
+      </div>
+    </div>`;
+
+  const contBtn = document.getElementById("btnContinueTitle");
+  if (contBtn) {
+    contBtn.addEventListener("click", () => {
+      root.innerHTML = "";
+      if (loadGame() && !state.gameOver) renderAll();
+      else showClassSelectModal();
+    });
+  }
+  document.getElementById("btnNewTitle").addEventListener("click", () => {
+    localStorage.removeItem("chronicles_save");
+    root.innerHTML = "";
+    showClassSelectModal();
+  });
+}
+
 function showClassSelectModal() {
   const seedSugerida = newSeed();
   const root = document.getElementById("modalRoot");
@@ -2281,7 +2356,48 @@ function usarItemDaMochila(itemId) {
   if (wrap) { wrap.innerHTML = inventoryModalContent(); bindInventoryModalEvents(); }
 }
 
+/* ============================================================
+   HISTÓRICO DE CONQUISTAS
+   Cada vez que uma run termina (morte ou final aceito), guarda um resumo
+   permanente em localStorage — separado do autosave, que é sobrescrito a
+   cada partida. É o que alimenta a tela inicial.
+   ============================================================ */
+const HISTORY_KEY = "chronicles_history";
+const HISTORY_MAX = 30;
+
+function getRunHistory() {
+  try {
+    const raw = localStorage.getItem(HISTORY_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch (e) {
+    return [];
+  }
+}
+
+function recordRunHistory(ending) {
+  try {
+    const historico = getRunHistory();
+    const classeInfo = DATA.classes.find((c) => c.id === state.hero.classeId);
+    historico.unshift({
+      data: Date.now(),
+      heroNome: state.hero.nome,
+      classeNome: classeInfo ? classeInfo.nome : state.hero.classeId,
+      classeEmoji: state.hero.emoji,
+      nivel: state.hero.nivel,
+      ouro: state.hero.ouro,
+      turno: state.turno,
+      descobertas: state.descobertos.size,
+      endingId: ending.id,
+      endingTitulo: ending.titulo,
+      endingEmoji: ending.emoji,
+      seed: state.seed,
+    });
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(historico.slice(0, HISTORY_MAX)));
+  } catch (e) { /* ignora erros de storage */ }
+}
+
 function showEndingModal(ending) {
+  recordRunHistory(ending);
   const root = document.getElementById("modalRoot");
   root.innerHTML = `
     <div class="modal-overlay">
@@ -2296,12 +2412,18 @@ function showEndingModal(ending) {
           <div class="ending-stat"><b>${state.descobertos.size}</b><span>Descobertas</span></div>
         </div>
         <button class="btn-primary" id="btnRestart">Nova Aventura</button>
+        <button class="btn-secondary" id="btnBackTitle" style="margin-top:10px;">🏠 Voltar ao Menu</button>
       </div>
     </div>`;
   document.getElementById("btnRestart").addEventListener("click", () => {
     localStorage.removeItem("chronicles_save");
     root.innerHTML = "";
     showClassSelectModal();
+  });
+  document.getElementById("btnBackTitle").addEventListener("click", () => {
+    localStorage.removeItem("chronicles_save");
+    root.innerHTML = "";
+    showTitleScreen();
   });
 }
 
@@ -2383,6 +2505,11 @@ document.getElementById("btnInventory").addEventListener("click", () => {
   showInventoryModal();
 });
 
+document.getElementById("btnMenu").addEventListener("click", () => {
+  if (state && (state.battle || state.minigame)) return; // trava de segurança: nunca durante batalha ou mini-game
+  showTitleScreen();
+});
+
 // Interface Viva: partículas ambiente que rodam o tempo todo, com ou sem
 // clima ativo — a tela nunca deve parecer parada (GDD "Melhoria Geral da
 // Interface"). Baixa frequência de propósito, pra não competir visualmente
@@ -2421,10 +2548,5 @@ function startAmbientParticles() {
   if (!ok) return;
 
   startAmbientParticles();
-
-  if (loadGame() && !state.gameOver) {
-    renderAll();
-  } else {
-    showClassSelectModal();
-  }
+  showTitleScreen();
 })();

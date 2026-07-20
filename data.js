@@ -4879,7 +4879,7 @@ const GAME_DATA = {
         defesaInimigo: 30,
         ouroDrop: [6, 14],
         expDrop: 500,
-        itemGarantido: "espada_perfeita",
+        itemPossivel: "espada_perfeita",
       },
       elite: true,
     },
