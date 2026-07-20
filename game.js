@@ -31,6 +31,9 @@ const REGIAO_META = {
   vulcao: { emoji: "🌋", nome: "Vulcão" },
   capital: { emoji: "🏙", nome: "Capital" },
   abismo: { emoji: "🕳", nome: "Abismo" },
+  planicie: { emoji: "🌾", nome: "Planícies Douradas" },
+  costa: { emoji: "🌊", nome: "Costa Esquecida" },
+  cripta: { emoji: "🪦", nome: "Cripta Sombria" }
 };
 
 // níveis de relacionamento com personagens, do mais hostil ao mais próximo
@@ -152,6 +155,7 @@ function novoEstado(classeId, seed) {
       inventario: [],
       conquistas: [],
       escolas: [],
+      buffsAtivos: [], // buffs temporários de combate (ataque/defesa/velocidade), vindos de poções
     },
     tags: {},
     itensObtidos: new Set(),
@@ -182,7 +186,19 @@ function heroStat(base) {
   Object.values(h.equipamentos).forEach((it) => {
     if (it && it.bonus && it.bonus[base] != null) bonus += it.bonus[base];
   });
+  (h.buffsAtivos || []).forEach((b) => { if (b.stat === base) bonus += b.valor; });
   return bonus;
+}
+
+// remove buffs expirados; chamada a cada turno do mundo E a cada rodada de
+// batalha, então "dura 3 turnos" significa a mesma coisa nos dois casos.
+function tickBuffs() {
+  const buffs = state.hero.buffsAtivos;
+  if (!buffs || !buffs.length) return;
+  buffs.forEach((b) => (b.turnosRestantes -= 1));
+  const expirados = buffs.filter((b) => b.turnosRestantes <= 0);
+  expirados.forEach((b) => addStory(`O efeito de ${b.nome} termina.`, "cinza"));
+  state.hero.buffsAtivos = buffs.filter((b) => b.turnosRestantes > 0);
 }
 function getAtaque() { return state.hero.ataqueBase + heroStat("ataque"); }
 function getDefesa() { return state.hero.defesaBase + heroStat("defesa"); }
@@ -564,10 +580,14 @@ function applyStatDelta(delta, motivoPrefix) {
   }
 }
 
-function obterItem(card, bonusOverride, nomeOverride) {
+// slotOverride existe porque resultados de "misterio" guardam o slot dentro
+// do próprio resultado sorteado, não em card.efeito.slot — sem isso, um
+// item de equipamento ganho por mistério não sabia seu slot e se perdia
+// silenciosamente (escrito em equipamentos[undefined]).
+function obterItem(card, bonusOverride, nomeOverride, slotOverride) {
   const nome = nomeOverride || card.efeito.nomeItem || card.nome;
   const bonus = bonusOverride || card.efeito.bonus || {};
-  const slot = card.efeito.slot;
+  const slot = slotOverride || card.efeito.slot;
 
   state.itensObtidos.add(card.id);
 
@@ -582,6 +602,8 @@ function obterItem(card, bonusOverride, nomeOverride) {
         emoji: card.emoji,
         cor: card.cor,
         cura: card.efeito.cura || 0,
+        mana: card.efeito.mana || 0,
+        buffCombate: card.efeito.buffCombate || null,
         quantidade: 1,
       });
     }
@@ -590,19 +612,20 @@ function obterItem(card, bonusOverride, nomeOverride) {
   }
 
   // trocar de equipamento não descarta o antigo — ele vira reserva na mochila
-  const anterior = state.hero.equipamentos[slot];
+  const slotFinal = ["arma", "armadura", "acessorio"].includes(slot) ? slot : "acessorio";
+  const anterior = state.hero.equipamentos[slotFinal];
   if (anterior) {
     state.hero.inventario.push({
       tipo: "equipamento",
       itemId: anterior.id,
       nome: anterior.nome,
       emoji: anterior.emoji || "🎒",
-      slot,
+      slot: slotFinal,
       bonus: anterior.bonus,
     });
   }
-  const item = { id: card.id, nome, emoji: card.emoji, bonus, slot };
-  state.hero.equipamentos[slot] = item;
+  const item = { id: card.id, nome, emoji: card.emoji, bonus, slot: slotFinal };
+  state.hero.equipamentos[slotFinal] = item;
   addStory(anterior ? `Você trocou de equipamento por ${nome}. O antigo foi para a mochila.` : `Você equipou ${nome}.`, "amarelo");
 }
 
@@ -613,8 +636,26 @@ function usarConsumivel(itemId) {
   if (!entry || entry.quantidade <= 0) return false;
   entry.quantidade--;
   if (entry.quantidade <= 0) state.hero.inventario = state.hero.inventario.filter((it) => it !== entry);
-  curar(entry.cura);
-  addStory(`Você usou ${entry.nome} e recuperou vitalidade.`, "amarelo");
+
+  const partes = [];
+  if (entry.cura) { curar(entry.cura); partes.push(`+${entry.cura} vida`); }
+  if (entry.mana) {
+    const antes = state.hero.mana;
+    state.hero.mana = Math.min(getManaMax(), state.hero.mana + entry.mana);
+    const ganho = state.hero.mana - antes;
+    if (ganho > 0) partes.push(`+${ganho} mana`);
+  }
+  if (entry.buffCombate) {
+    if (!state.hero.buffsAtivos) state.hero.buffsAtivos = [];
+    const b = entry.buffCombate;
+    const stat = b.ataque ? "ataque" : b.defesa ? "defesa" : "velocidade";
+    const valor = b.ataque || b.defesa || b.velocidade || 0;
+    const turnos = b.turnos || 3;
+    state.hero.buffsAtivos.push({ stat, valor, turnosRestantes: turnos, nome: entry.nome });
+    partes.push(`${valor >= 0 ? "+" : ""}${valor} ${stat} por ${turnos} turnos`);
+  }
+
+  addStory(`Você usou ${entry.nome}.${partes.length ? ` (${partes.join(", ")})` : ""}`, "amarelo");
   return true;
 }
 
@@ -786,6 +827,12 @@ function resolverMisterio(card) {
 
   if (escolhido.exp) { ganharExp(escolhido.exp); partes.push(`+${escolhido.exp} exp`); }
   if (escolhido.cura) { curar(escolhido.cura); partes.push(`+${escolhido.cura} vida`); }
+  if (escolhido.mana) {
+    const antes = state.hero.mana;
+    state.hero.mana = Math.min(getManaMax(), state.hero.mana + escolhido.mana);
+    const ganho = state.hero.mana - antes;
+    if (ganho > 0) partes.push(`+${ganho} mana`);
+  }
 
   if (escolhido.vida) {
     state.hero.vida = Math.max(0, state.hero.vida - escolhido.vida);
@@ -795,7 +842,7 @@ function resolverMisterio(card) {
   }
 
   if (escolhido.nomeItem) {
-    obterItem(card, escolhido.bonus, escolhido.nomeItem);
+    obterItem(card, escolhido.bonus, escolhido.nomeItem, escolhido.slot);
   }
 
   const cor = escolhido.vida ? "vermelho" : (card.cor || "cinza");
@@ -1049,12 +1096,17 @@ function battleTurnoInimigo() {
   if (dmg >= Math.max(6, getVidaMax() * 0.16)) shakeScreen("normal");
   b.defendendo = false;
   b.rodada++;
+  tickBuffs();
   pushBattleLog(linhas);
 
   if (state.hero.vida <= 0) b.fim = "derrota";
   renderBattleModal();
   if (b.fim) setTimeout(finalizarBatalha, 1100);
 }
+
+// custo de mana da magia de combate: fixo e baixo o bastante pra qualquer
+// classe conseguir usar algumas vezes, mesmo as com pouca mana máxima.
+const CUSTO_MAGIA_BATALHA = 12;
 
 function battleAction(tipo) {
   const b = state.battle;
@@ -1074,6 +1126,32 @@ function battleAction(tipo) {
   } else if (tipo === "defender") {
     b.defendendo = true;
     pushBattleLog(["🛡 Você se prepara para o próximo golpe."]);
+  } else if (tipo === "magia") {
+    if (state.hero.mana < CUSTO_MAGIA_BATALHA) {
+      pushBattleLog([`✨ Mana insuficiente (precisa de ${CUSTO_MAGIA_BATALHA}).`]);
+      renderBattleModal();
+      return;
+    }
+    state.hero.mana -= CUSTO_MAGIA_BATALHA;
+    // a magia ignora boa parte da defesa do inimigo — é o motivo de gastar
+    // mana em vez de simplesmente atacar de novo.
+    const dmg = Math.max(3, Math.round(getAtaque() * 1.5 + 5 - b.inimigo.defesa * 0.4) + rndInt(-1, 4));
+    b.inimigo.vida = Math.max(0, b.inimigo.vida - dmg);
+    pushBattleLog([`✨ Você conjura um feitiço e causa ${dmg} de dano (-${CUSTO_MAGIA_BATALHA} mana).`]);
+    spawnFloatingText(`✨ -${dmg}`, "dmg-crit");
+  } else if (tipo === "subornar") {
+    const custo = custoSuborno(b.inimigo);
+    if (state.hero.ouro < custo) {
+      pushBattleLog([`💰 Você precisaria de ${custo} de ouro para subornar — não é o suficiente.`]);
+      renderBattleModal();
+      return;
+    }
+    state.hero.ouro -= custo;
+    b.fim = "fuga";
+    pushBattleLog([`💰 Você suborna seu oponente e escapa em segurança (-${custo} ouro).`]);
+    renderBattleModal();
+    setTimeout(finalizarBatalha, 900);
+    return;
   } else if (tipo === "fugir") {
     const chance = 0.3 + Math.max(0, getVelocidade() - 5) * 0.02;
     if (rnd() < chance) {
@@ -1095,6 +1173,12 @@ function battleAction(tipo) {
   }
 
   battleTurnoInimigo();
+}
+
+// suborno fica mais caro contra inimigos mais fortes — senão viraria um
+// jeito "de graça" de pular qualquer chefe difícil.
+function custoSuborno(inimigo) {
+  return Math.round(15 + state.hero.nivel * 3 + inimigo.vidaMax * 0.3);
 }
 
 function battleUsarItem(itemId) {
@@ -1155,8 +1239,10 @@ function renderBattleModal() {
             : `<div class="battle-actions">
                 <button class="battle-btn atacar" onclick="battleAction('atacar')">⚔ Atacar</button>
                 <button class="battle-btn defender" onclick="battleAction('defender')">🛡 Defender</button>
+                <button class="battle-btn magia ${h.mana < CUSTO_MAGIA_BATALHA ? "battle-btn-fraco" : ""}" onclick="battleAction('magia')">✨ Magia <small>(${CUSTO_MAGIA_BATALHA} mana)</small></button>
                 <button class="battle-btn item" onclick="battleAction('item')">🧪 Usar Item</button>
                 <button class="battle-btn fugir" onclick="battleAction('fugir')">🏃 Fugir</button>
+                <button class="battle-btn subornar ${h.ouro < custoSuborno(b.inimigo) ? "battle-btn-fraco" : ""}" onclick="battleAction('subornar')">💰 Subornar <small>(${custoSuborno(b.inimigo)})</small></button>
               </div>`
         }
       </div>
@@ -1589,6 +1675,7 @@ function advanceTurn(card, alternativas, escolhaOpcao) {
     checkFaseTransition();
     resolveCard(card, alternativas, escolhaOpcao);
     tickGlobalEvent();
+    tickBuffs();
 
     const ending = checkEndings();
     if (ending) {
@@ -1700,6 +1787,11 @@ function renderHero() {
       <div class="stat-chip"><span>💨 Veloc.</span><span>${getVelocidade()}</span></div>
       <div class="stat-chip"><span>💰 Ouro</span><span>${h.ouro}</span></div>
     </div>
+
+    ${(h.buffsAtivos && h.buffsAtivos.length) ? `
+    <div class="buff-row">
+      ${h.buffsAtivos.map((b) => `<span class="buff-chip">${b.stat} ${b.valor >= 0 ? "+" : ""}${b.valor} · ${b.turnosRestantes}t</span>`).join("")}
+    </div>` : ""}
 
     <div class="hero-section-title">Equipamentos</div>
     <div class="equip-list">${equipHtml}</div>
@@ -2227,6 +2319,7 @@ function loadGame() {
     }
     if (!state.hero.escolas) state.hero.escolas = [];
     if (!state.hero.inventario) state.hero.inventario = [];
+    if (!state.hero.buffsAtivos) state.hero.buffsAtivos = [];
     state.battle = null; // nunca retoma no meio de uma batalha após recarregar a página
     state.minigame = null; // idem para mini-games
     return true;

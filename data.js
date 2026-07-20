@@ -209,7 +209,7 @@ const GAME_DATA = {
       raridade: "comum",
       weight: 10,
       inicial: true,
-      regiaoOrigem: ["aldeia", "caverna"],
+      regiaoOrigem: ["aldeia", "caverna", "costa", "planicie"],
       minNivel: 1,
       historia: [
         "Você contempla mais uma vez sua aldeia natal antes de partir.",
@@ -243,6 +243,8 @@ const GAME_DATA = {
         "bencao_da_fogueira",
         "arquearia_torneio",
         "forja_ferreiro",
+        "planicie_entrada",
+        "costa_entrada",
       ],
     },
     {
@@ -609,7 +611,7 @@ const GAME_DATA = {
       raridade: "incomum",
       weight: 20,
       inicial: true,
-      regiaoOrigem: ["floresta", "aldeia", "pantano"],
+      regiaoOrigem: ["floresta", "aldeia", "pantano", "costa"],
       minNivel: 2,
       historia: [
         "Pilares quebrados marcam a entrada de ruínas antigas.",
@@ -716,6 +718,422 @@ const GAME_DATA = {
         ],
       },
     },
+    /* ============================================================
+       NOVA ESTRATÉGIA: MAGIA DE SANGUE E PACIFISMO
+       ============================================================ */
+    {
+      id: "altar_de_sangue",
+      emoji: "🩸",
+      nome: "Altar de Sangue",
+      tipo: "escolha",
+      raridade: "epica",
+      weight: 12,
+      regiaoOrigem: ["ruinas", "cemiterio", "caverna"],
+      minNivel: 4,
+      historia: [
+        "Um altar grotesco de pedra rubra exige um sacrifício para conceder seu poder oculto.",
+      ],
+      cor: "vermelho",
+      efeito: {
+        tipo: "escolha",
+        intro:
+          "As runas do altar brilham fracamente, reagindo à sua pulsação. Elas têm sede.",
+        opcoes: [
+          {
+            id: "sacrificar_vitalidade",
+            label: "🩸 Cortar a própria mão sobre o altar",
+            dica: "Perde Vida Máxima permanentemente, mas ganha um Ataque devastador.",
+            historia: [
+              "Seu sangue é absorvido pela pedra. Você se sente mais frágil, porém imbuído de uma força aterradora.",
+            ],
+            dano: 25,
+            statDelta: {
+              vidaMax: -15,
+              ataque: 6,
+            },
+            tag: "magia_de_sangue",
+          },
+          {
+            id: "ignorar_altar",
+            label: "🚶 Afastar-se do altar",
+            dica: "A magia de sangue cobra caro. Melhor não arriscar.",
+            historia: [
+              "Você deixa o altar para trás. O ar parece mais leve longe dali.",
+            ],
+            exp: 5,
+            tag: "explorador_nato",
+          },
+        ],
+      },
+    },
+    {
+      id: "calice_escarlate",
+      emoji: "🍷",
+      nome: "Cálice Escarlate",
+      tipo: "artefato",
+      raridade: "lendaria",
+      weight: 0,
+      oculta: true,
+      regiaoOrigem: ["cemiterio", "abismo"],
+      minNivel: 6,
+      condicao: {
+        tag: "magia_de_sangue",
+        minimo: 1,
+      },
+      historia: [
+        "O líquido escuro no cálice nunca seca, alimentando-se da dor de quem o carrega.",
+      ],
+      cor: "roxo",
+      efeito: {
+        tipo: "item",
+        slot: "acessorio",
+        nomeItem: "Cálice Escarlate",
+        bonus: {
+          ataque: 8,
+          vidaMax: -5,
+          manaMax: 15,
+        },
+      },
+    },
+
+    /* ============================================================
+       NOVA ESTRATÉGIA: RIQUEZA / MERCANTILISMO
+       ============================================================ */
+    {
+      id: "banco_de_ferro",
+      emoji: "⚖️",
+      nome: "O Agiota do Reino",
+      tipo: "escolha",
+      raridade: "incomum",
+      weight: 15,
+      regiaoOrigem: ["capital", "deserto", "castelo", "aldeia"],
+      minNivel: 3,
+      historia: [
+        "Um homem elegantemente vestido com um sorriso de ouro cruza seu caminho e bloqueia a passagem.",
+      ],
+      cor: "amarelo",
+      efeito: {
+        tipo: "escolha",
+        intro:
+          '"Ouro parado é ouro morto, aventureiro. Deixe-me multiplicar suas riquezas... ou você pode pagar o pedágio."',
+        opcoes: [
+          {
+            id: "investir",
+            label: "💰 Subornar e Investir (Pagar 25 Ouro)",
+            dica: "Você perde ouro agora, mas abre caminho para comprar poder puro no futuro.",
+            historia: [
+              "Você entrega o ouro. O agiota sorri, entrega uma nota promissória e abre as portas do submundo econômico para você.",
+            ],
+            ouro: [-25, -25],
+            tag: "caminho_riqueza",
+            exp: 15,
+          },
+          {
+            id: "ameacar",
+            label: "🗡️ Ameaçá-lo com a arma",
+            dica: "Ganha ouro rápido, mas fecha o caminho da Riqueza.",
+            historia: [
+              "Ele entrega uma bolsa com moedas, praguejando que você se arrependerá da ousadia.",
+            ],
+            ouro: [10, 20],
+            tag: "caminho_forca",
+          },
+        ],
+      },
+    },
+    {
+      id: "coroa_de_ouro_maldito",
+      emoji: "👑",
+      nome: "Coroa do Mercador Rei",
+      tipo: "item",
+      raridade: "epica",
+      weight: 0,
+      oculta: true,
+      regiaoOrigem: ["capital", "deserto"],
+      minNivel: 5,
+      condicao: {
+        tag: "caminho_riqueza",
+        minimo: 1,
+      },
+      historia: [
+        "A coroa é pesada demais para um homem comum, feita puramente do ouro cobrado em impostos abusivos.",
+      ],
+      cor: "amarelo",
+      efeito: {
+        tipo: "item",
+        slot: "acessorio",
+        nomeItem: "Coroa do Mercador Rei",
+        bonus: {
+          defesa: 8,
+          velocidade: -2,
+        },
+      },
+    },
+
+    /* ============================================================
+       NOVA REGIÃO 1: PLANÍCIES DOURADAS
+       ============================================================ */
+    {
+      id: "planicie_entrada",
+      emoji: "🌾",
+      nome: "Planícies Douradas",
+      tipo: "local",
+      raridade: "incomum",
+      weight: 18,
+      inicial: true,
+      regiaoOrigem: ["aldeia", "floresta", "deserto"],
+      minNivel: 2,
+      historia: [
+        "Um oceano de grama dourada se estende até o horizonte.",
+        "O vento assobia entre as hastes de trigo selvagem, trazendo um ar fresco.",
+      ],
+      cor: "verde",
+      efeito: {
+        tipo: "mudar_regiao",
+        regiao: "planicie",
+      },
+      desbloqueia: [
+        "leao_branco",
+        "vento_curativo",
+        "lanca_dos_ventos",
+        "lyra_encontro",
+        "manada_furia",
+      ],
+    },
+    {
+      id: "leao_branco",
+      emoji: "🦁",
+      nome: "Leão Branco da Planície",
+      tipo: "inimigo",
+      raridade: "rara",
+      weight: 30,
+      regiaoOrigem: ["planicie"],
+      minNivel: 4,
+      historia: [
+        "O predador majestoso salta do meio da grama alta em um ataque surpresa.",
+        "A fera rugiu uma última vez antes de tombar sob seus golpes.",
+      ],
+      cor: "vermelho",
+      efeito: {
+        tipo: "combate",
+        vidaInimigo: 45,
+        ataqueInimigo: 11,
+        defesaInimigo: 3,
+        ouroDrop: [8, 16],
+        expDrop: 18,
+      },
+    },
+    {
+      id: "vento_curativo",
+      emoji: "🌬️",
+      nome: "Brisa de Verão",
+      tipo: "evento",
+      raridade: "comum",
+      weight: 45,
+      regiaoOrigem: ["planicie"],
+      minNivel: 2,
+      historia: [
+        "Uma brisa quente e mágica envolve seu corpo, aliviando o peso da jornada.",
+      ],
+      cor: "verde",
+      sinergiaTag: ["explorador_nato"],
+      efeito: {
+        tipo: "recompensa_leve",
+        cura: 25,
+        exp: 5,
+      },
+    },
+    {
+      id: "lanca_dos_ventos",
+      emoji: "🔱",
+      nome: "Lança dos Ventos",
+      tipo: "item",
+      raridade: "rara",
+      weight: 12,
+      regiaoOrigem: ["planicie"],
+      minNivel: 4,
+      historia: [
+        "A haste da lança é quase translúcida e zune quando cortada no ar.",
+      ],
+      cor: "amarelo",
+      efeito: {
+        tipo: "item",
+        slot: "arma",
+        nomeItem: "Lança dos Ventos",
+        bonus: {
+          ataque: 5,
+          velocidade: 3,
+        },
+      },
+    },
+
+    /* ============================================================
+       NOVA REGIÃO 2: COSTA ESQUECIDA
+       ============================================================ */
+    {
+      id: "costa_entrada",
+      emoji: "🌊",
+      nome: "Costa Esquecida",
+      tipo: "local",
+      raridade: "incomum",
+      weight: 15,
+      inicial: true,
+      regiaoOrigem: ["aldeia", "pantano", "ruinas", "planicie"],
+      minNivel: 3,
+      historia: [
+        "O som das ondas quebrando nas rochas ecoa muito antes de você avistar o mar.",
+        "A maresia enche seus pulmões. Navios naufragados pontuam a praia cinzenta.",
+      ],
+      cor: "azul",
+      efeito: {
+        tipo: "mudar_regiao",
+        regiao: "costa",
+      },
+      desbloqueia: [
+        "pirata_amaldicoado",
+        "canto_da_sereia",
+        "ancora_enferrujada",
+        "leviata_profundezas",
+        "thalassa_encontro",
+        "navio_fantasma",
+        "caranguejo_couracado",
+      ],
+    },
+    {
+      id: "pirata_amaldicoado",
+      emoji: "🏴‍☠️",
+      nome: "Pirata Amaldiçoado",
+      tipo: "inimigo",
+      raridade: "incomum",
+      weight: 35,
+      regiaoOrigem: ["costa"],
+      minNivel: 3,
+      historia: [
+        "Um esqueleto coberto de cracas avança, empunhando um sabre enferrujado.",
+        "O pirata finalmente encontra o descanso no fundo da areia.",
+      ],
+      cor: "vermelho",
+      efeito: {
+        tipo: "combate",
+        vidaInimigo: 30,
+        ataqueInimigo: 9,
+        defesaInimigo: 2,
+        ouroDrop: [10, 20], // Piratas dropam mais ouro
+        expDrop: 15,
+      },
+    },
+    {
+      id: "canto_da_sereia",
+      emoji: "🧜‍♀️",
+      nome: "O Canto da Sereia",
+      tipo: "escolha",
+      raridade: "rara",
+      weight: 14,
+      regiaoOrigem: ["costa"],
+      minNivel: 4,
+      historia: [
+        "Uma melodia hipnótica flutua sobre a água salgada. É impossível não querer ouvir de perto.",
+      ],
+      cor: "azul",
+      efeito: {
+        tipo: "escolha",
+        intro:
+          "A sereia emerge das águas rasas, segurando uma pérola brilhante. O canto ofusca seus pensamentos.",
+        opcoes: [
+          {
+            id: "resistir_roubar",
+            label: "🗡️ Quebrar o encanto e roubar a pérola",
+            dica: "Ganha um artefato excelente, mas sofre dano mental.",
+            historia: [
+              "Você avança cortando a própria mão para manter a sanidade. A sereia foge assustada, deixando a joia para trás.",
+            ],
+            dano: 18,
+            tag: "caminho_ganancia",
+            statDelta: { manaMax: 10, defesa: 2 },
+          },
+          {
+            id: "escutar",
+            label: "🎶 Sentar na areia e ouvir a música",
+            dica: "Cura massiva de vida e mana, pacificamente.",
+            historia: [
+              "Você adormece embalado pela melodia. Ao acordar, suas feridas estão curadas e a mente afiada.",
+            ],
+            cura: 50,
+            tag: "explorador_nato",
+            exp: 10,
+          },
+        ],
+      },
+    },
+    {
+      id: "ancora_enferrujada",
+      emoji: "⚓",
+      nome: "Âncora Pesada",
+      tipo: "item",
+      raridade: "incomum",
+      weight: 10,
+      regiaoOrigem: ["costa"],
+      minNivel: 3,
+      historia: [
+        "Não é exatamente uma arma elegante, mas esmaga armaduras com facilidade.",
+      ],
+      cor: "amarelo",
+      efeito: {
+        tipo: "item",
+        slot: "arma",
+        nomeItem: "Âncora Pesada",
+        bonus: {
+          ataque: 7,
+          velocidade: -3,
+        },
+      },
+    },
+    {
+      id: "leviata_profundezas",
+      emoji: "🦑",
+      nome: "Leviatã das Profundezas",
+      tipo: "chefe",
+      raridade: "epica",
+      weight: 4,
+      regiaoOrigem: ["costa"],
+      minNivel: 9,
+      historia: [
+        "Os tentáculos gigantes colapsam sobre a praia. A besta do mar retorna às profundezas, derrotada.",
+        "O oceano ruge em fúria enquanto o Leviatã finalmente tomba.",
+      ],
+      cor: "vermelho",
+      efeito: {
+        tipo: "combate",
+        vidaInimigo: 140,
+        ataqueInimigo: 18,
+        defesaInimigo: 12,
+        ouroDrop: [50, 80],
+        expDrop: 75,
+        itemGarantido: "escama_abissal",
+      },
+    },
+    {
+      id: "escama_abissal",
+      emoji: "🛡️",
+      nome: "Escama Abissal",
+      tipo: "artefato",
+      raridade: "lendaria",
+      weight: 0,
+      oculta: true,
+      regiaoOrigem: ["costa"],
+      minNivel: 9,
+      historia: ["A escama é dura como aço e gelada como o fundo do mar."],
+      cor: "roxo",
+      efeito: {
+        tipo: "item",
+        slot: "armadura",
+        nomeItem: "Escama Abissal",
+        bonus: {
+          defesa: 10,
+          vidaMax: 20,
+        },
+      },
+    },
     {
       id: "montanha_trilha",
       emoji: "🏔",
@@ -724,7 +1142,7 @@ const GAME_DATA = {
       raridade: "incomum",
       weight: 25,
       inicial: true,
-      regiaoOrigem: ["floresta", "aldeia", "pantano"],
+      regiaoOrigem: ["floresta", "aldeia", "pantano", "planicie"],
       minNivel: 3,
       historia: [
         "O ar fica mais frio conforme você sobe a trilha rochosa.",
@@ -798,7 +1216,7 @@ const GAME_DATA = {
       tipo: "local",
       raridade: "incomum",
       weight: 20,
-      regiaoOrigem: ["montanha"],
+      regiaoOrigem: ["montanha", "cripta"],
       minNivel: 4,
       historia: [
         "O gelo reflete sua tocha em mil pontos de luz.",
@@ -900,7 +1318,7 @@ const GAME_DATA = {
       tipo: "npc",
       raridade: "comum",
       weight: 30,
-      regiaoOrigem: ["aldeia", "ruinas", "deserto"],
+      regiaoOrigem: ["aldeia", "ruinas", "deserto", "planicie"],
       minNivel: 1,
       historia: [
         "O mercador oferece um bom negócio antes de seguir viagem.",
@@ -922,7 +1340,7 @@ const GAME_DATA = {
       tipo: "npc",
       raridade: "lendaria",
       weight: 3,
-      regiaoOrigem: ["aldeia"],
+      regiaoOrigem: ["aldeia", "costa"],
       minNivel: 1,
       historia: [
         "O ferreiro forja uma lâmina sob encomenda especialmente para você.",
@@ -1168,7 +1586,7 @@ const GAME_DATA = {
       raridade: "incomum",
       weight: 20,
       inicial: true,
-      regiaoOrigem: ["ruinas", "pantano"],
+      regiaoOrigem: ["ruinas", "pantano", "cripta"],
       minNivel: 3,
       historia: [
         "Névoa espessa cobre as lápides ao entrar no cemitério.",
@@ -1380,7 +1798,14 @@ const GAME_DATA = {
         tipo: "mudar_regiao",
         regiao: "castelo",
       },
-      desbloqueia: ["cavaleiro_negro", "espada_lendaria", "arena_desafio", "arrombamento_portao", "diario_de_soldado", "espectro_da_torre"],
+      desbloqueia: [
+        "cavaleiro_negro",
+        "espada_lendaria",
+        "arena_desafio",
+        "arrombamento_portao",
+        "diario_de_soldado",
+        "espectro_da_torre",
+      ],
     },
     {
       id: "cavaleiro_negro",
@@ -1633,7 +2058,7 @@ const GAME_DATA = {
       tipo: "escolha",
       raridade: "rara",
       weight: 16,
-      regiaoOrigem: ["montanha", "aldeia"],
+      regiaoOrigem: ["montanha", "aldeia", "planicie"],
       minNivel: 3,
       historia: ["Kael crava a espada no chão diante de você e sorri."],
       cor: "vermelho",
@@ -1668,6 +2093,292 @@ const GAME_DATA = {
             personagemId: "kael",
           },
         ],
+      },
+    },
+    /* ============================================================
+       QUALIDADE DE VIDA (QoL) E EVENTOS GERAIS
+       ============================================================ */
+    {
+      id: "santuario_transmutacao",
+      emoji: "⚖️",
+      nome: "Santuário da Transmutação",
+      tipo: "escolha",
+      raridade: "incomum",
+      weight: 20,
+      regiaoOrigem: ["aldeia", "floresta", "planicie", "costa", "ruinas"],
+      minNivel: 3,
+      historia: [
+        "Uma estátua de duas faces segura uma balança perfeitamente equilibrada. O ar ao redor cheira a ozônio.",
+      ],
+      cor: "roxo",
+      efeito: {
+        tipo: "escolha",
+        intro:
+          "A voz de mármore ecoa em sua mente: 'Tudo tem um preço. O que deseja alterar em seu destino?'",
+        opcoes: [
+          {
+            id: "corpo_por_mente",
+            label: "🧠 Sacrificar Vida por Mana",
+            dica: "Perde 10 Vida Máx, Ganha 15 Mana Máx (Bom para Magos).",
+            historia: [
+              "Seu corpo enfraquece, mas sua mente se expande como o universo.",
+            ],
+            statDelta: { vidaMax: -10, manaMax: 15 },
+          },
+          {
+            id: "mente_por_corpo",
+            label: "💪 Sacrificar Mana por Vida",
+            dica: "Perde 10 Mana Máx, Ganha 15 Vida Máx (Bom para Guerreiros).",
+            historia: [
+              "Suas memórias arcanas desaparecem, substituídas por músculos tensos e resistência absurda.",
+            ],
+            statDelta: { manaMax: -10, vidaMax: 15 },
+          },
+          {
+            id: "descanso_puro",
+            label: "🏕️ Apenas descansar na sombra",
+            dica: "Recupera 30 de Vida e 30 de Mana.",
+            historia: [
+              "A balança não se move, mas a sombra da estátua oferece um conforto inexplicável.",
+            ],
+            cura: 30,
+            curaMana: 30,
+          },
+        ],
+      },
+    },
+    {
+      id: "armadura_juggernaut",
+      emoji: "🛡️",
+      nome: "Carapaça do Juggernaut",
+      tipo: "item",
+      raridade: "epica",
+      weight: 8,
+      regiaoOrigem: ["caverna", "castelo"],
+      minNivel: 6,
+      historia: [
+        "Uma armadura tão pesada que muitos morreram de exaustão apenas tentando vesti-la.",
+      ],
+      cor: "cinza",
+      efeito: {
+        tipo: "item",
+        slot: "armadura",
+        nomeItem: "Carapaça do Juggernaut",
+        bonus: {
+          defesa: 12,
+          velocidade: -5,
+          vidaMax: 20,
+        },
+        tag: "muralha_ferro",
+      },
+    },
+
+    /* ============================================================
+       EXPANSÃO: PLANÍCIES DOURADAS (Personagem e Conteúdo)
+       ============================================================ */
+    {
+      id: "lyra_encontro",
+      emoji: "🦅",
+      nome: "Lyra, a Cavaleira do Vento",
+      tipo: "escolha",
+      raridade: "rara",
+      weight: 15,
+      regiaoOrigem: ["planicie"],
+      minNivel: 3,
+      historia: [
+        "Uma guerreira ágil desce dos céus montada em uma águia gigante. Ela te avalia com olhos afiados.",
+      ],
+      cor: "verde",
+      efeito: {
+        tipo: "escolha",
+        intro:
+          '"Você tem passos pesados, aventureiro. Posso te ensinar a dançar com o vento, ou podemos caçar juntos."',
+        opcoes: [
+          {
+            id: "treinamento_vento",
+            label: "🌪️ Treinar agilidade com Lyra (Custa 30 Ouro)",
+            dica: "Ganha +3 de Velocidade permanente.",
+            historia: [
+              "O treino é brutal, mas agora você se move antes que seus inimigos sequer pisquem.",
+            ],
+            ouro: [-30, -30],
+            statDelta: { velocidade: 3 },
+          },
+          {
+            id: "cacar_juntos",
+            label: "🏹 Ajudá-la na caça",
+            dica: "Recebe o Manto de Penas e divide os lucros.",
+            historia: [
+              "Vocês abatem feras da planície. Ela te recompensa com ouro e uma de suas vestes.",
+            ],
+            ouro: [20, 40],
+            itemGanho: "manto_de_penas", // Dá um item automaticamente se você tiver suporte para isso, ou apenas dê stats.
+          },
+        ],
+      },
+    },
+    {
+      id: "manto_de_penas",
+      emoji: "🪶",
+      nome: "Manto de Penas da Águia",
+      tipo: "item",
+      raridade: "incomum",
+      weight: 0, // Dropado pela Lyra
+      oculta: true,
+      regiaoOrigem: ["planicie"],
+      minNivel: 3,
+      historia: [
+        "Leve como o ar, oferece pouca proteção física, mas desvia golpes mágicos.",
+      ],
+      cor: "verde",
+      efeito: {
+        tipo: "item",
+        slot: "armadura",
+        nomeItem: "Manto de Penas da Águia",
+        bonus: { defesa: 3, velocidade: 4, manaMax: 10 },
+      },
+    },
+    {
+      id: "manada_furia",
+      emoji: "🦬",
+      nome: "Manada em Fúria",
+      tipo: "evento",
+      raridade: "incomum",
+      weight: 25,
+      regiaoOrigem: ["planicie"],
+      minNivel: 3,
+      historia: [
+        "O chão treme violentamente. Centenas de búfalos selvagens correm em sua direção!",
+      ],
+      cor: "laranja",
+      efeito: {
+        tipo: "teste_atributo",
+        atributo: "velocidade",
+        dificuldade: 8, // Exige Velocidade 8 ou mais para sucesso perfeito
+        sucesso: {
+          historia: [
+            "Você é rápido o bastante para escalar uma rocha alta e evitar ser esmagado. De lá, você acha ouro que caiu de aventureiros menos sortudos.",
+          ],
+          ouro: [15, 30],
+          exp: 10,
+        },
+        falha: {
+          historia: [
+            "Você tenta correr, mas é pego de raspão pela manada. Ossos quebram, mas você sobrevive.",
+          ],
+          dano: 25,
+        },
+      },
+    },
+
+    /* ============================================================
+       EXPANSÃO: COSTA ESQUECIDA (Personagem e Conteúdo)
+       ============================================================ */
+    {
+      id: "thalassa_encontro",
+      emoji: "🐚",
+      nome: "Thalassa, Oráculo das Marés",
+      tipo: "escolha",
+      raridade: "rara",
+      weight: 15,
+      regiaoOrigem: ["costa"],
+      minNivel: 4,
+      historia: [
+        "Uma mulher de pele azulada e cabelos de algas está sentada em um trono de corais mortos.",
+      ],
+      cor: "azul",
+      efeito: {
+        tipo: "escolha",
+        intro:
+          '"As correntes trazem segredos do abismo. Por um preço, revelarei o que o futuro te guarda."',
+        opcoes: [
+          {
+            id: "comprar_visao",
+            label: "🔮 Pagar pela Visão (Custa 20 Ouro)",
+            dica: "Aumenta Mana Máxima e concede Experiência absurda.",
+            historia: [
+              "Seus olhos brilham. Ela sussurra os segredos de inimigos antigos. Você se sente muito mais sábio.",
+            ],
+            ouro: [-20, -20],
+            statDelta: { manaMax: 20 },
+            exp: 30,
+          },
+          {
+            id: "roubar_oraculo",
+            label: "🗡️ Tentar saquear o trono de coral",
+            dica: "A fúria do mar cairá sobre você. Risco extremo.",
+            historia: [
+              "Você arranca rubis do trono. Thalassa grita e o mar te atinge com uma onda venenosa antes de você fugir.",
+            ],
+            ouro: [40, 80],
+            dano: 35,
+            tag: "toque_venenoso", // Adiciona a tag da nova estratégia sombria/tóxica
+          },
+        ],
+      },
+    },
+    {
+      id: "navio_fantasma",
+      emoji: "⛵",
+      nome: "Navio Encalhado",
+      tipo: "evento",
+      raridade: "comum",
+      weight: 30,
+      regiaoOrigem: ["costa"],
+      minNivel: 3,
+      historia: [
+        "A carcaça apodrecida de um galeão repousa na areia. Um silêncio mortal paira sobre ele.",
+      ],
+      cor: "cinza",
+      efeito: {
+        tipo: "escolha",
+        intro:
+          "O porão escuro parece promissor, mas o cheiro de decomposição é terrível.",
+        opcoes: [
+          {
+            id: "saquear_rapido",
+            label: "🏃 Saquear o convés e sair",
+            dica: "Ganhos seguros, sem riscos.",
+            historia: [
+              "Você encontra algumas moedas esquecidas pelos marinheiros e foge antes que o piso ceda.",
+            ],
+            ouro: [10, 20],
+          },
+          {
+            id: "mergulhar_porao",
+            label: "🕳️ Descer até o porão escuro",
+            dica: "Risco de combate com mortos-vivos ou grande tesouro.",
+            historia: [
+              "O chão cede! Você cai no meio de um tesouro... e de seus antigos donos amaldiçoados!",
+            ],
+            ouro: [30, 60],
+            dano: 15, // Dano de queda/armadilha
+            exp: 15,
+          },
+        ],
+      },
+    },
+    {
+      id: "caranguejo_couracado",
+      emoji: "🦀",
+      nome: "Caranguejo Couraçado",
+      tipo: "inimigo",
+      raridade: "comum",
+      weight: 35,
+      regiaoOrigem: ["costa"],
+      minNivel: 3,
+      historia: [
+        "Um caranguejo do tamanho de uma carroça emerge da areia, batendo pinças de aço natural.",
+        "Com um som de rachadura alta, a couraça se parte e a besta cai.",
+      ],
+      cor: "vermelho",
+      efeito: {
+        tipo: "combate",
+        vidaInimigo: 50,
+        ataqueInimigo: 6, // Ataque baixo
+        defesaInimigo: 8, // Defesa muito alta, força o jogador a ter dano mágico ou perfurante
+        ouroDrop: [5, 10],
+        expDrop: 12,
       },
     },
     {
@@ -2332,7 +3043,7 @@ const GAME_DATA = {
       raridade: "epica",
       weight: 6,
       faseMin: 3,
-      regiaoOrigem: ["caverna"],
+      regiaoOrigem: ["caverna", "cripta"],
       minNivel: 11,
       historia: [
         "Uma fenda escura se abre no chão da caverna, exalando um frio que não é natural.",
@@ -3284,6 +3995,7 @@ const GAME_DATA = {
         "vulcao",
         "capital",
         "abismo",
+        "planicie",
       ],
       minNivel: 1,
       historia: [
@@ -4098,7 +4810,7 @@ const GAME_DATA = {
         "templo",
         "abismo",
         "deserto",
-        "caverna"
+        "caverna",
       ],
       minNivel: 8,
       historia: [
@@ -4508,336 +5220,1021 @@ const GAME_DATA = {
         contadorTag: "salamandrasDerrotadas",
       },
     },
-{
-  "id": "item_aljava",
-  "emoji": "🏹",
-  "nome": "Aljava Reforçada",
-  "tipo": "item",
-  "raridade": "rara",
-  "weight": 1,
-  "regiaoOrigem": [
-    "floresta",
-    "montanha"
-  ],
-  "minNivel": 1,
-  "historia": [
-    "Uma aljava de couro grosso, ainda cheirando a resina — feita para quem não erra duas vezes seguidas."
-  ],
-  "cor": "amarelo",
-  "efeito": {
-    "tipo": "item",
-    "slot": "arma",
-    "nomeItem": "Aljava Reforçada",
-    "bonus": {
-      "ataque": 3,
-      "velocidade": 2
-    }
-  }
-},
-{
-  "id": "item_ferramentas_mestre",
-  "emoji": "🗝",
-  "nome": "Ferramentas de Mestre",
-  "tipo": "item",
-  "raridade": "rara",
-  "weight": 1,
-  "regiaoOrigem": [
-    "ruinas",
-    "castelo"
-  ],
-  "minNivel": 1,
-  "historia": [
-    "Um estojo de gazuas e limas tão bem cuidado que parece ter sido passado de mestre a aprendiz por gerações."
-  ],
-  "cor": "azul",
-  "efeito": {
-    "tipo": "item",
-    "slot": "acessorio",
-    "nomeItem": "Ferramentas de Mestre",
-    "bonus": {
-      "velocidade": 2,
-      "defesa": 2
-    }
-  }
-},
-{
-  "id": "item_martelo_forja",
-  "emoji": "🔨",
-  "nome": "Martelo da Forja",
-  "tipo": "item",
-  "raridade": "rara",
-  "weight": 1,
-  "regiaoOrigem": [
-    "aldeia",
-    "vulcao"
-  ],
-  "minNivel": 1,
-  "historia": [
-    "O cabo ainda está quente. Foi temperado por alguém que sabia exatamente a hora certa de parar de bater."
-  ],
-  "cor": "vermelho",
-  "efeito": {
-    "tipo": "item",
-    "slot": "arma",
-    "nomeItem": "Martelo da Forja",
-    "bonus": {
-      "ataque": 4,
-      "defesa": 1
-    }
-  }
-},
-{
-  "id": "item_colar_orador",
-  "emoji": "🗣",
-  "nome": "Colar do Orador",
-  "tipo": "item",
-  "raridade": "rara",
-  "weight": 1,
-  "regiaoOrigem": [
-    "deserto",
-    "capital"
-  ],
-  "minNivel": 1,
-  "historia": [
-    "Um pingente simples, gasto de tanto ser segurado enquanto seu dono escolhia as próximas palavras com cuidado."
-  ],
-  "cor": "roxo",
-  "efeito": {
-    "tipo": "item",
-    "slot": "acessorio",
-    "nomeItem": "Colar do Orador",
-    "bonus": {
-      "mana": 8,
-      "ataque": 1
-    }
-  }
-},
-{
-  "id": "arquearia_torneio",
-  "emoji": "🎯",
-  "nome": "Torneio de Tiro ao Alvo",
-  "tipo": "evento",
-  "raridade": "incomum",
-  "weight": 18,
-  "regiaoOrigem": [
-    "floresta"
-  ],
-  "minNivel": 1,
-  "historia": [
-    "Caçadores locais armaram um pequeno torneio à beira da estrada, apostando moedas em quem acerta mais alvos.",
-    "\"Vamos ver do que você é feito\", diz o organizador, apontando para a fileira de alvos de palha."
-  ],
-  "cor": "verde",
-  "efeito": {
-    "tipo": "minigame",
-    "jogo": "arquearia",
-    "ouroBase": [
-      8,
-      18
-    ],
-    "expBase": 10,
-    "itemPossivel": "item_aljava",
-    "custoFalha": 4
-  }
-},
-{
-  "id": "arquearia_caca",
-  "emoji": "🦅",
-  "nome": "Caça às Águias-Sombra",
-  "tipo": "evento",
-  "raridade": "rara",
-  "weight": 12,
-  "regiaoOrigem": [
-    "montanha"
-  ],
-  "minNivel": 3,
-  "historia": [
-    "Um bando de aves rápidas circula sobre o penhasco — abatê-las evitaria que atacassem viajantes mais à frente.",
-    "O vento forte torna cada disparo uma aposta."
-  ],
-  "cor": "azul",
-  "efeito": {
-    "tipo": "minigame",
-    "jogo": "arquearia",
-    "ouroBase": [
-      12,
-      24
-    ],
-    "expBase": 16,
-    "itemPossivel": "item_aljava",
-    "custoFalha": 6
-  }
-},
-{
-  "id": "arrombamento_cofre",
-  "emoji": "🔐",
-  "nome": "Cofre Trancado das Ruínas",
-  "tipo": "evento",
-  "raridade": "rara",
-  "weight": 14,
-  "regiaoOrigem": [
-    "ruinas"
-  ],
-  "minNivel": 2,
-  "historia": [
-    "Um cofre de metal enferrujado, com uma fechadura de símbolos entalhados que parece exigir uma ordem exata.",
-    "Cada símbolo range ao ser tocado — um erro pode travar o mecanismo de vez."
-  ],
-  "cor": "cinza",
-  "efeito": {
-    "tipo": "minigame",
-    "jogo": "arrombamento",
-    "ouroBase": [
-      14,
-      26
-    ],
-    "expBase": 14,
-    "itemPossivel": "item_ferramentas_mestre",
-    "custoFalha": 5
-  }
-},
-{
-  "id": "arrombamento_portao",
-  "emoji": "🚪",
-  "nome": "Portão Selado do Castelo",
-  "tipo": "evento",
-  "raridade": "epica",
-  "weight": 6,
-  "regiaoOrigem": [
-    "castelo"
-  ],
-  "minNivel": 8,
-  "historia": [
-    "O mecanismo do portão foi projetado para confundir qualquer um que não conhecesse o brasão real de cor.",
-    "Um clique errado e barras de ferro descem sobre a passagem — melhor acertar de primeira."
-  ],
-  "cor": "cinza",
-  "efeito": {
-    "tipo": "minigame",
-    "jogo": "arrombamento",
-    "ouroBase": [
-      22,
-      40
-    ],
-    "expBase": 24,
-    "itemPossivel": "item_ferramentas_mestre",
-    "custoFalha": 10
-  }
-},
-{
-  "id": "forja_ferreiro",
-  "emoji": "⚒",
-  "nome": "Desafio do Ferreiro",
-  "tipo": "evento",
-  "raridade": "incomum",
-  "weight": 18,
-  "regiaoOrigem": [
-    "aldeia"
-  ],
-  "minNivel": 1,
-  "historia": [
-    "O ferreiro da aldeia te entrega um martelo. \"Bata na hora certa e eu te dou algo digno de uso. Erre, e é só metal desperdiçado.\"",
-    "A bigorna já está quente, esperando o primeiro golpe."
-  ],
-  "cor": "vermelho",
-  "efeito": {
-    "tipo": "minigame",
-    "jogo": "forja",
-    "ouroBase": [
-      6,
-      14
-    ],
-    "expBase": 10,
-    "itemPossivel": "item_martelo_forja",
-    "custoFalha": 3
-  }
-},
-{
-  "id": "forja_vulcanica",
-  "emoji": "🌋",
-  "nome": "Forja Vulcânica",
-  "tipo": "evento",
-  "raridade": "epica",
-  "weight": 8,
-  "regiaoOrigem": [
-    "vulcao"
-  ],
-  "minNivel": 10,
-  "faseMin": 3,
-  "historia": [
-    "O calor da lava próxima torna cada golpe mais arriscado — errar o momento certo pode custar mais que o metal.",
-    "Um ferreiro anão trabalha ao seu lado sem se queimar, guiando seus golpes com um aceno de cabeça."
-  ],
-  "cor": "vermelho",
-  "efeito": {
-    "tipo": "minigame",
-    "jogo": "forja",
-    "ouroBase": [
-      18,
-      32
-    ],
-    "expBase": 22,
-    "itemPossivel": "item_martelo_forja",
-    "custoFalha": 8
-  }
-},
-{
-  "id": "persuasao_mercador",
-  "emoji": "🎭",
-  "nome": "Negociação no Deserto",
-  "tipo": "evento",
-  "raridade": "incomum",
-  "weight": 16,
-  "regiaoOrigem": [
-    "deserto"
-  ],
-  "minNivel": 2,
-  "historia": [
-    "Um mercador nômade recusa seu primeiro preço com um sorriso. \"Vamos ver se você sabe mesmo negociar.\"",
-    "Ele cruza os braços, esperando sua próxima jogada."
-  ],
-  "cor": "roxo",
-  "efeito": {
-    "tipo": "minigame",
-    "jogo": "persuasao",
-    "ouroBase": [
-      10,
-      20
-    ],
-    "expBase": 12,
-    "itemPossivel": "item_colar_orador",
-    "custoFalha": 4
-  }
-},
-{
-  "id": "persuasao_conselho",
-  "emoji": "🏛",
-  "nome": "Debate no Conselho da Capital",
-  "tipo": "evento",
-  "raridade": "epica",
-  "weight": 6,
-  "regiaoOrigem": [
-    "capital"
-  ],
-  "minNivel": 10,
-  "faseMin": 3,
-  "historia": [
-    "Os conselheiros da Capital escutam em silêncio, prontos para desmontar qualquer argumento fraco.",
-    "Uma palavra errada aqui pode custar mais do que ouro."
-  ],
-  "cor": "roxo",
-  "efeito": {
-    "tipo": "minigame",
-    "jogo": "persuasao",
-    "ouroBase": [
-      20,
-      36
-    ],
-    "expBase": 26,
-    "itemPossivel": "item_colar_orador",
-    "custoFalha": 9
-  }
-},
+    {
+      id: "item_aljava",
+      emoji: "🏹",
+      nome: "Aljava Reforçada",
+      tipo: "item",
+      raridade: "rara",
+      weight: 1,
+      regiaoOrigem: ["floresta", "montanha"],
+      minNivel: 1,
+      historia: [
+        "Uma aljava de couro grosso, ainda cheirando a resina — feita para quem não erra duas vezes seguidas.",
+      ],
+      cor: "amarelo",
+      efeito: {
+        tipo: "item",
+        slot: "arma",
+        nomeItem: "Aljava Reforçada",
+        bonus: {
+          ataque: 3,
+          velocidade: 2,
+        },
+      },
+    },
+    {
+      id: "item_ferramentas_mestre",
+      emoji: "🗝",
+      nome: "Ferramentas de Mestre",
+      tipo: "item",
+      raridade: "rara",
+      weight: 1,
+      regiaoOrigem: ["ruinas", "castelo"],
+      minNivel: 1,
+      historia: [
+        "Um estojo de gazuas e limas tão bem cuidado que parece ter sido passado de mestre a aprendiz por gerações.",
+      ],
+      cor: "azul",
+      efeito: {
+        tipo: "item",
+        slot: "acessorio",
+        nomeItem: "Ferramentas de Mestre",
+        bonus: {
+          velocidade: 2,
+          defesa: 2,
+        },
+      },
+    },
+    {
+      id: "item_martelo_forja",
+      emoji: "🔨",
+      nome: "Martelo da Forja",
+      tipo: "item",
+      raridade: "rara",
+      weight: 1,
+      regiaoOrigem: ["aldeia", "vulcao"],
+      minNivel: 1,
+      historia: [
+        "O cabo ainda está quente. Foi temperado por alguém que sabia exatamente a hora certa de parar de bater.",
+      ],
+      cor: "vermelho",
+      efeito: {
+        tipo: "item",
+        slot: "arma",
+        nomeItem: "Martelo da Forja",
+        bonus: {
+          ataque: 4,
+          defesa: 1,
+        },
+      },
+    },
+    {
+      id: "item_colar_orador",
+      emoji: "🗣",
+      nome: "Colar do Orador",
+      tipo: "item",
+      raridade: "rara",
+      weight: 1,
+      regiaoOrigem: ["deserto", "capital"],
+      minNivel: 1,
+      historia: [
+        "Um pingente simples, gasto de tanto ser segurado enquanto seu dono escolhia as próximas palavras com cuidado.",
+      ],
+      cor: "roxo",
+      efeito: {
+        tipo: "item",
+        slot: "acessorio",
+        nomeItem: "Colar do Orador",
+        bonus: {
+          mana: 8,
+          ataque: 1,
+        },
+      },
+    },
+    {
+      id: "arquearia_torneio",
+      emoji: "🎯",
+      nome: "Torneio de Tiro ao Alvo",
+      tipo: "evento",
+      raridade: "incomum",
+      weight: 18,
+      regiaoOrigem: ["floresta"],
+      minNivel: 1,
+      historia: [
+        "Caçadores locais armaram um pequeno torneio à beira da estrada, apostando moedas em quem acerta mais alvos.",
+        '"Vamos ver do que você é feito", diz o organizador, apontando para a fileira de alvos de palha.',
+      ],
+      cor: "verde",
+      efeito: {
+        tipo: "minigame",
+        jogo: "arquearia",
+        ouroBase: [8, 18],
+        expBase: 10,
+        itemPossivel: "item_aljava",
+        custoFalha: 4,
+      },
+    },
+    {
+      id: "arquearia_caca",
+      emoji: "🦅",
+      nome: "Caça às Águias-Sombra",
+      tipo: "evento",
+      raridade: "rara",
+      weight: 12,
+      regiaoOrigem: ["montanha"],
+      minNivel: 3,
+      historia: [
+        "Um bando de aves rápidas circula sobre o penhasco — abatê-las evitaria que atacassem viajantes mais à frente.",
+        "O vento forte torna cada disparo uma aposta.",
+      ],
+      cor: "azul",
+      efeito: {
+        tipo: "minigame",
+        jogo: "arquearia",
+        ouroBase: [12, 24],
+        expBase: 16,
+        itemPossivel: "item_aljava",
+        custoFalha: 6,
+      },
+    },
+    {
+      id: "arrombamento_cofre",
+      emoji: "🔐",
+      nome: "Cofre Trancado das Ruínas",
+      tipo: "evento",
+      raridade: "rara",
+      weight: 14,
+      regiaoOrigem: ["ruinas"],
+      minNivel: 2,
+      historia: [
+        "Um cofre de metal enferrujado, com uma fechadura de símbolos entalhados que parece exigir uma ordem exata.",
+        "Cada símbolo range ao ser tocado — um erro pode travar o mecanismo de vez.",
+      ],
+      cor: "cinza",
+      efeito: {
+        tipo: "minigame",
+        jogo: "arrombamento",
+        ouroBase: [14, 26],
+        expBase: 14,
+        itemPossivel: "item_ferramentas_mestre",
+        custoFalha: 5,
+      },
+    },
+    {
+      id: "arrombamento_portao",
+      emoji: "🚪",
+      nome: "Portão Selado do Castelo",
+      tipo: "evento",
+      raridade: "epica",
+      weight: 6,
+      regiaoOrigem: ["castelo"],
+      minNivel: 8,
+      historia: [
+        "O mecanismo do portão foi projetado para confundir qualquer um que não conhecesse o brasão real de cor.",
+        "Um clique errado e barras de ferro descem sobre a passagem — melhor acertar de primeira.",
+      ],
+      cor: "cinza",
+      efeito: {
+        tipo: "minigame",
+        jogo: "arrombamento",
+        ouroBase: [22, 40],
+        expBase: 24,
+        itemPossivel: "item_ferramentas_mestre",
+        custoFalha: 10,
+      },
+    },
+    {
+      id: "forja_ferreiro",
+      emoji: "⚒",
+      nome: "Desafio do Ferreiro",
+      tipo: "evento",
+      raridade: "incomum",
+      weight: 18,
+      regiaoOrigem: ["aldeia"],
+      minNivel: 1,
+      historia: [
+        'O ferreiro da aldeia te entrega um martelo. "Bata na hora certa e eu te dou algo digno de uso. Erre, e é só metal desperdiçado."',
+        "A bigorna já está quente, esperando o primeiro golpe.",
+      ],
+      cor: "vermelho",
+      efeito: {
+        tipo: "minigame",
+        jogo: "forja",
+        ouroBase: [6, 14],
+        expBase: 10,
+        itemPossivel: "item_martelo_forja",
+        custoFalha: 3,
+      },
+    },
+    {
+      id: "forja_vulcanica",
+      emoji: "🌋",
+      nome: "Forja Vulcânica",
+      tipo: "evento",
+      raridade: "epica",
+      weight: 8,
+      regiaoOrigem: ["vulcao"],
+      minNivel: 10,
+      faseMin: 3,
+      historia: [
+        "O calor da lava próxima torna cada golpe mais arriscado — errar o momento certo pode custar mais que o metal.",
+        "Um ferreiro anão trabalha ao seu lado sem se queimar, guiando seus golpes com um aceno de cabeça.",
+      ],
+      cor: "vermelho",
+      efeito: {
+        tipo: "minigame",
+        jogo: "forja",
+        ouroBase: [18, 32],
+        expBase: 22,
+        itemPossivel: "item_martelo_forja",
+        custoFalha: 8,
+      },
+    },
+    {
+      id: "persuasao_mercador",
+      emoji: "🎭",
+      nome: "Negociação no Deserto",
+      tipo: "evento",
+      raridade: "incomum",
+      weight: 16,
+      regiaoOrigem: ["deserto"],
+      minNivel: 2,
+      historia: [
+        'Um mercador nômade recusa seu primeiro preço com um sorriso. "Vamos ver se você sabe mesmo negociar."',
+        "Ele cruza os braços, esperando sua próxima jogada.",
+      ],
+      cor: "roxo",
+      efeito: {
+        tipo: "minigame",
+        jogo: "persuasao",
+        ouroBase: [10, 20],
+        expBase: 12,
+        itemPossivel: "item_colar_orador",
+        custoFalha: 4,
+      },
+    },
+    {
+      id: "persuasao_conselho",
+      emoji: "🏛",
+      nome: "Debate no Conselho da Capital",
+      tipo: "evento",
+      raridade: "epica",
+      weight: 6,
+      regiaoOrigem: ["capital"],
+      minNivel: 10,
+      faseMin: 3,
+      historia: [
+        "Os conselheiros da Capital escutam em silêncio, prontos para desmontar qualquer argumento fraco.",
+        "Uma palavra errada aqui pode custar mais do que ouro.",
+      ],
+      cor: "roxo",
+      efeito: {
+        tipo: "minigame",
+        jogo: "persuasao",
+        ouroBase: [20, 36],
+        expBase: 26,
+        itemPossivel: "item_colar_orador",
+        custoFalha: 9,
+      },
+    },
+    /* ============================================================
+       💰 SUMIDOUROS DE OURO E COMÉRCIO (Gastos Pesados)
+       ============================================================ */
+    {
+      id: "taverna_javali",
+      emoji: "🍺",
+      nome: "Taverna do Javali Cospedor",
+      tipo: "escolha",
+      raridade: "comum",
+      weight: 25,
+      regiaoOrigem: ["aldeia", "cidade", "estrada"],
+      minNivel: 2,
+      historia: [
+        "O cheiro de carne assada e cerveja barata é um convite irrecusável.",
+      ],
+      cor: "laranja",
+      efeito: {
+        tipo: "escolha",
+        intro:
+          "O taverneiro limpa um copo sujo. 'Temos comida, bebida e fofocas. O que vai ser?'",
+        opcoes: [
+          {
+            id: "banquete",
+            label: "🍖 Pagar um Banquete Farto (Custa 40 Ouro)",
+            dica: "Cura 100% da Vida e ganha +5 Vida Máxima.",
+            historia: [
+              "Você come como um rei. Seu corpo está revigorado e mais resistente.",
+            ],
+            ouro: [-40, -40],
+            cura: 999,
+            statDelta: { vidaMax: 5 },
+          },
+          {
+            id: "boatos",
+            label: "🗣️ Comprar Boatos (Custa 15 Ouro)",
+            dica: "Ganha muita Experiência.",
+            historia: [
+              "Você descobre rotas secretas e fraquezas de monstros locais.",
+            ],
+            ouro: [-15, -15],
+            exp: 25,
+          },
+          {
+            id: "sair_taverna",
+            label: "🚪 Apenas ir embora",
+            dica: "Não gasta nada.",
+            historia: [
+              "Você ignora seu estômago roncando e volta para a estrada.",
+            ],
+          },
+        ],
+      },
+    },
+    {
+      id: "cassino_goblin",
+      emoji: "🎲",
+      nome: "Cassino Clandestino",
+      tipo: "escolha",
+      raridade: "incomum",
+      weight: 15,
+      regiaoOrigem: ["caverna", "castelo", "ruinas", "deserto"],
+      minNivel: 4,
+      historia: [
+        "Uma porta escondida revela um salão cheio de goblins gritando ao redor de mesas de aposta.",
+      ],
+      cor: "amarelo",
+      efeito: {
+        tipo: "escolha",
+        intro:
+          "Um goblin de terno esfarrapado sorri: 'Aposte 50 moedas de ouro! Se tirar sorte grande, leva uma fortuna!'",
+        opcoes: [
+          {
+            id: "apostar_alto",
+            label: "🪙 Apostar 50 Ouro",
+            dica: "Pode ganhar 150 de Ouro ou perder tudo.",
+            historia: [
+              "A roleta gira... E você ganha a bolada! Os goblins choram.",
+            ],
+            ouro: [100, 150],
+          }, // Aqui simulamos o ganho (ele paga 50, mas leva 150, saldo positivo de 100)
+          {
+            id: "roubar_mesa",
+            label: "🗡️ Tentar roubar a mesa",
+            dica: "Teste de Velocidade. Se falhar, leva dano.",
+            historia: [
+              "Você tenta pegar as moedas, mas os seguranças goblins te espancam antes de você fugir!",
+            ],
+            dano: 20,
+            exp: 5,
+          },
+          {
+            id: "ignorar_cassino",
+            label: "🚶 Sair de fininho",
+            dica: "O jogo é para tolos.",
+            historia: ["Você mantém seu suado ouro seguro na bolsa."],
+          },
+        ],
+      },
+    },
+    {
+      id: "mestre_darmas",
+      emoji: "⚔️",
+      nome: "Mestre d'Armas Veterano",
+      tipo: "escolha",
+      raridade: "rara",
+      weight: 12,
+      regiaoOrigem: ["capital", "montanha", "aldeia"],
+      minNivel: 5,
+      historia: [
+        "Um guerreiro cego e cheio de cicatrizes afia uma espada gigante debaixo de uma árvore.",
+      ],
+      cor: "cinza",
+      efeito: {
+        tipo: "escolha",
+        intro:
+          "'Eu não luto mais... mas posso te ensinar a matar. O treinamento custa 70 moedas de ouro.'",
+        opcoes: [
+          {
+            id: "treino_intensivo",
+            label: "💪 Pagar pelo Treinamento (Custa 70 Ouro)",
+            dica: "Ganha +4 de Ataque permanentemente.",
+            historia: [
+              "Os golpes dele são implacáveis, mesmo cego. Você sai do treino muito mais letal.",
+            ],
+            ouro: [-70, -70],
+            statDelta: { ataque: 4 },
+          },
+          {
+            id: "recusar_treino",
+            label: "✋ O preço é muito alto",
+            dica: "Você guarda seu ouro.",
+            historia: ["O velho dá de ombros. 'Sua cova, suas regras.'"],
+          },
+        ],
+      },
+    },
+
+    /* ============================================================
+       ⚡ EVENTOS RÁPIDOS E ESCOLHAS DE EXPLORAÇÃO
+       ============================================================ */
+    {
+      id: "cogumelos_brilhantes",
+      emoji: "🍄",
+      nome: "Caverna dos Esporos",
+      tipo: "escolha",
+      raridade: "comum",
+      weight: 35,
+      regiaoOrigem: ["floresta", "caverna", "pantano"],
+      minNivel: 1,
+      historia: [
+        "Você encontra um círculo de cogumelos que brilham com uma luz azulada.",
+      ],
+      cor: "roxo",
+      efeito: {
+        tipo: "escolha",
+        intro: "Eles cheiram a magia crua... e a podridão.",
+        opcoes: [
+          {
+            id: "comer_cogumelo",
+            label: "🤤 Comer o cogumelo azul",
+            dica: "Restaura muita Mana, mas causa um pouco de dano tóxico.",
+            historia: [
+              "Sua mente se expande com magia cósmica, mas seu estômago revira violentamente.",
+            ],
+            curaMana: 40,
+            dano: 10,
+          },
+          {
+            id: "esmagar_esporos",
+            label: "🥾 Esmagar para abrir caminho",
+            dica: "Evita riscos.",
+            historia: ["Você passa ileso."],
+          },
+        ],
+      },
+    },
+    {
+      id: "mendigo_misterioso",
+      emoji: "🤲",
+      nome: "O Velho Faminto",
+      tipo: "escolha",
+      raridade: "incomum",
+      weight: 20,
+      regiaoOrigem: ["estrada", "aldeia", "capital"],
+      minNivel: 2,
+      historia: ["Um homem em trapos estende uma mão tremula em sua direção."],
+      cor: "amarelo",
+      efeito: {
+        tipo: "escolha",
+        intro: "'Me dê algumas moedas, jovem... a bondade sempre retorna.'",
+        opcoes: [
+          {
+            id: "dar_ouro_mendigo",
+            label: "🪙 Doar 10 Ouro",
+            dica: "O carma não falha.",
+            historia: [
+              "Ao receber as moedas, o velho sorri. Uma luz divina emana dele, curando todas as suas feridas.",
+            ],
+            ouro: [-10, -10],
+            cura: 100,
+          },
+          {
+            id: "dar_comida",
+            label: "🍞 Ignorar o pedido",
+            dica: "Nada acontece.",
+            historia: [
+              "Você afasta o rosto e continua andando. Ele suspira tristemente.",
+            ],
+          },
+        ],
+      },
+    },
+    {
+      id: "armadilha_urso",
+      emoji: "🪤",
+      nome: "Armadilha de Caçador",
+      tipo: "evento",
+      raridade: "comum",
+      weight: 25,
+      regiaoOrigem: ["floresta", "planicie"],
+      minNivel: 1,
+      historia: [
+        "*CRACK!* Uma armadilha de urso de ferro maciço dispara direto no seu tornozelo!",
+      ],
+      cor: "vermelho",
+      efeito: {
+        tipo: "teste_atributo",
+        atributo: "velocidade",
+        dificuldade: 6,
+        sucesso: {
+          historia: [
+            "Seus reflexos são impressionantes! Você tira o pé no último milissegundo. Você desmonta a armadilha e a vende por algumas moedas.",
+          ],
+          ouro: [5, 10],
+        },
+        falha: {
+          historia: [
+            "Os dentes de ferro cravam na sua perna. Você perde muito sangue até conseguir se soltar.",
+          ],
+          dano: 18,
+        },
+      },
+    },
+    {
+      id: "tempestade_magica",
+      emoji: "🌩️",
+      nome: "Tempestade Arcana",
+      tipo: "evento",
+      raridade: "incomum",
+      weight: 15,
+      regiaoOrigem: ["montanha", "ruinas", "planicie"],
+      minNivel: 3,
+      historia: [
+        "Nuvens roxas cobrem o céu, e raios de pura energia mágica começam a bombardear o solo.",
+      ],
+      cor: "roxo",
+      efeito: {
+        tipo: "teste_atributo",
+        atributo: "manaMax",
+        dificuldade: 20,
+        sucesso: {
+          historia: [
+            "Sua aura mágica absorve a tempestade! Você converte o perigo em poder puro, fortalecendo seu espírito.",
+          ],
+          statDelta: { manaMax: 5 },
+          exp: 20,
+        },
+        falha: {
+          historia: [
+            "Um raio arcano atinge você em cheio. Sua mente queima de dor.",
+          ],
+          dano: 25,
+        },
+      },
+    },
+    {
+      id: "estatua_choro",
+      emoji: "🗽",
+      nome: "A Estátua que Chora",
+      tipo: "escolha",
+      raridade: "rara",
+      weight: 10,
+      regiaoOrigem: ["ruinas", "cemiterio"],
+      minNivel: 5,
+      historia: [
+        "Uma estátua de anjo esculpida em mármore derrama lágrimas de sangue negro.",
+      ],
+      cor: "vermelho",
+      efeito: {
+        tipo: "escolha",
+        intro:
+          "Uma voz sussurra: 'Tome minha dor, e eu lhe darei a vida eterna.'",
+        opcoes: [
+          {
+            id: "beber_sangue",
+            label: "🩸 Beber as lágrimas negras",
+            dica: "Ganha +15 Vida Máxima, mas perde Velocidade.",
+            historia: [
+              "O líquido tem gosto de cinzas. Seu corpo fica denso e quase imortal, mas seus movimentos ficam lentos.",
+            ],
+            statDelta: { vidaMax: 15, velocidade: -2 },
+            tag: "magia_de_sangue",
+          },
+          {
+            id: "destruir_estatua",
+            label: "🔨 Esmagar a estátua maligna",
+            dica: "Você destrói a heresia e ganha XP.",
+            historia: [
+              "O mármore quebra facilmente. Você se sente purificado.",
+            ],
+            exp: 15,
+          },
+        ],
+      },
+    },
+
+    /* ============================================================
+       🦇 NOVOS MONSTROS E DESAFIOS DE COMBATE
+       ============================================================ */
+    {
+      id: "goblin_gatuno",
+      emoji: "👺",
+      nome: "Goblin Gatuno",
+      tipo: "inimigo",
+      raridade: "comum",
+      weight: 35,
+      regiaoOrigem: ["caverna", "estrada", "floresta"],
+      minNivel: 2,
+      historia: [
+        "Um vulto verde salta dos arbustos com uma faca na mão e olho na sua bolsa!",
+        "Ele tentou correr, mas sua arma o alcançou antes.",
+      ],
+      cor: "verde",
+      efeito: {
+        tipo: "combate",
+        vidaInimigo: 15,
+        ataqueInimigo: 12,
+        defesaInimigo: 1,
+        ouroDrop: [25, 40],
+        expDrop: 10,
+      }, // Bate forte e rápido, mas é frágil e dá muito ouro
+    },
+    {
+      id: "golem_granito",
+      emoji: "🗿",
+      nome: "Golem de Granito",
+      tipo: "inimigo",
+      raridade: "incomum",
+      weight: 20,
+      regiaoOrigem: ["montanha", "caverna", "ruinas"],
+      minNivel: 4,
+      historia: [
+        "A própria montanha parece ganhar vida. Ele se move lentamente, mas cada passo treme o chão.",
+        "A rocha se despedaça em mil pedregulhos inofensivos.",
+      ],
+      cor: "cinza",
+      efeito: {
+        tipo: "combate",
+        vidaInimigo: 80,
+        ataqueInimigo: 8,
+        defesaInimigo: 6,
+        ouroDrop: [5, 10],
+        expDrop: 30,
+      }, // Tank puro, testa a paciência e força de dano do jogador
+    },
+    {
+      id: "espectro_lamentoso",
+      emoji: "👻",
+      nome: "Espectro Lamentoso",
+      tipo: "inimigo",
+      raridade: "rara",
+      weight: 15,
+      regiaoOrigem: ["cemiterio", "ruinas"],
+      minNivel: 5,
+      historia: [
+        "Uma alma aprisionada pela dor avança flutuando, suas garras geladas buscam seu calor vital.",
+        "O fantasma se dissipa no ar com um último suspiro aliviado.",
+      ],
+      cor: "roxo",
+      efeito: {
+        tipo: "combate",
+        vidaInimigo: 30,
+        ataqueInimigo: 16,
+        defesaInimigo: 8,
+        ouroDrop: [0, 0],
+        expDrop: 25,
+      }, // Alto ataque e defesa alta, exige magias ou dano alto rápido
+    },
+    {
+      id: "enxame_vespas",
+      emoji: "🐝",
+      nome: "Enxame de Vespas Gigantes",
+      tipo: "inimigo",
+      raridade: "comum",
+      weight: 25,
+      regiaoOrigem: ["floresta", "pantano"],
+      minNivel: 3,
+      historia: [
+        "Um zumbido ensurdecedor domina o ar. Milhares de ferrões letais vêm na sua direção!",
+        "O zumbido cessa, deixando o chão forrado de insetos mortos.",
+      ],
+      cor: "amarelo",
+      efeito: {
+        tipo: "combate",
+        vidaInimigo: 45,
+        ataqueInimigo: 10,
+        defesaInimigo: 0,
+        ouroDrop: [2, 5],
+        expDrop: 18,
+      }, // Zero defesa, mas bate machucando constantemente
+    },
+    {
+      id: "cavaleiro_sem_cabeca",
+      emoji: "🎃",
+      nome: "Cavaleiro Decapitado",
+      tipo: "inimigo",
+      raridade: "rara",
+      weight: 10,
+      regiaoOrigem: ["estrada", "cemiterio"],
+      minNivel: 6,
+      historia: [
+        "Os cascos do cavalo fantasma ecoam na neblina. O cavaleiro brande sua lâmina infernal.",
+        "O cavaleiro cai do cavalo, e sua armadura se desfaz em fumaça.",
+      ],
+      cor: "vermelho",
+      efeito: {
+        tipo: "combate",
+        vidaInimigo: 65,
+        ataqueInimigo: 15,
+        defesaInimigo: 4,
+        ouroDrop: [15, 30],
+        expDrop: 40,
+      },
+    },
+    {
+      id: "mimico_bau",
+      emoji: "🧰",
+      nome: "Mímico Devorador",
+      tipo: "chefe",
+      raridade: "epica",
+      weight: 8,
+      regiaoOrigem: ["caverna", "castelo", "ruinas"],
+      minNivel: 5,
+      historia: [
+        "O que parecia um baú cheio de tesouros de repente abre uma boca gigante cheia de dentes afiados!",
+        "A criatura monstruosa gosmenta finalmente morre, cuspindo o ouro que devorou.",
+      ],
+      cor: "laranja",
+      efeito: {
+        tipo: "combate",
+        vidaInimigo: 90,
+        ataqueInimigo: 14,
+        defesaInimigo: 5,
+        ouroDrop: [70, 100],
+        expDrop: 50,
+        itemGarantido: "anel_ganancia",
+      }, // Drop de ouro massivo e item específico
+    },
+
+    /* ============================================================
+       🛡️ NOVOS ITENS E ARTEFATOS
+       ============================================================ */
+    {
+      id: "anel_ganancia",
+      emoji: "💍",
+      nome: "Anel da Ganância",
+      tipo: "item",
+      raridade: "epica",
+      weight: 0,
+      oculta: true,
+      regiaoOrigem: ["caverna"],
+      minNivel: 5,
+      historia: [
+        "Um anel de ouro amaldiçoado. Ele te atrai para riquezas, mas te deixa descuidado nas batalhas.",
+      ],
+      cor: "amarelo",
+      efeito: {
+        tipo: "item",
+        slot: "acessorio",
+        nomeItem: "Anel da Ganância",
+        bonus: { velocidade: -2, defesa: -2 },
+        tag: "caminho_riqueza",
+      }, // A tag de riqueza ativa eventos futuros que dobram ganho de ouro
+    },
+    {
+      id: "bomba_fumaca",
+      emoji: "💣",
+      nome: "Bomba de Fumaça",
+      tipo: "item",
+      raridade: "comum",
+      weight: 20,
+      regiaoOrigem: ["cidade", "castelo"],
+      minNivel: 2,
+      historia: [
+        "Um pequeno frasco ninja que explode em uma nuvem cinza, permitindo esquivas perfeitas.",
+      ],
+      cor: "cinza",
+      efeito: {
+        tipo: "item",
+        slot: "acessorio",
+        nomeItem: "Bomba de Fumaça",
+        bonus: { velocidade: 5, ataque: -1 },
+      },
+    },
+    {
+      id: "laminas_gêmeas",
+      emoji: "🗡️",
+      nome: "Lâminas Gêmeas do Assassino",
+      tipo: "item",
+      raridade: "incomum",
+      weight: 15,
+      regiaoOrigem: ["cidade", "caverna"],
+      minNivel: 3,
+      historia: [
+        "Focadas em atacar extremamente rápido antes que o inimigo reaja.",
+      ],
+      cor: "azul",
+      efeito: {
+        tipo: "item",
+        slot: "arma",
+        nomeItem: "Lâminas Gêmeas",
+        bonus: { ataque: 5, velocidade: 4 },
+      },
+    },
+    {
+      id: "escudo_espinhoso",
+      emoji: "🛡️",
+      nome: "Escudo de Espinhos",
+      tipo: "item",
+      raridade: "rara",
+      weight: 12,
+      regiaoOrigem: ["floresta", "castelo"],
+      minNivel: 4,
+      historia: [
+        "Além de bloquear ataques, suas pontas de ferro rasgam a pele de quem o golpeia.",
+      ],
+      cor: "vermelho",
+      efeito: {
+        tipo: "item",
+        slot: "armadura",
+        nomeItem: "Escudo de Espinhos",
+        bonus: { defesa: 4, ataque: 3, velocidade: -1 },
+      },
+    },
+    {
+      id: "coracao_cristal",
+      emoji: "💎",
+      nome: "Coração de Cristal Frio",
+      tipo: "item",
+      raridade: "epica",
+      weight: 5,
+      regiaoOrigem: ["montanha", "ruinas"],
+      minNivel: 6,
+      historia: [
+        "Um artefato que gela o peito do usuário, concedendo uma resistência mágica e física absurdas.",
+      ],
+      cor: "roxo",
+      efeito: {
+        tipo: "item",
+        slot: "acessorio",
+        nomeItem: "Coração de Cristal Frio",
+        bonus: { vidaMax: 30, defesa: 3, manaMax: -10 },
+      },
+    },
+    {
+      id: "elixir_deuses",
+      emoji: "🏺",
+      nome: "Elixir dos Deuses Antigos",
+      tipo: "escolha",
+      raridade: "lendaria",
+      weight: 4,
+      regiaoOrigem: ["ruinas", "capital", "templo"],
+      minNivel: 7,
+      historia: [
+        "Você encontra um frasco brilhante e intacto escondido em um altar selado.",
+      ],
+      cor: "dourado",
+      efeito: {
+        tipo: "escolha",
+        intro:
+          "O líquido dourado parece borbulhar luz pura. É uma bebida divina.",
+        opcoes: [
+          {
+            id: "beber_elixir",
+            label: "🥂 Virar o Elixir de uma vez",
+            dica: "+10 em TODOS os atributos permanentemente.",
+            historia: [
+              "Você sente o poder do próprio sol correndo em suas veias. Você agora é quase um semideus.",
+            ],
+            statDelta: {
+              vidaMax: 10,
+              manaMax: 10,
+              ataque: 10,
+              defesa: 10,
+              velocidade: 10,
+            },
+            cura: 999,
+          },
+        ],
+      },
+    },
+
+    /* ============================================================
+       💀 NOVA MINI-REGIÃO: A CRIPTA SOMBRIA (Late Game)
+       ============================================================ */
+    {
+      id: "cripta_entrada",
+      emoji: "🪦",
+      nome: "Entrada da Cripta Sombria",
+      tipo: "local",
+      raridade: "incomum",
+      weight: 15,
+      inicial: true,
+      regiaoOrigem: ["cemiterio", "ruinas", "caverna", "castelo", "templo", "deserto"],
+      minNivel: 12,
+      historia: [
+        "Uma escadaria espiral desce para as profundezas da terra. O cheiro de morte é insuportável.",
+        "As tochas azuis acendem sozinhas quando você pisa no primeiro degrau.",
+      ],
+      cor: "roxo",
+      efeito: { tipo: "mudar_regiao", regiao: "cripta" },
+      desbloqueia: [
+        "rei_esqueleto",
+        "guardiao_tumbas",
+        "trono_de_ossos",
+        "pilar_sacrificio",
+      ],
+    },
+    {
+      id: "guardiao_tumbas",
+      emoji: "🧌",
+      nome: "Guardião das Tumbas",
+      tipo: "inimigo",
+      raridade: "comum",
+      weight: 40,
+      regiaoOrigem: ["cripta"],
+      minNivel: 6,
+      historia: [
+        "Um colosso zumbi forjado a partir de partes de dezenas de guerreiros caídos.",
+        "A abominação finalmente colapsa em uma pilha de carne apodrecida.",
+      ],
+      cor: "vermelho",
+      efeito: {
+        tipo: "combate",
+        vidaInimigo: 85,
+        ataqueInimigo: 12,
+        defesaInimigo: 6,
+        ouroDrop: [10, 25],
+        expDrop: 35,
+      },
+    },
+    {
+      id: "pilar_sacrificio",
+      emoji: "🗡️",
+      nome: "Pilar do Sacrifício",
+      tipo: "evento",
+      raridade: "incomum",
+      weight: 30,
+      regiaoOrigem: ["cripta"],
+      minNivel: 6,
+      historia: [
+        "Um pilar negro exige sangue para abrir a porta dourada à frente.",
+      ],
+      cor: "cinza",
+      efeito: {
+        tipo: "escolha",
+        intro:
+          "Você precisa deixar algo de si para trás se quiser o prêmio final.",
+        opcoes: [
+          {
+            id: "dar_vida",
+            label: "🩸 Cortar os pulsos no pilar",
+            dica: "Sofre 40 de Dano, ganha muito Ouro.",
+            historia: [
+              "Você sobrevive por pouco, mas o cofre oculto se abre, revelando pilhas de ouro velho.",
+            ],
+            dano: 40,
+            ouro: [60, 100],
+          },
+          {
+            id: "dar_mana",
+            label: "🧠 Pagar com memórias",
+            dica: "Perde 10 Mana Máx, ganha XP.",
+            historia: [
+              "Você esquece de partes de sua infância, mas o pilar o recompensa com conhecimento sombrio.",
+            ],
+            statDelta: { manaMax: -10 },
+            exp: 40,
+          },
+        ],
+      },
+    },
+    {
+      id: "rei_esqueleto",
+      emoji: "👑",
+      nome: "Rei Esqueleto, Soberano Morto",
+      tipo: "chefe",
+      raridade: "lendaria",
+      weight: 5,
+      regiaoOrigem: ["cripta"],
+      minNivel: 8,
+      historia: [
+        "O rei amaldiçoado se levanta de seu trono de ossos. Uma coroa enferrujada brilha em sua caveira.",
+        "A coroa rola pelo chão de pedra enquanto os ossos do rei viram pó.",
+      ],
+      cor: "preto",
+      efeito: {
+        tipo: "combate",
+        vidaInimigo: 150,
+        ataqueInimigo: 18,
+        defesaInimigo: 10,
+        ouroDrop: [100, 150],
+        expDrop: 100,
+        itemGarantido: "coroa_rei_morto",
+      },
+    },
+    {
+      id: "coroa_rei_morto",
+      emoji: "💀",
+      nome: "Coroa do Rei Morto",
+      tipo: "item",
+      raridade: "lendaria",
+      weight: 0,
+      oculta: true,
+      regiaoOrigem: ["cripta"],
+      minNivel: 8,
+      historia: [
+        "Um item profano. O usuário não sente mais dor, mas também não sente alegria.",
+      ],
+      cor: "roxo",
+      efeito: {
+        tipo: "item",
+        slot: "capacete",
+        nomeItem: "Coroa do Rei Morto",
+        bonus: { defesa: 8, ataque: 5, vidaMax: 40, velocidade: -3 },
+      },
+    },
   ],
   events: [
     {
