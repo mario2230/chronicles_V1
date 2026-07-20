@@ -163,6 +163,7 @@ function novoEstado(classeId, seed) {
       velocidadeBase: classe.velocidade,
       ouro: classe.ouroInicial,
       fragmentos: 0,
+      rerolls: 0,
       equipamentos: { arma: null, armadura: null, acessorio: null },
       inventario: [],
       conquistas: [],
@@ -443,6 +444,44 @@ function drawThreeCards() {
     state.vezesVista[c.id] = (state.vezesVista[c.id] || 0) + 1;
     state.descobertos.add(c.id);
   });
+}
+
+function rerollCards(opts) {
+  // opts.method = 'gold' | 'frag' | undefined (auto)
+  if (!state || state.gameOver || state.battle || state.minigame) return false;
+  opts = opts || {};
+  const custoOuro = 8 + (state.hero.rerolls || 0) * 6;
+  const custoFragmentos = 3 + Math.floor((state.hero.rerolls || 0) / 2);
+  const haveGold = (state.hero.ouro || 0) >= custoOuro;
+  const haveFrag = (state.hero.fragmentos || 0) >= custoFragmentos;
+
+  const method = opts.method;
+  if (method === 'gold') {
+    if (!haveGold) { addStory(`Ouro insuficiente para reroll.`, "cinza"); return false; }
+    state.hero.ouro -= custoOuro;
+    addStory(`Você paga ${custoOuro} ouro para buscar novos caminhos.`, "amarelo");
+  } else if (method === 'frag') {
+    if (!haveFrag) { addStory(`Você não tem fragmentos suficientes para reroll.`, "cinza"); return false; }
+    ajustarFragmentos(-custoFragmentos);
+    addStory(`Gasta ${custoFragmentos} fragmento(s) para rerollear as cartas.`, "amarelo");
+  } else {
+    // auto: prefer gold, fallback to fragments
+    if (haveGold) {
+      state.hero.ouro -= custoOuro;
+      addStory(`Você paga ${custoOuro} ouro para buscar novos caminhos.`, "amarelo");
+    } else if (haveFrag) {
+      ajustarFragmentos(-custoFragmentos);
+      addStory(`Gasta ${custoFragmentos} fragmento(s) para rerollear as cartas.`, "amarelo");
+    } else {
+      addStory(`Reroll indisponível: custa ${custoOuro} ouro ou ${custoFragmentos} fragmentos.`, "cinza");
+      return false;
+    }
+  }
+
+  state.hero.rerolls = (state.hero.rerolls || 0) + 1;
+  drawThreeCards();
+  renderAll();
+  return true;
 }
 
 /* ============================================================
@@ -2124,6 +2163,8 @@ function buildCardPreview(card) {
 
 function renderCards() {
   const el = document.getElementById("cardsFooter");
+  const custoOuro = 8 + (state.hero.rerolls || 0) * 6;
+  const custoFragmentos = 3 + Math.floor((state.hero.rerolls || 0) / 2);
   el.innerHTML = state.currentCards
     .map((c) => {
       const isNew = !state.tree.some((n) => n.nome === c.nome);
@@ -2585,6 +2626,7 @@ function startGame(classeId, seed) {
   state.tree.push({ emoji: state.hero.emoji, nome: state.hero.nome, tipo: "heroi" });
   drawThreeCards();
   renderAll();
+  updateRerollTooltip();
 }
 
 document.getElementById("btnNewGame").addEventListener("click", () => {
@@ -2607,6 +2649,49 @@ document.getElementById("btnInventory").addEventListener("click", () => {
 document.getElementById("btnMenu").addEventListener("click", () => {
   if (state && (state.battle || state.minigame)) return; // trava de segurança: nunca durante batalha ou mini-game
   showTitleScreen();
+});
+
+function updateRerollTooltip() {
+  const el = document.getElementById("rerollBtn");
+  if (!el) return;
+  const gold = state && state.hero ? state.hero.ouro : 0;
+  const frags = state && state.hero ? state.hero.fragmentos : 0;
+  // custos dinâmicos (mesma fórmula usada em rerollCards())
+  const custoOuro = 8 + (state && state.hero ? (state.hero.rerolls || 0) * 6 : 0);
+  const custoFragmentos = 3 + Math.floor((state && state.hero ? (state.hero.rerolls || 0) : 0) / 2);
+  el.title = `Reroll de cartas — custo: ${custoOuro} ouro (clique) ou ${custoFragmentos} fragmentos (segure Shift + clique).`;
+  // atualiza badges visuais
+  const g = el.querySelector('.gold-cost');
+  const f = el.querySelector('.frag-cost');
+  if (g) g.textContent = `💰${custoOuro}`;
+  if (f) f.textContent = `💎${custoFragmentos}`;
+  // tooltip adicional dentro do botão
+  let tip = el.querySelector('.reroll-tooltip');
+  if (!tip) {
+    tip = document.createElement('div');
+    tip.className = 'reroll-tooltip';
+    el.appendChild(tip);
+  }
+  tip.textContent = `Custa ${custoOuro} ouro (clique) • ${custoFragmentos} fragmento(s) (Shift+clique)`;
+}
+
+document.getElementById("rerollBtn").addEventListener("click", (e) => {
+  if (!state || state.battle || state.minigame) return;
+  const useFrag = e.shiftKey;
+  const custoOuro = 8 + (state.hero.rerolls || 0) * 6;
+  const custoFragmentos = 3 + Math.floor((state.hero.rerolls || 0) / 2);
+  const haveGold = (state.hero.ouro || 0) >= custoOuro;
+  const haveFrag = (state.hero.fragmentos || 0) >= custoFragmentos;
+  let method;
+  if (useFrag) {
+    method = haveFrag ? 'frag' : (haveGold ? 'gold' : 'frag');
+  } else {
+    method = haveGold ? 'gold' : (haveFrag ? 'frag' : 'gold');
+  }
+  const success = rerollCards({ method });
+  if (success) {
+    updateRerollTooltip();
+  }
 });
 
 // Interface Viva: partículas ambiente que rodam o tempo todo, com ou sem

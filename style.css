@@ -541,6 +541,7 @@ body.weather-praga footer.cards { border-top-color: #4ADE80; }
 }
 .game-card:active { transform: translateY(-3px) scale(0.99); }
 
+
 .game-card.card-rarity-rara { box-shadow: 0 0 14px -4px rgba(56,189,248,0.35); }
 .game-card.card-rarity-epica { box-shadow: 0 0 16px -3px rgba(168,85,247,0.4); animation: cardFloat 4.5s ease-in-out infinite, glowPulse 2.4s ease-in-out infinite; }
 .game-card.card-rarity-lendaria { box-shadow: 0 0 18px -2px rgba(250,204,21,0.45); animation: cardFloat 4.5s ease-in-out infinite, glowPulse 2s ease-in-out infinite; }
@@ -1260,6 +1261,91 @@ body.in-battle header.top button:not(.battle-btn) {
 
 .music-btn:active{
     transform:scale(.95);
+}
+/* botão de reroll (espelhado ao botão de música, no lado esquerdo) */
+.reroll-btn{
+  position: fixed;
+  left: 20px;
+  bottom: 20px;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 2px solid rgba(255,255,255,.08);
+  background: linear-gradient(180deg, rgba(30,30,40,0.92), rgba(18,18,20,0.9));
+  color: #9ae6b4;
+  font-size: 20px;
+  cursor: pointer;
+  z-index: 9999;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  backdrop-filter: blur(6px);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.45);
+  transition: transform .18s ease, box-shadow .18s ease, background .18s ease;
+}
+.reroll-btn:hover{
+  transform:scale(1.08);
+  background:#343444;
+  box-shadow:0 10px 26px rgba(0,0,0,0.5);
+}
+.reroll-btn:active{ transform:scale(.96); }
+
+.reroll-btn .reroll-icon { font-size: 20px; line-height: 1; }
+.reroll-btn .reroll-costs {
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  display:flex;
+  gap:6px;
+  font-size: 0.62rem;
+  pointer-events: none;
+}
+.reroll-btn .gold-cost, .reroll-btn .frag-cost{
+  background: rgba(0,0,0,0.28);
+  padding: 4px 6px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.03);
+  color: #ffffff;
+  font-weight: 700;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.35);
+}
+.reroll-btn .gold-cost { color: #f8d56b; }
+.reroll-btn .frag-cost { color: #9ae6b4; }
+
+/* tooltip visual: aparece com descrição quando hover */
+.reroll-btn .reroll-tooltip {
+  position: absolute;
+  left: calc(100% + 12px);
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(8,8,10,0.96);
+  color: var(--text);
+  padding: 8px 10px;
+  border-radius: 8px;
+  font-size: 0.78rem;
+  border: 1px solid var(--border);
+  white-space: nowrap;
+  display: none;
+  z-index: 10000;
+  min-width: 180px;
+  text-align: left;
+}
+.reroll-btn:hover .reroll-tooltip { display: block; }
+
+/* ajusta em telas pequenas: tooltip aparece acima para não escapar da tela */
+@media (max-width: 600px) {
+  .reroll-btn .reroll-tooltip {
+    left: 50%;
+    top: auto;
+    bottom: 68px;
+    transform: translateX(-50%);
+  }
+}
+
+@media (max-width: 600px) {
+  .reroll-btn { left: 12px; bottom: 12px; width: 44px; height: 44px; }
+  .reroll-btn .reroll-costs { bottom: -8px; gap: 4px; font-size: 0.56rem; }
 }
 /* ============================================================
    MINI GAMES — desafios curtos e visuais que quebram o ritmo normal
