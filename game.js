@@ -37,6 +37,17 @@ const REGIAO_META = {
 };
 
 // níveis de relacionamento com personagens, do mais hostil ao mais próximo
+REGIAO_META.vale_cristalino = { emoji: "💎", nome: "Vale Cristalino" };
+
+// Bônus de conjunto transformam equipamentos isolados em escolhas de build.
+// Duas peças definem uma direção; três peças recompensam o compromisso.
+const SET_BONUSES = {
+  lunar: { nome: "Conjunto Lunar", bonus: { 2: { mana: 12, velocidade: 2 }, 3: { ataque: 5, mana: 12, velocidade: 5 } } },
+  prisma: { nome: "Conjunto do Prisma", bonus: { 2: { defesa: 5, vidaMax: 20 }, 3: { defesa: 13, vidaMax: 55 } } },
+  tempestade: { nome: "Conjunto da Tempestade", bonus: { 2: { mana: 8, velocidade: 3 }, 3: { ataque: 5, mana: 12, velocidade: 6 } } },
+  sobrevivente: { nome: "Conjunto do Sobrevivente", bonus: { 2: { defesa: 4, vidaMax: 18 }, 3: { ataque: 3, defesa: 8, vidaMax: 36 } } },
+};
+
 const REL_TIERS = [
   { min: -999, emoji: "🖤", label: "Medo" },
   { min: -40, emoji: "😡", label: "Ódio" },
@@ -151,6 +162,7 @@ function novoEstado(classeId, seed) {
       defesaBase: classe.defesa,
       velocidadeBase: classe.velocidade,
       ouro: classe.ouroInicial,
+      fragmentos: 0,
       equipamentos: { arma: null, armadura: null, acessorio: null },
       inventario: [],
       conquistas: [],
@@ -186,8 +198,24 @@ function heroStat(base) {
   Object.values(h.equipamentos).forEach((it) => {
     if (it && it.bonus && it.bonus[base] != null) bonus += it.bonus[base];
   });
+  Object.values(getSetBonuses()).forEach((setBonus) => { bonus += setBonus[base] || 0; });
   (h.buffsAtivos || []).forEach((b) => { if (b.stat === base) bonus += b.valor; });
   return bonus;
+}
+
+function getSetBonuses() {
+  if (!state || !state.hero) return {};
+  const contagem = {};
+  Object.values(state.hero.equipamentos).forEach((it) => {
+    if (it && it.conjunto) contagem[it.conjunto] = (contagem[it.conjunto] || 0) + 1;
+  });
+  const ativos = {};
+  Object.entries(contagem).forEach(([id, qtd]) => {
+    const set = SET_BONUSES[id];
+    const nivel = qtd >= 3 ? 3 : qtd >= 2 ? 2 : 0;
+    if (set && nivel) ativos[id] = { ...set.bonus[nivel], nome: set.nome, pecas: nivel };
+  });
+  return ativos;
 }
 
 // remove buffs expirados; chamada a cada turno do mundo E a cada rodada de
@@ -225,9 +253,11 @@ function rarityMultiplier(nivel, raridade) {
    ============================================================ */
 const FASES = [
   { numero: 1, nome: "O Início da Jornada", turnoMin: 0, dificuldade: 1 },
-  { numero: 2, nome: "O Mundo se Complica", turnoMin: 14, dificuldade: 1.15 },
-  { numero: 3, nome: "O Peso do Destino", turnoMin: 32, dificuldade: 1.3 },
-  { numero: 4, nome: "A Hora Final", turnoMin: 55, dificuldade: 1.5 },
+  // A curva sobe de forma constante, sem o salto excessivo das fases finais:
+  // o jogador enfrenta mais opções e builds melhores antes de cada aumento.
+  { numero: 2, nome: "O Mundo se Complica", turnoMin: 14, dificuldade: 1.12 },
+  { numero: 3, nome: "O Peso do Destino", turnoMin: 32, dificuldade: 1.25 },
+  { numero: 4, nome: "A Hora Final", turnoMin: 55, dificuldade: 1.4 },
 ];
 function currentFase() {
   let f = FASES[0];
@@ -298,7 +328,10 @@ function computeWeight(card) {
   if (state.activeEvent) {
     const mod = state.activeEvent.modificadores;
     if (mod.tipo && mod.tipo === card.tipo) w *= mod.multiplicador;
-    if (mod.regiao && card.regiaoOrigem && card.regiaoOrigem.includes(mod.regiao)) w *= mod.multiplicador;
+    if (mod.regiao && card.regiaoOrigem) {
+      const regioesDoEvento = Array.isArray(mod.regiao) ? mod.regiao : [mod.regiao];
+      if (regioesDoEvento.some((regiao) => card.regiaoOrigem.includes(regiao))) w *= mod.multiplicador;
+    }
     if (mod.raridade && mod.raridade.includes(card.raridade)) w *= mod.multiplicador;
   }
 
@@ -342,17 +375,47 @@ function drawThreeCards() {
   const chosen = [];
   const workingPool = sourcePool.map((c) => ({ card: c, w: computeWeight(c) }));
 
-  for (let i = 0; i < 3 && workingPool.length > 0; i++) {
-    const total = workingPool.reduce((s, e) => s + e.w, 0);
+  // Cada escolha prioriza um tipo ainda ausente. Dentro de cada tipo a
+  // raridade e o peso da carta continuam valendo, mas o volume de cartas de
+  // uma categoria não pode esmagar todas as outras. Locais recebem limite de
+  // um por oferta sempre que houver qualquer alternativa válida.
+  const tipoBalance = { local: 0.8, chefe: 0.45, artefato: 0.55, escola: 0.65 };
+
+  function pickWeighted(entries) {
+    const total = entries.reduce((s, e) => s + e.w, 0);
     let r = rnd() * total;
-    let idx = 0;
-    for (; idx < workingPool.length; idx++) {
-      r -= workingPool[idx].w;
-      if (r <= 0) break;
+    for (let i = 0; i < entries.length; i++) {
+      r -= entries[i].w;
+      if (r <= 0) return entries[i];
     }
-    idx = Math.min(idx, workingPool.length - 1);
-    chosen.push(workingPool[idx].card);
-    workingPool.splice(idx, 1);
+    return entries[entries.length - 1];
+  }
+
+  for (let i = 0; i < 3 && workingPool.length > 0; i++) {
+    const tiposEscolhidos = new Set(chosen.map((c) => c.tipo));
+    let candidatos = workingPool.filter((e) => !(e.card.tipo === "local" && tiposEscolhidos.has("local")));
+    if (!candidatos.length) candidatos = workingPool;
+
+    // Se existe um tipo novo, ele ocupa este espaço. Só repetimos tipo quando
+    // a região realmente não tem variedade suficiente naquele momento.
+    const tiposNovos = candidatos.filter((e) => !tiposEscolhidos.has(e.card.tipo));
+    if (tiposNovos.length) candidatos = tiposNovos;
+
+    // Normaliza a massa de cada tipo por raiz quadrada: inimigos e itens
+    // continuam frequentes por terem mais cartas, mas eventos, NPCs e locais
+    // relevantes também ganham espaço nas três opções.
+    const pesoPorTipo = {};
+    candidatos.forEach((e) => { pesoPorTipo[e.card.tipo] = (pesoPorTipo[e.card.tipo] || 0) + e.w; });
+    const balanceados = candidatos.map((e) => ({
+      ...e,
+      w: (e.w / Math.sqrt(pesoPorTipo[e.card.tipo])) * (tipoBalance[e.card.tipo] || 1),
+    }));
+    const escolhido = pickWeighted(balanceados);
+    chosen.push(escolhido.card);
+    const idx = workingPool.findIndex((e) => e.card.id === escolhido.card.id);
+    if (idx >= 0) {
+      workingPool.splice(idx, 1);
+    }
   }
 
   // fallback: se não houver cartas suficientes no contexto atual, permite cartas de
@@ -360,7 +423,7 @@ function drawThreeCards() {
   // sempre cair na mesma primeira carta "local" da lista.
   while (chosen.length < 3) {
     const fallbackPool = DATA.cards
-      .filter((c) => c.tipo === "local" && state.availableCardIds.has(c.id) && !chosen.includes(c))
+      .filter((c) => c.tipo === "local" && state.availableCardIds.has(c.id) && !chosen.includes(c) && !chosen.some((escolhida) => escolhida.tipo === "local"))
       .map((c) => ({ card: c, w: computeWeight(c) }));
     if (!fallbackPool.length) break;
     const total = fallbackPool.reduce((s, e) => s + e.w, 0);
@@ -562,6 +625,12 @@ function curar(qtd) {
   }
 }
 
+function ajustarFragmentos(qtd) {
+  if (!qtd) return;
+  state.hero.fragmentos = Math.max(0, (state.hero.fragmentos || 0) + qtd);
+  addStory(`${qtd > 0 ? "+" : ""}${qtd} fragmentos cristalinos.`, qtd > 0 ? "azul" : "cinza");
+}
+
 // aplica um "build" permanente ao herói vindo de uma escolha, vínculo ou
 // recompensa — é assim que decisões e relações passam a moldar o
 // personagem de verdade, não só o inventário.
@@ -588,6 +657,7 @@ function obterItem(card, bonusOverride, nomeOverride, slotOverride) {
   const nome = nomeOverride || card.efeito.nomeItem || card.nome;
   const bonus = bonusOverride || card.efeito.bonus || {};
   const slot = slotOverride || card.efeito.slot;
+  const conjunto = card.efeito.conjunto || null;
 
   state.itensObtidos.add(card.id);
 
@@ -622,9 +692,10 @@ function obterItem(card, bonusOverride, nomeOverride, slotOverride) {
       emoji: anterior.emoji || "🎒",
       slot: slotFinal,
       bonus: anterior.bonus,
+      conjunto: anterior.conjunto || null,
     });
   }
-  const item = { id: card.id, nome, emoji: card.emoji, bonus, slot: slotFinal };
+  const item = { id: card.id, nome, emoji: card.emoji, bonus, slot: slotFinal, conjunto };
   state.hero.equipamentos[slotFinal] = item;
   addStory(anterior ? `Você trocou de equipamento por ${nome}. O antigo foi para a mochila.` : `Você equipou ${nome}.`, "amarelo");
 }
@@ -665,10 +736,10 @@ function equiparDaMochila(itemId) {
   if (idx === -1) return;
   const entry = state.hero.inventario[idx];
   const atual = state.hero.equipamentos[entry.slot];
-  state.hero.equipamentos[entry.slot] = { id: entry.itemId, nome: entry.nome, emoji: entry.emoji, bonus: entry.bonus, slot: entry.slot };
+  state.hero.equipamentos[entry.slot] = { id: entry.itemId, nome: entry.nome, emoji: entry.emoji, bonus: entry.bonus, slot: entry.slot, conjunto: entry.conjunto || null };
   state.hero.inventario.splice(idx, 1);
   if (atual) {
-    state.hero.inventario.push({ tipo: "equipamento", itemId: atual.id, nome: atual.nome, emoji: atual.emoji || "🎒", slot: entry.slot, bonus: atual.bonus });
+    state.hero.inventario.push({ tipo: "equipamento", itemId: atual.id, nome: atual.nome, emoji: atual.emoji || "🎒", slot: entry.slot, bonus: atual.bonus, conjunto: atual.conjunto || null });
   }
   addStory(`Você trocou de equipamento: agora usa ${entry.nome}.`, "amarelo");
   renderHero();
@@ -687,7 +758,8 @@ function resolverCombate(card) {
 
   if (state.activeEvent && state.activeEvent.modificadores.buffInimigoAtaque) {
     const mod = state.activeEvent.modificadores;
-    if ((mod.regiao && card.regiaoOrigem.includes(mod.regiao)) || (mod.tipo && mod.tipo === card.tipo)) {
+    const regioesDoEvento = Array.isArray(mod.regiao) ? mod.regiao : [mod.regiao];
+    if ((mod.regiao && regioesDoEvento.some((regiao) => card.regiaoOrigem.includes(regiao))) || (mod.tipo && mod.tipo === card.tipo)) {
       ataqueInimigo += mod.buffInimigoAtaque;
     }
   }
@@ -746,6 +818,7 @@ function resolverCombate(card) {
   state.hero.ouro += ouro;
   const expGanho = card.elite ? Math.round(ef.expDrop * 1.4) : ef.expDrop;
   ganharExp(expGanho);
+  if (ef.fragmentosDrop) ajustarFragmentos(ef.fragmentosDrop);
 
   // mostra ao jogador o quanto seu equipamento e build pesaram na vitória —
   // decisões de build precisam ser sentidas, não só numéricas nos bastidores.
@@ -826,6 +899,7 @@ function resolverMisterio(card) {
   }
 
   if (escolhido.exp) { ganharExp(escolhido.exp); partes.push(`+${escolhido.exp} exp`); }
+  if (escolhido.fragmentos) { ajustarFragmentos(escolhido.fragmentos); partes.push(`${escolhido.fragmentos > 0 ? "+" : ""}${escolhido.fragmentos} fragmentos`); }
   if (escolhido.cura) { curar(escolhido.cura); partes.push(`+${escolhido.cura} vida`); }
   if (escolhido.mana) {
     const antes = state.hero.mana;
@@ -862,6 +936,14 @@ function resolveEscolha(card, opcao) {
   const texto = pickStoryLine(card, opcao.historia, card.id + ":" + opcao.id);
   addStory(texto, opcao.cor || card.cor);
 
+  if (opcao.custoFragmentos) {
+    if ((state.hero.fragmentos || 0) < opcao.custoFragmentos) {
+      addStory(`Você precisa de ${opcao.custoFragmentos} fragmentos cristalinos para isso.`, "cinza");
+      return;
+    }
+    ajustarFragmentos(-opcao.custoFragmentos);
+  }
+
   if (opcao.ouro) {
     const [min, max] = opcao.ouro;
     const g = rndInt(min, max);
@@ -869,6 +951,7 @@ function resolveEscolha(card, opcao) {
     addStory(`(${g >= 0 ? "+" : ""}${g} ouro)`, "amarelo");
   }
   if (opcao.exp) ganharExp(opcao.exp);
+  if (opcao.fragmentos) ajustarFragmentos(opcao.fragmentos);
   if (opcao.cura) curar(opcao.cura);
   if (opcao.dano) {
     state.hero.vida = Math.max(0, state.hero.vida - opcao.dano);
@@ -946,6 +1029,13 @@ function resolveCard(card, alternativas, escolhaOpcao) {
         }
         state.hero.ouro -= ef.custoOuro;
       }
+      if (ef.custoFragmentos) {
+        if ((state.hero.fragmentos || 0) < ef.custoFragmentos) {
+          addStory(`Você precisa de ${ef.custoFragmentos} fragmentos cristalinos para ${card.nome}.`, "cinza");
+          break;
+        }
+        ajustarFragmentos(-ef.custoFragmentos);
+      }
       obterItem(card);
       addStory(pickStoryLine(card), card.cor);
       break;
@@ -978,6 +1068,7 @@ function resolveCard(card, alternativas, escolhaOpcao) {
   if (card.desbloqueia) {
     card.desbloqueia.forEach((id) => state.availableCardIds.add(id));
   }
+  if (ef.fragmentos) ajustarFragmentos(ef.fragmentos);
 }
 
 /* ============================================================
@@ -1786,7 +1877,8 @@ function renderHero() {
       const it = h.equipamentos[slot];
       if (!it) return `<div class="equip-item"><span class="slot">${slot}</span><span class="empty-note">vazio</span></div>`;
       const bonusTxt = Object.entries(it.bonus).map(([k, v]) => `${k} ${v > 0 ? "+" : ""}${v}`).join(", ");
-      return `<div class="equip-item"><span class="slot">${slot}</span><span>${it.nome}<br><small style="color:#00E5FF">${bonusTxt}</small></span></div>`;
+      const conjuntoTxt = it.conjunto && SET_BONUSES[it.conjunto] ? ` · ${SET_BONUSES[it.conjunto].nome}` : "";
+      return `<div class="equip-item"><span class="slot">${slot}</span><span>${it.nome}<br><small style="color:#00E5FF">${bonusTxt}${conjuntoTxt}</small></span></div>`;
     })
     .join("");
 
@@ -1813,6 +1905,7 @@ function renderHero() {
       <div class="stat-chip"><span>🛡 Defesa</span><span>${getDefesa()}</span></div>
       <div class="stat-chip"><span>💨 Veloc.</span><span>${getVelocidade()}</span></div>
       <div class="stat-chip"><span>💰 Ouro</span><span>${h.ouro}</span></div>
+      <div class="stat-chip"><span>💎 Fragmentos</span><span>${h.fragmentos || 0}</span></div>
     </div>
 
     ${(h.buffsAtivos && h.buffsAtivos.length) ? `
@@ -1822,6 +1915,8 @@ function renderHero() {
 
     <div class="hero-section-title">Equipamentos</div>
     <div class="equip-list">${equipHtml}</div>
+
+    ${Object.values(getSetBonuses()).length ? `<div class="buff-row">${Object.values(getSetBonuses()).map((s) => `<span class="buff-chip">${s.nome} (${s.pecas}/3): ${Object.entries(s).filter(([k]) => !["nome", "pecas"].includes(k)).map(([k, v]) => `${k} +${v}`).join(", ")}</span>`).join("")}</div>` : ""}
 
     <div class="hero-section-title">Mochila</div>
     <div class="empty-note codex-link" onclick="showInventoryModal()">${h.inventario.filter((i) => i.tipo === "consumivel").reduce((s, i) => s + i.quantidade, 0)} consumíveis, ${h.inventario.filter((i) => i.tipo === "equipamento").length} em reserva — abrir Mochila ›</div>
@@ -1944,6 +2039,7 @@ function buildCardPreview(card) {
 
   switch (ef.tipo) {
     case "combate": {
+      if (ef.fragmentosDrop) push(`💎 +${ef.fragmentosDrop} fragmentos`, "chip-pos");
       const eliteMult = card.elite ? 1.4 : 1;
       if (ef.ouroDrop) {
         const gMin = Math.round(ef.ouroDrop[0] * eliteMult);
@@ -1968,6 +2064,8 @@ function buildCardPreview(card) {
       break;
     }
     case "item": {
+      if (ef.custoFragmentos) push(`💎 -${ef.custoFragmentos} fragmentos`, "chip-neg");
+      if (ef.conjunto && SET_BONUSES[ef.conjunto]) push(`🧩 ${SET_BONUSES[ef.conjunto].nome}`, "chip-neutral");
       if (ef.custoOuro) push(`💰 -${ef.custoOuro} ouro`, "chip-neg");
       if (ef.cura) push(`❤️ +${ef.cura} vida`, "chip-pos");
       formatStatDelta(ef.bonus).forEach((t) => push(t, "chip-pos"));
@@ -1980,6 +2078,7 @@ function buildCardPreview(card) {
       break;
     }
     case "recompensa_leve": {
+      if (ef.fragmentos) push(`💎 +${ef.fragmentos} fragmentos`, "chip-pos");
       if (ef.ouro && (ef.ouro[0] || ef.ouro[1])) push(`💰 +${ef.ouro[0]}~${ef.ouro[1]} ouro`, "chip-pos");
       if (ef.exp) push(`✨ +${ef.exp} exp`, "chip-pos");
       if (ef.cura) push(`❤️ +${ef.cura} vida`, "chip-pos");
