@@ -1464,6 +1464,108 @@ function renderStory() {
   storyPanel.scrollTop = storyPanel.scrollHeight;
 }
 
+/* ============================================================
+   PRÉVIA DE CUSTO/GANHO NAS CARTAS
+   Antes de clicar, o jogador precisa ter uma ideia razoável do que está
+   em jogo: quanto ouro/exp pode ganhar, quanto pode perder de vida, que
+   status um item concede. Isso não substitui a surpresa da narrativa —
+   os números continuam sendo faixas/estimativas, não garantias exatas
+   (sorte, fase da campanha e crítico ainda alteram o resultado final).
+   ============================================================ */
+function formatStatDelta(delta) {
+  const labels = { ataque: "⚔ atq", defesa: "🛡 def", velocidade: "🏃 vel", vidaMax: "❤️ vida máx.", manaMax: "✨ mana máx." };
+  return Object.entries(delta || {})
+    .filter(([, v]) => v)
+    .map(([k, v]) => `${v > 0 ? "+" : ""}${v} ${labels[k] || k}`);
+}
+
+function buildCardPreview(card) {
+  const ef = card.efeito;
+  const chips = [];
+  const push = (text, cls) => chips.push({ text, cls: cls || "chip-neutral" });
+  if (!ef) return chips;
+
+  switch (ef.tipo) {
+    case "combate": {
+      const eliteMult = card.elite ? 1.4 : 1;
+      if (ef.ouroDrop) {
+        const gMin = Math.round(ef.ouroDrop[0] * eliteMult);
+        const gMax = Math.round(ef.ouroDrop[1] * eliteMult);
+        push(`💰 +${gMin}~${gMax} ouro`, "chip-pos");
+      }
+      if (ef.expDrop) push(`✨ +${Math.round(ef.expDrop * eliteMult)} exp`, "chip-pos");
+
+      // estimativa de risco com os status atuais do herói — não é uma
+      // promessa exata (sorte e crítico existem), mas dá uma noção real
+      // do custo em vida antes de clicar.
+      const dificuldade = typeof currentFase === "function" ? currentFase().dificuldade : 1;
+      const vidaInimigo = Math.round((ef.vidaInimigo || 1) * dificuldade * eliteMult);
+      const ataqueInimigo = Math.round((ef.ataqueInimigo || 0) * (1 + (dificuldade - 1) * 0.6) * (card.elite ? 1.15 : 1));
+      const dmgHeroi = Math.max(1, getAtaque() - (ef.defesaInimigo || 0));
+      const dmgInimigo = Math.max(1, ataqueInimigo - getDefesa());
+      const rounds = Math.max(1, Math.ceil(vidaInimigo / dmgHeroi));
+      const riscoVida = dmgInimigo * rounds;
+      const riscoPct = riscoVida / Math.max(1, getVidaMax());
+      const riscoCls = riscoPct > 0.55 ? "chip-risk-alto" : riscoPct > 0.22 ? "chip-risk" : "chip-neutral";
+      push(`❤️ risco ~${riscoVida} vida`, riscoCls);
+      break;
+    }
+    case "item": {
+      if (ef.custoOuro) push(`💰 -${ef.custoOuro} ouro`, "chip-neg");
+      if (ef.cura) push(`❤️ +${ef.cura} vida`, "chip-pos");
+      formatStatDelta(ef.bonus).forEach((t) => push(t, "chip-pos"));
+      if (!ef.custoOuro && !ef.cura && !ef.bonus) push("🎁 item gratuito", "chip-pos");
+      break;
+    }
+    case "npc": {
+      if (ef.ouro) push(`💰 +${ef.ouro[0]}~${ef.ouro[1]} ouro`, "chip-pos");
+      if (ef.expChance) push(`✨ até +${ef.expChance} exp (50%)`, "chip-neutral");
+      break;
+    }
+    case "recompensa_leve": {
+      if (ef.ouro && (ef.ouro[0] || ef.ouro[1])) push(`💰 +${ef.ouro[0]}~${ef.ouro[1]} ouro`, "chip-pos");
+      if (ef.exp) push(`✨ +${ef.exp} exp`, "chip-pos");
+      if (ef.cura) push(`❤️ +${ef.cura} vida`, "chip-pos");
+      break;
+    }
+    case "personagem": {
+      if (ef.relacao) push(`💜 ${ef.relacao > 0 ? "+" : ""}${ef.relacao} relação`, ef.relacao > 0 ? "chip-pos" : "chip-neg");
+      if (ef.exp) push(`✨ +${ef.exp} exp`, "chip-pos");
+      if (ef.cura) push(`❤️ +${ef.cura} vida`, "chip-pos");
+      break;
+    }
+    case "misterio": {
+      // agrega os possíveis resultados para dar uma pista do leque de
+      // ganho/perda sem entregar qual vai acontecer.
+      const resultados = ef.resultados || [];
+      const temRisco = resultados.some((r) => r.vida || r.sub === "dano");
+      const temGanho = resultados.some((r) => (r.ouro && r.ouro[1] > 0) || r.exp || r.sub === "item");
+      push("🎲 resultado incerto", "chip-neutral");
+      if (temGanho) push("↑ chance de bônus", "chip-pos");
+      if (temRisco) push("↓ chance de perda", "chip-neg");
+      break;
+    }
+    case "escolha": {
+      const opcoes = ef.opcoes || [];
+      push(`💬 ${opcoes.length} caminhos possíveis`, "chip-neutral");
+      const temRisco = opcoes.some((o) => o.dano);
+      const temBuild = opcoes.some((o) => o.statDelta);
+      if (temRisco) push("⚠ alguma opção arrisca vida", "chip-risk");
+      if (temBuild) push("📈 pode moldar seu build", "chip-pos");
+      break;
+    }
+    case "mudar_regiao":
+      push("🧭 viagem", "chip-neutral");
+      break;
+    case "escola":
+      push("📚 ensinamento", "chip-neutral");
+      break;
+    default:
+      break;
+  }
+  return chips;
+}
+
 function renderCards() {
   const el = document.getElementById("cardsFooter");
   el.innerHTML = state.currentCards
@@ -1472,6 +1574,7 @@ function renderCards() {
       const isEscolha = c.efeito && c.efeito.tipo === "escolha";
       const isFinal = !!(c.efeito && c.efeito.flagFinal);
       const desc = isEscolha ? (c.efeito.intro || c.historia[0]) : c.historia[0];
+      const preview = buildCardPreview(c);
       const classes = [
         "game-card", "entering", `card-rarity-${c.raridade}`,
         isEscolha ? "card-escolha" : "",
@@ -1491,6 +1594,7 @@ function renderCards() {
         <div class="card-name">${c.nome}</div>
         <div class="card-type">${c.tipo}</div>
         <div class="card-desc">${desc}</div>
+        ${preview.length ? `<div class="card-cost">${preview.map((p) => `<span class="cost-chip ${p.cls}">${p.text}</span>`).join("")}</div>` : ""}
       </div>`;
     })
     .join("");

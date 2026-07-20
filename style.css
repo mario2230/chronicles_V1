@@ -457,9 +457,9 @@ body.weather-praga footer.cards { border-top-color: #4ADE80; }
   width: 210px;
   min-width: 210px;
   max-width: 210px;
-  height: 260px;
-  min-height: 260px;
-  max-height: 260px;
+  height: 300px;
+  min-height: 300px;
+  max-height: 300px;
   flex-shrink: 0;
   background: var(--card);
   border: 1px solid var(--border);
@@ -597,11 +597,38 @@ body.weather-praga footer.cards { border-top-color: #4ADE80; }
   color: var(--text-dim);
   line-height: 1.4;
   display: -webkit-box;
-  -webkit-line-clamp: 4;
+  -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
   flex: 1;
 }
+
+/* prévia de custo/ganho — o jogador precisa ver, antes de clicar, o que
+   está em jogo (o quanto pode ganhar de ouro/exp/status e o risco de vida
+   envolvido). Não é uma promessa exata: sorte, crítico e a fase da
+   campanha ainda alteram o resultado final, mas dá uma base real de
+   decisão em vez de um clique às cegas. */
+.card-cost {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 2px;
+  padding-top: 8px;
+  border-top: 1px dashed var(--border);
+}
+.cost-chip {
+  font-size: 0.58rem;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 5px;
+  white-space: nowrap;
+  line-height: 1.5;
+}
+.cost-chip.chip-pos { color: var(--cor-verde); background: rgba(74,222,128,0.10); }
+.cost-chip.chip-neg { color: var(--cor-vermelho); background: rgba(248,113,113,0.10); }
+.cost-chip.chip-neutral { color: var(--text-dim); background: rgba(255,255,255,0.05); }
+.cost-chip.chip-risk { color: var(--cor-laranja); background: rgba(251,146,60,0.10); }
+.cost-chip.chip-risk-alto { color: var(--cor-vermelho); background: rgba(248,113,113,0.16); }
 .game-card .card-new {
   align-self: flex-start;
   font-size: 0.58rem;
@@ -1081,7 +1108,7 @@ body.in-battle header.top button:not(.battle-btn) {
 @media (max-width: 900px) {
   main.panels { grid-template-columns: 1fr; grid-template-rows: auto auto 1fr; }
   footer.cards { flex-wrap: wrap; }
-  .game-card { width: 160px; min-width: 160px; max-width: 160px; height: 230px; min-height: 230px; max-height: 230px; }
+  .game-card { width: 160px; min-width: 160px; max-width: 160px; height: 270px; min-height: 270px; max-height: 270px; }
 }
 
 .music-btn{
