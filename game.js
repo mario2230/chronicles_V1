@@ -1000,31 +1000,48 @@ function checkEndings() {
    Inimigos comuns e elites continuam resolvendo instantaneamente
    via resolverCombate(), sem passar por aqui.
    ============================================================ */
-function showBossWarningModal(card, alternativas) {
+// Depois de vencer um chefe que carrega um final da história, o jogador
+// decide, ali mesmo, se aceita esse final agora ou guarda a conquista e
+// continua a aventura. Substitui o antigo comportamento de encerrar a run
+// automaticamente assim que a flagFinal era setada.
+function showFinalChoiceModal(card) {
+  const ending = DATA.endings.find(
+    (e) => e.condicao === "flag" && e.flag === card.efeito.flagFinal
+  );
   const root = document.getElementById("modalRoot");
   root.innerHTML = `
     <div class="modal-overlay">
       <div class="modal-box boss-warning-box">
-        <div class="ending-emoji">⚠</div>
-        <h2 style="text-align:center;">Ponto Sem Volta</h2>
+        <div class="ending-emoji">${ending ? ending.emoji : "👑"}</div>
+        <h2 style="text-align:center;">${card.nome} foi derrotado!</h2>
         <p class="sub" style="text-align:center; margin-bottom:22px;">
-          ${card.emoji} <b>${card.nome}</b> é uma batalha decisiva. O resultado desse confronto —
-          vitória, fuga ou derrota — vai selar o destino desta jornada. Uma vez dentro, não há
-          como recuar da história que se segue.
+          Essa vitória poderia encerrar sua jornada agora, com o final
+          <b>"${ending ? ending.titulo : "?"}"</b>. Você pode aceitar esse
+          final neste momento, ou guardar essa conquista e continuar
+          explorando o mundo.
         </p>
         <div class="boss-warning-actions">
-          <button class="btn-primary" id="btnLutarChefe">⚔ Lutar</button>
-          <button class="btn-secondary" id="btnRecuarChefe">🏃 Recuar</button>
+          <button class="btn-primary" id="btnAceitarFinal">${ending ? ending.emoji : "👑"} Aceitar o Final</button>
+          <button class="btn-secondary" id="btnContinuarRun">🗺 Continuar a Jornada</button>
         </div>
       </div>
     </div>`;
-  document.getElementById("btnLutarChefe").addEventListener("click", () => {
+
+  document.getElementById("btnAceitarFinal").addEventListener("click", () => {
+    state.tags["flag_" + card.efeito.flagFinal] = true;
     root.innerHTML = "";
-    iniciarBatalha(card, alternativas);
+    const finalEscolhido = checkEndings();
+    if (finalEscolhido) {
+      state.gameOver = true;
+      renderAll();
+      showEndingModal(finalEscolhido);
+    }
   });
-  document.getElementById("btnRecuarChefe").addEventListener("click", () => {
+
+  document.getElementById("btnContinuarRun").addEventListener("click", () => {
     root.innerHTML = "";
-    document.querySelectorAll(".game-card").forEach((el) => (el.style.pointerEvents = ""));
+    drawThreeCards();
+    renderAll();
   });
 }
 
@@ -1256,6 +1273,8 @@ function finalizarBatalha() {
 
   addTreeNode(card, alternativas);
 
+  let venceuChefeFinal = false;
+
   if (fim === "vitoria") {
     const ouro = rndInt(card.efeito.ouroDrop[0], card.efeito.ouroDrop[1]);
     state.hero.ouro += ouro;
@@ -1267,7 +1286,9 @@ function finalizarBatalha() {
       const it = DATA.cards.find((c) => c.id === card.efeito.itemGarantido);
       if (it) obterItem(it);
     }
-    if (card.efeito.flagFinal) state.tags["flag_" + card.efeito.flagFinal] = true;
+    // chefes com flagFinal não encerram mais a run sozinhos — o jogador
+    // decide depois da vitória, em showFinalChoiceModal().
+    if (card.efeito.flagFinal) venceuChefeFinal = true;
     if (card.desbloqueia) card.desbloqueia.forEach((id) => state.availableCardIds.add(id));
   } else if (fim === "fuga") {
     addStory(`🏃 Você recua da batalha contra ${card.nome}. Ele ainda ronda por aí — talvez seja melhor voltar mais preparado.`, "cinza");
@@ -1281,6 +1302,13 @@ function finalizarBatalha() {
   state.battle = null;
 
   tickGlobalEvent();
+
+  if (venceuChefeFinal) {
+    renderAll();
+    showFinalChoiceModal(card);
+    return;
+  }
+
   const ending = checkEndings();
   if (ending) {
     state.gameOver = true;
@@ -1635,13 +1663,12 @@ function onCardClick(cardId) {
   const alternativas = state.currentCards.filter((c) => c.id !== cardId);
 
   // chefes e subchefes viram combate em turnos; inimigos comuns e elites
-  // continuam resolvendo instantaneamente, como sempre.
+  // continuam resolvendo instantaneamente, como sempre. Chefes que carregam
+  // um final da história não recebem mais um aviso especial de "sem volta"
+  // — a decisão de aceitar aquele final ou continuar a run acontece depois
+  // da vitória, em showFinalChoiceModal().
   if (card.tipo === "chefe") {
-    if (card.efeito.flagFinal) {
-      showBossWarningModal(card, alternativas);
-    } else {
-      iniciarBatalha(card, alternativas);
-    }
+    iniciarBatalha(card, alternativas);
     return;
   }
 
@@ -2023,7 +2050,7 @@ function renderCards() {
         ${isEscolha ? '<span class="card-choice-tag">💬 Decisão</span>' : ""}
         ${isMinigame ? '<span class="card-minigame-tag">⚡ Desafio</span>' : ""}
         ${c.elite ? '<span class="card-elite-tag">⚔ Especial</span>' : ""}
-        ${isFinal ? '<span class="card-final-tag">⚠ Ponto Sem Volta</span>' : ""}
+        ${isFinal ? '<span class="card-final-tag">👑 Chefe Final</span>' : ""}
         <div class="card-name">${c.nome}</div>
         <div class="card-type">${c.tipo}</div>
         <div class="card-desc">${desc}</div>

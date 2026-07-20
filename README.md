@@ -83,13 +83,14 @@ foram adicionados: Xamã Goblin, Javali Ancestral, Morcego Rei e Salamandra Matr
 3 jacarés derrotados) e Senhor das Areias (gatilho: 3 escorpiões derrotados), cada um
 com um item exclusivo garantido.
 
-**⚠ Aviso visual nos chefes finais:** cartas cujo efeito tem `flagFinal` — ou seja, os
-poucos chefes que realmente **encerram a aventura** ao serem derrotados (Dragão, Rei
-Lich, Cavaleiro Negro, Coração do Vulcão, Rainha Usurpada, Devorador do Abismo, Último
-Covil) — agora aparecem com borda vermelha pulsante e a tag "⚠ Ponto Sem Volta". A
-maioria dos chefes (Rei dos Lobos, Guilda dos Bandidos, Sumo Sacerdote, Rei Goblin,
-Gigante de Pedra, Matriarca do Pântano, Senhor das Areias) **não** têm esse aviso —
-são batalhas marcantes, mas a jornada continua depois delas.
+**👑 Chefes finais viraram uma escolha, não uma armadilha:** cartas cujo efeito tem
+`flagFinal` (Dragão, Rei Lich, Cavaleiro Negro, Coração do Vulcão, Rainha Usurpada,
+Devorador do Abismo, Último Covil, Rei Esqueleto, Behemoth Dourado, Leviatã) ainda
+aparecem marcadas com a tag "👑 Chefe Final", mas derrotá-las não encerra mais a
+run automaticamente. Ao vencer, o jogador vê um modal perguntando se quer **aceitar
+aquele final agora** ou **continuar a aventura** guardando a conquista (ouro, exp e
+item garantido continuam sendo recebidos de qualquer forma). Só quando o jogador
+escolhe aceitar o final é que a run realmente termina.
 
 
 
