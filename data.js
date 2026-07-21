@@ -4889,6 +4889,7 @@ const GAME_DATA = {
         "abismo",
         "deserto",
         "caverna",
+        "vulcao"
       ],
       minNivel: 8,
       historia: [
