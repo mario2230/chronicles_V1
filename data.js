@@ -7631,7 +7631,11 @@ const GAME_DATA = {
         tipo: "escolha",
         intro: "O calor castiga sua pele. Cada passo sobre a ponte pode ser o último.",
         opcoes: [
-          { id: "cruzar_ponte", label: "🔥 Cruzar a ponte", dica: "Arriscado, mas há uma recompensa do outro lado.", historia: ["Você atravessa entre labaredas e encontra uma bolsa esquecida por um explorador menos afortunado."], dano: 12, ouro: 28, exp: 18 },
+          { id: "cruzar_ponte", label: "🔥 Cruzar a ponte", dica: "Arriscado, mas há uma recompensa do outro lado.", historia: ["Você atravessa entre labaredas e encontra uma bolsa esquecida por um explorador menos afortunado."], dano: 12,
+            statDelta: {
+              vidaMax: -15,
+              ataque: 6,
+            }, ouro: 28, exp: 18 },
           { id: "recuar_ponte", label: "↩️ Voltar pelo caminho seguro", dica: "Você preserva suas forças.", historia: ["Você respeita o poder do vulcão e retorna antes que a ponte ceda."], exp: 6 },
         ],
       },
