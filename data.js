@@ -4900,7 +4900,7 @@ const GAME_DATA = {
         tipo: "combate",
         vidaInimigo: 999,
         ataqueInimigo: 55,
-        defesaInimigo: 25,
+        defesaInimigo: 100,
         ouroDrop: [6, 14],
         expDrop: 1000,
         itemGarantido: "espada_perfeita",
