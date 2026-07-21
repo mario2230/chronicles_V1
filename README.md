@@ -59,6 +59,42 @@ navegadores bloqueiam `fetch()` de arquivos abertos via `file://`.
 
 ## Correções e novidades desta rodada
 
+**🎯 Sistema de Habilidades de Classe (novo):** cada uma das 9 classes agora tem
+4 habilidades próprias que desbloqueiam com o nível (1, 4, 8 e 14), aparecendo como
+ícones redondos com emoji logo acima das cartas. Mistura de passivas (sempre ativas)
+e ativas (clique, custam mana, têm recarga em turnos):
+
+- **Passivas fixas**: bônus/malus permanente aplicado uma vez ao desbloquear (ex.:
+  Mago ganha +15 mana mas -1 defesa).
+- **Passivas dinâmicas**: escalam com o que a run acumulou — Guerreiro fica mais
+  resistente a cada chefe derrotado, Ladino fica mais letal quanto mais ouro carrega,
+  Druida fica mais rápido a cada região explorada, Paladino mais defensivo a cada
+  aliado conquistado, Necromante mais forte a cada inimigo abatido no total, Bardo
+  ganha mana por personagem conhecido, Monge fica mais forte quanto mais cheia sua
+  mana, Mago ganha mana por item descoberto. Isso é o que faz duas partidas com a
+  mesma classe jogarem diferente dependendo das cartas que você foi pegando.
+- **Ativas**: desde golpes de dano em combate (Rajada Arcana, Tiro Certeiro, Punho de
+  Ferro...) até buffs temporários (Grito de Guerra, Casca de Carvalho, Melodia
+  Inspiradora), curas (Mãos Sagradas, Renascimento Selvagem) e ações especiais únicas
+  (Sumiço do Ladino garante fuga; Mão Leve rouba ouro; Bis! do Bardo reseta recargas).
+
+O motor (`game.js`) interpreta os dados de forma genérica — nenhuma classe tem código
+próprio, só parâmetros diferentes em `DATA.classes[].habilidades`, no mesmo espírito
+data-driven do resto do jogo. Isso significa que dá pra ajustar qualquer habilidade
+(ou criar novas) só editando `data.js`, sem tocar no `game.js`.
+
+**🐛 2 bugs corrigidos de passagem:** uma opção de escolha guardava `ouro` como
+número simples em vez de `[min, max]` e quebrava o jogo (`resolveEscolha` agora aceita
+os dois formatos); e os dois pontos onde ouro de combate era entregue não
+consideravam bônus passivos de ouro — corrigido para that o Bardo realmente ganhe
+mais ouro por vitória.
+
+**✅ Testado:** simulação automatizada de 90 partidas completas (9 classes × 10
+partidas, até 500 turnos cada, decisões aleatórias incluindo uso aleatório de
+habilidades ativas dentro e fora de combate) — todas as 36 combinações classe+
+habilidade foram acionadas pelo menos uma vez, zero erros de runtime.
+
+
 **🐛 Bug crítico corrigido:** várias cartas de mistério (`orin_biblioteca_perdida`,
 `cronica_dos_reis`, `bencao_da_fogueira` e outras) usavam campos que a função
 `resolverMisterio` não sabia interpretar, e uma delas nem tinha o campo `ouro` que

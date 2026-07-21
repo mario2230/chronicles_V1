@@ -180,6 +180,10 @@ function novoEstado(classeId, seed) {
       conquistas: [],
       escolas: [],
       buffsAtivos: [], // buffs temporários de combate (ataque/defesa/velocidade), vindos de poções
+      habilidadesDesbloqueadas: [], // ids de habilidades de classe já desbloqueadas
+      habilidadesBonus: {}, // soma permanente de bonus/malus de habilidades passivas fixas
+      cooldownsHabilidade: {}, // id -> turnos restantes de recarga
+      inimigosDerrotadosTotal: 0, // contador global (comuns + elites + chefes) para passivas dinâmicas
     },
     tags: {},
     itensObtidos: new Set(),
@@ -212,7 +216,273 @@ function heroStat(base) {
   });
   Object.values(getSetBonuses()).forEach((setBonus) => { bonus += setBonus[base] || 0; });
   (h.buffsAtivos || []).forEach((b) => { if (b.stat === base) bonus += b.valor; });
+  bonus += (h.habilidadesBonus && h.habilidadesBonus[base]) || 0;
+  bonus += bonusDinamicoHabilidades(base);
   return bonus;
+}
+
+/* ============================================================
+   HABILIDADES DE CLASSE
+   Cada classe (em DATA.classes[].habilidades) tem 4 habilidades que
+   desbloqueiam com o nível. O motor abaixo é genérico — interpreta o
+   campo `efeito.tipo` de cada habilidade; nenhuma classe tem código
+   próprio, só dados diferentes (mesmo espírito data-driven do resto
+   do jogo).
+   ============================================================ */
+function getClasseAtual() {
+  return DATA.classes.find((c) => c.id === state.hero.classeId);
+}
+function getHabilidadesClasse() {
+  const classe = getClasseAtual();
+  return (classe && classe.habilidades) || [];
+}
+function getHabilidadesDesbloqueadas() {
+  return getHabilidadesClasse().filter((h) => state.hero.nivel >= h.nivelDesbloqueio);
+}
+
+// bônus vivo (recalculado sempre) de habilidades passivas cujo poder
+// escala com algo que a run acumulou — ouro, exploração, aliados feitos,
+// inimigos derrotados etc. É isso que faz duas partidas com a mesma classe
+// jogarem diferente dependendo do que o jogador foi pegando pelo caminho.
+function bonusDinamicoHabilidades(stat) {
+  let total = 0;
+  getHabilidadesDesbloqueadas().forEach((hab) => {
+    if (hab.efeito.tipo === "passiva_dinamico" && hab.efeito.stat === stat) {
+      const valorFonte = valorFonteDinamica(hab.efeito.fonte);
+      const bruto = Math.floor(valorFonte / hab.efeito.divisor) * hab.efeito.incremento;
+      total += Math.min(hab.efeito.max, Math.max(0, bruto));
+    }
+  });
+  return total;
+}
+function valorFonteDinamica(fonte) {
+  switch (fonte) {
+    case "itensDescobertos": return state.itensObtidos.size;
+    case "chefesDerrotados": return state.derrotados.size;
+    case "ouro": return state.hero.ouro;
+    case "regioesVisitadas": return state.regioesVisitadas.size;
+    case "aliados": return Object.values(state.personagens || {}).filter((p) => p.relacao > 0).length;
+    case "personagensConhecidos": return Object.keys(state.personagens || {}).length;
+    case "inimigosDerrotadosTotal": return state.hero.inimigosDerrotadosTotal || 0;
+    case "manaPercentual": return getManaMax() > 0 ? Math.round((state.hero.mana / getManaMax()) * 100) : 0;
+    default: return 0;
+  }
+}
+
+// chamada logo após state.hero.nivel++ (dentro de ganharExp). Aplica de
+// forma permanente o bônus/malus de habilidades passivas fixas assim que
+// elas desbloqueiam, e avisa o jogador no diário.
+function verificarNovasHabilidades() {
+  const habilidades = getHabilidadesClasse();
+  if (!habilidades.length) return;
+  if (!state.hero.habilidadesDesbloqueadas) state.hero.habilidadesDesbloqueadas = [];
+  if (!state.hero.habilidadesBonus) state.hero.habilidadesBonus = {};
+  habilidades.forEach((hab) => {
+    if (state.hero.nivel >= hab.nivelDesbloqueio && !state.hero.habilidadesDesbloqueadas.includes(hab.id)) {
+      state.hero.habilidadesDesbloqueadas.push(hab.id);
+      if (hab.efeito.tipo === "passiva_stat") {
+        Object.entries(hab.efeito.bonus || {}).forEach(([k, v]) => {
+          state.hero.habilidadesBonus[k] = (state.hero.habilidadesBonus[k] || 0) + v;
+        });
+        Object.entries(hab.efeito.malus || {}).forEach(([k, v]) => {
+          state.hero.habilidadesBonus[k] = (state.hero.habilidadesBonus[k] || 0) + v;
+        });
+      }
+      addStory(`${hab.emoji} Nova habilidade desbloqueada: ${hab.nome}! ${hab.descricao}`, "roxo");
+    }
+  });
+}
+
+// passivas de regeneração (vida) rodam uma vez por turno do mundo — não a
+// cada rodada de batalha, pra não virar cura infinita em lutas longas.
+function aplicarRegenPassivas() {
+  getHabilidadesDesbloqueadas().forEach((hab) => {
+    if (hab.efeito.tipo === "passiva_regen_vida" && hab.efeito.valor) {
+      curar(hab.efeito.valor);
+    }
+  });
+}
+
+// bônus percentual de ouro vindo de passivas (ex.: Bardo). Usado nos dois
+// pontos onde ouro de combate é entregue (combate automático e batalha).
+function multiplicadorOuroPassivo() {
+  let mult = 1;
+  getHabilidadesDesbloqueadas().forEach((hab) => {
+    if (hab.efeito.tipo === "passiva_ouro_bonus") mult += hab.efeito.percentual;
+  });
+  return mult;
+}
+
+function tickCooldownsHabilidade() {
+  const cds = state.hero.cooldownsHabilidade;
+  if (!cds) return;
+  Object.keys(cds).forEach((k) => { if (cds[k] > 0) cds[k]--; });
+}
+
+// ponto de entrada único pra qualquer habilidade ATIVA clicada na barra
+// acima das cartas. Passivas não passam por aqui (estão sempre "ligadas").
+function usarHabilidade(habId) {
+  if (state.gameOver) return;
+  const hab = getHabilidadesClasse().find((h) => h.id === habId);
+  if (!hab) return;
+  if (state.hero.nivel < hab.nivelDesbloqueio) return;
+  if (hab.tipo !== "ativa") {
+    addStory(`${hab.emoji} ${hab.nome} é passiva — está sempre ativa, não precisa acionar.`, "cinza");
+    renderAll();
+    return;
+  }
+
+  if (!state.hero.cooldownsHabilidade) state.hero.cooldownsHabilidade = {};
+  const cd = state.hero.cooldownsHabilidade[habId] || 0;
+  if (cd > 0) {
+    addStory(`${hab.emoji} ${hab.nome} ainda está recarregando (${cd} turno${cd > 1 ? "s" : ""}).`, "cinza");
+    renderAll();
+    return;
+  }
+  const ef = hab.efeito;
+  const custoMana = ef.custoMana || 0;
+  if (state.hero.mana < custoMana) {
+    addStory(`${hab.emoji} Mana insuficiente para usar ${hab.nome} (precisa de ${custoMana}).`, "cinza");
+    renderAll();
+    return;
+  }
+  const somenteCombate = ef.tipo === "ativa_dano_combate" || (ef.tipo === "ativa_especial" && ["fuga_garantida", "roubo"].includes(ef.acao));
+  if (somenteCombate && !state.battle) {
+    addStory(`${hab.emoji} ${hab.nome} só pode ser usada em combate.`, "cinza");
+    renderAll();
+    return;
+  }
+
+  state.hero.mana -= custoMana;
+  state.hero.cooldownsHabilidade[habId] = hab.cooldown || 0;
+
+  const encerraComVitoria = () => {
+    if (state.battle.inimigo.vida <= 0) {
+      state.battle.fim = "vitoria";
+      renderBattleModal();
+      setTimeout(finalizarBatalha, 1100);
+      return true;
+    }
+    return false;
+  };
+
+  if (ef.tipo === "ativa_dano_combate") {
+    const golpes = ef.golpes || 1;
+    let danoTotal = 0;
+    for (let i = 0; i < golpes; i++) {
+      danoTotal += Math.max(1, Math.round(getAtaque() * (ef.multiplicador || 1.5) - state.battle.inimigo.defesa * 0.3));
+    }
+    state.battle.inimigo.vida = Math.max(0, state.battle.inimigo.vida - danoTotal);
+    if (ef.drenoVida) curar(Math.round(danoTotal * ef.drenoVida));
+    pushBattleLog([`${hab.emoji} Você usa ${hab.nome} e causa ${danoTotal} de dano${ef.drenoVida ? " (drenando vida)" : ""}!`]);
+    spawnFloatingText(`${hab.emoji} -${danoTotal}`, "dmg-crit");
+    if (encerraComVitoria()) return;
+    renderBattleModal();
+    battleTurnoInimigo();
+    return;
+  }
+
+  if (ef.tipo === "ativa_buff") {
+    if (!state.hero.buffsAtivos) state.hero.buffsAtivos = [];
+    (ef.buffs || [ef]).forEach((b) => {
+      state.hero.buffsAtivos.push({ stat: b.stat, valor: b.valor, turnosRestantes: b.turnos || 3, nome: hab.nome });
+    });
+    addStory(`${hab.emoji} Você usa ${hab.nome}.`, "roxo");
+    renderAll();
+    return;
+  }
+
+  if (ef.tipo === "ativa_cura") {
+    curar(ef.cura || 0);
+    if (ef.danoMultiplicador && state.battle) {
+      const dano = Math.max(1, Math.round(getAtaque() * ef.danoMultiplicador - state.battle.inimigo.defesa * 0.3));
+      state.battle.inimigo.vida = Math.max(0, state.battle.inimigo.vida - dano);
+      pushBattleLog([`${hab.emoji} ${hab.nome} causa ${dano} de dano e cura ${ef.cura} de vida!`]);
+      if (encerraComVitoria()) return;
+      renderBattleModal();
+      battleTurnoInimigo();
+      return;
+    }
+    addStory(`${hab.emoji} Você usa ${hab.nome} e recupera ${ef.cura} de vida.`, "verde");
+    renderAll();
+    return;
+  }
+
+  if (ef.tipo === "ativa_especial") {
+    if (ef.acao === "fuga_garantida") {
+      state.battle.fim = "fuga";
+      pushBattleLog([`${hab.emoji} Você usa ${hab.nome} e escapa sem esforço!`]);
+      renderBattleModal();
+      setTimeout(finalizarBatalha, 900);
+      return;
+    }
+    if (ef.acao === "roubo") {
+      const roubo = rndInt(8, 18);
+      state.hero.ouro += roubo;
+      const dano = Math.max(1, Math.round(getAtaque() * 0.8 - state.battle.inimigo.defesa * 0.3));
+      state.battle.inimigo.vida = Math.max(0, state.battle.inimigo.vida - dano);
+      pushBattleLog([`${hab.emoji} ${hab.nome}: +${roubo} ouro e ${dano} de dano!`]);
+      if (encerraComVitoria()) return;
+      renderBattleModal();
+      battleTurnoInimigo();
+      return;
+    }
+    if (ef.acao === "resetar_cooldowns") {
+      Object.keys(state.hero.cooldownsHabilidade).forEach((k) => {
+        state.hero.cooldownsHabilidade[k] = Math.max(0, (state.hero.cooldownsHabilidade[k] || 0) - 2);
+      });
+      addStory(`${hab.emoji} ${hab.nome}: recargas de todas as habilidades reduzidas!`, "roxo");
+      renderAll();
+      return;
+    }
+  }
+
+  renderAll();
+}
+
+function renderSkillBar() {
+  const el = document.getElementById("skillBar");
+  if (!el) return;
+  const habilidades = getHabilidadesClasse();
+  if (!habilidades.length) { el.innerHTML = ""; return; }
+
+  el.innerHTML = habilidades.map((hab) => {
+    const desbloqueada = state.hero.nivel >= hab.nivelDesbloqueio;
+    const ativa = hab.tipo === "ativa";
+    const cd = (state.hero.cooldownsHabilidade && state.hero.cooldownsHabilidade[hab.id]) || 0;
+    const semMana = ativa && state.hero.mana < (hab.efeito.custoMana || 0);
+    const fraca = desbloqueada && (cd > 0 || semMana);
+    const classes = [
+      "skill-icon",
+      desbloqueada ? (ativa ? "skill-ativa" : "skill-passiva") : "skill-locked",
+      fraca ? "skill-fraca" : "",
+    ].filter(Boolean).join(" ");
+    const onclick = desbloqueada && ativa ? ` onclick="usarHabilidade('${hab.id}')"` : "";
+
+    const meta = [];
+    if (!desbloqueada) meta.push(`<span>Desbloqueia no <b>nível ${hab.nivelDesbloqueio}</b></span>`);
+    if (desbloqueada && ativa) {
+      meta.push(`<span>Custo: <b>${hab.efeito.custoMana || 0} mana</b></span>`);
+      meta.push(`<span>Recarga: <b>${hab.cooldown || 0}t</b></span>`);
+      if (cd > 0) meta.push(`<span style="color:var(--cor-vermelho)">Recarregando: <b>${cd}t</b></span>`);
+      if (semMana) meta.push(`<span style="color:var(--cor-vermelho)">Mana insuficiente</span>`);
+    }
+
+    const tooltip = `
+      <div class="skill-tooltip ${ativa ? "stt-ativa" : "stt-passiva"}">
+        <div class="stt-nome"><span>${hab.emoji}</span> ${hab.nome} <span class="stt-tag">${ativa ? "ativa" : "passiva"}</span></div>
+        <div class="stt-desc">${hab.descricao}</div>
+        <div class="stt-meta">${meta.join("")}</div>
+      </div>`;
+
+    return `
+      <div class="${classes}"${onclick}>
+        <span class="skill-emoji">${desbloqueada ? hab.emoji : "🔒"}</span>
+        ${desbloqueada && ativa && cd > 0 ? `<span class="skill-cd">${cd}</span>` : ""}
+        ${!desbloqueada ? `<span class="skill-req">Nv${hab.nivelDesbloqueio}</span>` : ""}
+        ${tooltip}
+      </div>`;
+  }).join("");
 }
 
 function getSetBonuses() {
@@ -662,6 +932,7 @@ function ganharExp(qtd) {
     state.hero.manaMax += 5;
     state.hero.vida = Math.min(getVidaMax(), state.hero.vida + 15);
     addStory(`⭐ Você subiu para o nível ${state.hero.nivel}!`, "amarelo");
+    verificarNovasHabilidades();
   }
 }
 
@@ -864,8 +1135,9 @@ function resolverCombate(card) {
   }
 
   const ouroBase = rndInt(ef.ouroDrop[0], ef.ouroDrop[1]);
-  const ouro = card.elite ? Math.round(ouroBase * 1.4) : ouroBase;
+  const ouro = Math.round((card.elite ? ouroBase * 1.4 : ouroBase) * multiplicadorOuroPassivo());
   state.hero.ouro += ouro;
+  state.hero.inimigosDerrotadosTotal = (state.hero.inimigosDerrotadosTotal || 0) + 1;
   const expGanho = card.elite ? Math.round(ef.expDrop * 1.4) : ef.expDrop;
   ganharExp(expGanho);
   if (ef.fragmentosDrop) ajustarFragmentos(ef.fragmentosDrop);
@@ -995,8 +1267,7 @@ function resolveEscolha(card, opcao) {
   }
 
   if (opcao.ouro) {
-    const [min, max] = opcao.ouro;
-    const g = rndInt(min, max);
+    const g = Array.isArray(opcao.ouro) ? rndInt(opcao.ouro[0], opcao.ouro[1]) : opcao.ouro;
     state.hero.ouro += g;
     addStory(`(${g >= 0 ? "+" : ""}${g} ouro)`, "amarelo");
   }
@@ -1255,6 +1526,7 @@ function battleTurnoInimigo() {
   b.defendendo = false;
   b.rodada++;
   tickBuffs();
+  tickCooldownsHabilidade();
   pushBattleLog(linhas);
 
   if (state.hero.vida <= 0) b.fim = "derrota";
@@ -1417,8 +1689,10 @@ function finalizarBatalha() {
   let venceuChefeFinal = false;
 
   if (fim === "vitoria") {
-    const ouro = rndInt(card.efeito.ouroDrop[0], card.efeito.ouroDrop[1]);
+    const ouroBase = rndInt(card.efeito.ouroDrop[0], card.efeito.ouroDrop[1]);
+    const ouro = Math.round(ouroBase * multiplicadorOuroPassivo());
     state.hero.ouro += ouro;
+    state.hero.inimigosDerrotadosTotal = (state.hero.inimigosDerrotadosTotal || 0) + 1;
     ganharExp(card.efeito.expDrop);
     addStory(`👑 ${pickStoryLine(card)} (+${ouro} ouro, +${card.efeito.expDrop} exp)`, card.cor);
     if (card.efeito.contadorTag) state.tags[card.efeito.contadorTag] = (state.tags[card.efeito.contadorTag] || 0) + 1;
@@ -1844,6 +2118,8 @@ function advanceTurn(card, alternativas, escolhaOpcao) {
     resolveCard(card, alternativas, escolhaOpcao);
     tickGlobalEvent();
     tickBuffs();
+    tickCooldownsHabilidade();
+    aplicarRegenPassivas();
 
     const ending = checkEndings();
     if (ending) {
@@ -2238,6 +2514,7 @@ function renderAll() {
   renderTree();
   renderStory();
   renderCards();
+  renderSkillBar();
   renderEventBanner();
   applyWeather();
   if (!state.battle && !state.minigame) saveGame();
@@ -2620,6 +2897,14 @@ function loadGame() {
     if (!state.hero.escolas) state.hero.escolas = [];
     if (!state.hero.inventario) state.hero.inventario = [];
     if (!state.hero.buffsAtivos) state.hero.buffsAtivos = [];
+    if (!state.hero.habilidadesDesbloqueadas) state.hero.habilidadesDesbloqueadas = [];
+    if (!state.hero.habilidadesBonus) state.hero.habilidadesBonus = {};
+    if (!state.hero.cooldownsHabilidade) state.hero.cooldownsHabilidade = {};
+    if (!state.hero.inimigosDerrotadosTotal) state.hero.inimigosDerrotadosTotal = 0;
+    // saves antigos não passaram por verificarNovasHabilidades nos level-ups
+    // já ocorridos — roda uma vez na carga pra aplicar o que já deveria ter
+    // sido desbloqueado (idempotente: cada habilidade só aplica bônus 1x).
+    verificarNovasHabilidades();
     state.battle = null; // nunca retoma no meio de uma batalha após recarregar a página
     state.minigame = null; // idem para mini-games
     return true;
