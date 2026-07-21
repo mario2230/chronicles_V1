@@ -4879,7 +4879,7 @@ const GAME_DATA = {
       nome: "Mercenário Rival",
       tipo: "chefe",
       raridade: "mitica",
-      weight: 9,
+      weight: 50,
       regiaoOrigem: [
         "aldeia",
         "floresta",
