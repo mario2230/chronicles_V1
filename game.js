@@ -1,8 +1,19 @@
-/* ============================================================
-   CHRONICLES — engine.js
-   Motor 100% data-driven. Todo conteúdo vem de /data/*.json.
-   Este arquivo apenas interpreta os dados e aplica as regras.
-   ============================================================ */
+/*
+========================================================
+
+Chronicles
+
+Criado por:
+Mario Gonçalves de Freitas Junior
+
+Copyright © 2026
+Todos os direitos reservados.
+
+GitHub:
+https://github.com/SEU-USUARIO
+
+========================================================
+*/
 
 let DATA = { classes: [], cards: [], events: [], endings: [] };
 let state = null;
