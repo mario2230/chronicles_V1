@@ -129,3 +129,14 @@ disponível. Depois de editar `data.js`, é só recarregar a página (F5).
 - Sons e música (pasta `assets/` já reservada no GDD).
 - Cadeias narrativas ramificadas mais longas (§45 do GDD) — hoje o `desbloqueia`
   já cria ramificações, mas não há rastreamento de "linha de missão" dedicado.
+
+
+
+
+  # Copyright
+
+© 2026 Mario Gonçalves de Freitas Junior.
+
+Este projeto está protegido por direitos autorais.
+
+Não é permitida a cópia, redistribuição, modificação, comercialização ou utilização do código sem autorização expressa do autor.
