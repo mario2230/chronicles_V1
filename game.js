@@ -915,15 +915,22 @@ function tickGlobalEvent() {
 /* ============================================================
    RESOLUÇÃO DE EFEITOS
    ============================================================ */
-function addStory(texto, cor) {
-  state.story.push({ tipo: "linha", texto, cor });
+function addStory(texto, cor, marcante) {
+  state.story.push({ tipo: "linha", texto, cor, marcante: !!marcante });
 }
 
 // vira um capítulo do Diário sempre que o herói muda de região
 function addChapter(regiao) {
   state.capituloAtual++;
   const meta = REGIAO_META[regiao] || { emoji: "🌍", nome: regiao };
-  state.story.push({ tipo: "capitulo", numero: state.capituloAtual, regiao, meta });
+  state.story.push({
+    tipo: "capitulo",
+    numero: state.capituloAtual,
+    regiao,
+    meta,
+    nivelNoMomento: state.hero.nivel,
+    turnoNoMomento: state.turno,
+  });
 }
 
 // realça números e palavras-chave da narrativa (+ouro, -vida, ⭐ etc.)
@@ -1309,7 +1316,7 @@ function resolverCombate(card) {
 
   if (state.hero.vida <= 0) {
     state.hero.vida = 0;
-    addStory(`💀 Você foi derrotado por ${card.nome}.`, "vermelho");
+    addStory(`💀 Você foi derrotado por ${card.nome}.`, "vermelho", true);
     spawnFloatingText("💀 DERROTA", "dmg-fatal");
     return;
   }
@@ -1330,7 +1337,7 @@ function resolverCombate(card) {
   else if (criticos >= 2) sufixoBuild = ` Sua velocidade garantiu ${criticos} acertos críticos.`;
 
   const prefixoElite = card.elite ? "⚔ Inimigo Especial derrotado! " : "";
-  addStory(`${prefixoElite}${pickStoryLine(card)} (+${ouro} ouro, +${expGanho} exp)${sufixoBuild}`, card.cor);
+  addStory(`${prefixoElite}${pickStoryLine(card)} (+${ouro} ouro, +${expGanho} exp)${sufixoBuild}`, card.cor, !!card.elite);
   spawnFloatingText(`${Math.max(0, Math.round(vidaInimigoMax))} dano total causado`, "dmg-pos");
 
   if (ef.contadorTag) state.tags[ef.contadorTag] = (state.tags[ef.contadorTag] || 0) + 1;
@@ -1894,7 +1901,7 @@ function finalizarBatalha() {
     state.hero.ouro += ouro;
     state.hero.inimigosDerrotadosTotal = (state.hero.inimigosDerrotadosTotal || 0) + 1;
     ganharExp(card.efeito.expDrop);
-    addStory(`👑 ${pickStoryLine(card)} (+${ouro} ouro, +${card.efeito.expDrop} exp)`, card.cor);
+    addStory(`👑 ${pickStoryLine(card)} (+${ouro} ouro, +${card.efeito.expDrop} exp)`, card.cor, true);
     if (card.efeito.contadorTag) state.tags[card.efeito.contadorTag] = (state.tags[card.efeito.contadorTag] || 0) + 1;
     state.derrotados.add(card.id);
     if (card.efeito.itemGarantido) {
@@ -1909,7 +1916,7 @@ function finalizarBatalha() {
     addStory(`🏃 Você recua da batalha contra ${card.nome}. Ele ainda ronda por aí — talvez seja melhor voltar mais preparado.`, "cinza");
   } else if (fim === "derrota") {
     state.hero.vida = 0;
-    addStory(`💀 Você caiu diante de ${card.nome}.`, "vermelho");
+    addStory(`💀 Você caiu diante de ${card.nome}.`, "vermelho", true);
   }
 
   document.body.classList.remove("in-battle");
@@ -2524,7 +2531,7 @@ function renderStory() {
       if (s.tipo === "capitulo") {
         return `
         <div class="chapter-divider">
-          <span class="chapter-num">Capítulo ${s.numero}</span>
+          <span class="chapter-num">Capítulo ${s.numero} · Nível ${s.nivelNoMomento || state.hero.nivel} · Turno ${s.turnoNoMomento ?? state.turno}</span>
           <span class="chapter-title">${s.meta.emoji} ${s.meta.nome}</span>
         </div>`;
       }
@@ -2532,7 +2539,8 @@ function renderStory() {
       // olhar do jogador até onde a história está acontecendo agora.
       const distFromLast = last - i;
       const novaClasse = distFromLast === 0 ? "story-entry-new" : distFromLast === 1 ? "story-entry-recent" : "";
-      return `<div class="story-entry ${COR_CLASS[s.cor] || ""} ${novaClasse}">${enhanceStoryText(s.texto)}</div>`;
+      const marcanteClasse = s.marcante ? "story-marcante" : "";
+      return `<div class="story-entry ${COR_CLASS[s.cor] || ""} ${novaClasse} ${marcanteClasse}">${enhanceStoryText(s.texto)}</div>`;
     })
     .join("");
 
@@ -3044,15 +3052,99 @@ function recordRunHistory(ending) {
   } catch (e) { /* ignora erros de storage */ }
 }
 
+// monta o "Epílogo" da run — não é uma ficha de status, é uma narrativa em
+// prosa construída só com o que aconteceu de verdade nesta partida (região
+// por região, chefes vencidos, vínculos formados, relíquias encontradas).
+// É o que faz o jogador sentir que a história foi escrita por ele mesmo.
+function gerarEpilogo(ending) {
+  const h = state.hero;
+  const classeInfo = DATA.classes.find((c) => c.id === h.classeId);
+  const paragrafos = [];
+
+  // ordem real de exploração, na sequência em que os capítulos aconteceram
+  const regioesEmOrdem = [];
+  state.story.forEach((s) => {
+    if (s.tipo === "capitulo") {
+      const label = `${s.meta.emoji} ${s.meta.nome}`;
+      if (!regioesEmOrdem.includes(label)) regioesEmOrdem.push(label);
+    }
+  });
+
+  const chefes = [...state.derrotados].map((id) => DATA.cards.find((c) => c.id === id)).filter(Boolean);
+
+  const vinculos = Object.entries(state.personagens)
+    .map(([id, rel]) => {
+      const p = DATA.characters && DATA.characters.find((c) => c.id === id);
+      if (!p) return null;
+      return { p, tier: relTier(rel.relacao) };
+    })
+    .filter((v) => v && REL_TIERS.indexOf(v.tier) >= 4); // Respeito ou acima
+
+  const reliquias = [...state.itensObtidos]
+    .map((id) => DATA.cards.find((c) => c.id === id))
+    .filter((c) => c && ["epica", "lendaria", "mitica"].includes(c.raridade));
+
+  paragrafos.push(
+    `${h.emoji} <b>${h.nome}</b>${classeInfo ? `, ${classeInfo.nome.toLowerCase()}` : ""}, partiu de uma pequena aldeia sem saber ` +
+      `aonde o caminho levaria. ${state.turno} decisões depois, chegou ao nível ${h.nivel} carregando ${h.ouro} de ouro — ` +
+      `e essa é uma história que ninguém mais vai viver exatamente assim, porque nasceu só das suas escolhas.`
+  );
+
+  if (regioesEmOrdem.length > 1) {
+    paragrafos.push(
+      `A jornada passou por ${regioesEmOrdem.join(" → ")}, em ${state.capituloAtual} capítulos escritos um a um, ` +
+        `cada troca de região resultado de uma carta que você escolheu virar, entre outras que ficaram pra trás.`
+    );
+  }
+
+  if (chefes.length) {
+    const lista = chefes.map((c) => `${c.emoji} ${c.nome}`).join(", ");
+    paragrafos.push(
+      `${chefes.length > 1 ? "Nomes que passaram a temer" : "Um nome que passou a temer"} ${h.nome}: ${lista}. ` +
+        `${chefes.length > 1 ? "Cada um caiu num turno específico que só existiu porque você decidiu enfrentar, não fugir." : "Uma vitória que só aconteceu porque você decidiu enfrentar, não fugir."}`
+    );
+  }
+
+  if (vinculos.length) {
+    const lista = vinculos.map((v) => `${v.tier.emoji} ${v.p.nome} (${v.tier.label})`).join(", ");
+    paragrafos.push(
+      `Ninguém trilha esse caminho sozinho: ${lista} ${vinculos.length > 1 ? "carregam" : "carrega"} memória do que ` +
+        `vocês viveram juntos — e teriam uma lembrança bem diferente se você tivesse escolhido de outro jeito em algum daqueles encontros.`
+    );
+  }
+
+  if (reliquias.length) {
+    const lista = reliquias.map((c) => `${c.emoji} ${c.nome}`).join(", ");
+    paragrafos.push(`Entre tudo que encontrou pelo caminho, algumas coisas eram raras demais pra esquecer: ${lista}.`);
+  }
+
+  const foiMorte = ending.condicao === "vida";
+  paragrafos.push(
+    foiMorte
+      ? `E então, no turno ${state.turno}, tudo parou: ${ending.texto} Não foi o fim que ${h.nome} escolheu — foi o que as escolhas anteriores tornaram inevitável.`
+      : `No fim, ${h.nome} escolheu o próprio destino, de olhos abertos: ${ending.texto}`
+  );
+
+  paragrafos.push(`— Crônica nº${state.seed}, encerrada no turno ${state.turno}, nível ${h.nivel}.`);
+
+  return paragrafos.map((p) => `<p class="epilogo-paragrafo">${p}</p>`).join("");
+}
+
 function showEndingModal(ending) {
   recordRunHistory(ending);
   const root = document.getElementById("modalRoot");
   root.innerHTML = `
     <div class="modal-overlay">
-      <div class="modal-box">
+      <div class="modal-box ending-box">
         <div class="ending-emoji">${ending.emoji}</div>
         <div class="ending-title">${ending.titulo}</div>
         <div class="ending-text">${ending.texto}</div>
+
+        <div class="epilogo-box">
+          <div class="epilogo-titulo">📜 Sua Crônica</div>
+          ${gerarEpilogo(ending)}
+        </div>
+
         <div class="ending-stats">
           <div class="ending-stat"><b>${state.hero.nivel}</b><span>Nível</span></div>
           <div class="ending-stat"><b>${state.turno}</b><span>Turnos</span></div>

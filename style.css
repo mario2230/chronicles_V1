@@ -463,6 +463,24 @@ main.panels {
   100% { box-shadow: -10px 0 0px -6px rgba(0,229,255,0); }
 }
 
+/* momentos que mudam o rumo da campanha (chefe caído, morte) se destacam
+   do resto do diário — a leitura precisa "bater diferente" nessas linhas */
+.story-marcante {
+  font-size: 1.02rem;
+  padding: 12px 16px;
+  border-left-width: 4px;
+  background: linear-gradient(90deg, rgba(255,255,255,0.05), transparent 70%);
+  border-radius: 0 8px 8px 0;
+  position: relative;
+}
+.story-marcante::before {
+  content: "";
+  position: absolute;
+  left: -4px; top: 0; bottom: 0; width: 4px;
+  box-shadow: 0 0 12px 1px currentColor;
+  opacity: 0.6;
+}
+
 /* ---------- RELACIONAMENTOS ---------- */
 .rel-list { display: flex; flex-direction: column; gap: 6px; }
 .rel-item {
@@ -1309,6 +1327,42 @@ body.weather-corrupcao #weatherLayer {
 .ending-stat { text-align: center; }
 .ending-stat b { display: block; font-size: 1.1rem; color: var(--primary); }
 .ending-stat span { font-size: 0.65rem; color: var(--text-dim); text-transform: uppercase; }
+
+.ending-box { max-width: 620px; }
+.epilogo-box {
+  background: #0d0d0d;
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--secondary);
+  border-radius: 4px 12px 12px 4px;
+  padding: 18px 20px;
+  margin-bottom: 22px;
+}
+.epilogo-titulo {
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--secondary);
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+.epilogo-paragrafo {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 0.86rem;
+  line-height: 1.75;
+  color: #e8e8e8;
+  text-align: left;
+  margin: 0 0 14px;
+}
+.epilogo-paragrafo:last-child {
+  margin-bottom: 0;
+  color: var(--text-dim);
+  font-size: 0.72rem;
+  font-family: 'Inter', system-ui, sans-serif;
+  letter-spacing: 0.02em;
+  text-align: right;
+  font-style: italic;
+}
+.epilogo-paragrafo b { color: var(--primary); }
 
 .btn-primary {
   width: 100%;
