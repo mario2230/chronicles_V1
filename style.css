@@ -1791,3 +1791,82 @@ body.in-minigame .game-card { pointer-events: none; }
   85% { opacity: .3; }
   100% { transform: translateY(-100vh) translateX(20px); opacity: 0; }
 }
+
+/* ============================================================
+   AVISO DE EQUIPAR ITEM — pequeno e não-bloqueante. Não é um modal
+   cheio (sem overlay escurecendo a tela): o jogo continua jogável por
+   baixo, e some sozinho se ignorado (o item já está seguro na mochila
+   de qualquer forma, então ignorar não perde nada).
+   ============================================================ */
+#toastRoot {
+  position: fixed;
+  top: 76px; /* 🔧 posição do aviso na tela */
+  right: 20px;
+  z-index: 60; /* acima da UI normal do jogo, abaixo de modais de verdade (100+) */
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  pointer-events: none; /* só os cards individuais capturam clique */
+}
+.equip-toast {
+  pointer-events: auto;
+  width: 260px; /* 🔧 largura do aviso */
+  background: var(--card);
+  border: 1px solid var(--secondary);
+  border-radius: 12px;
+  padding: 12px 14px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5), 0 0 20px rgba(168,85,247,0.15);
+  animation: equipToastIn .25s ease;
+}
+.equip-toast.equip-toast-out { animation: equipToastOut .2s ease forwards; }
+@keyframes equipToastIn {
+  from { opacity: 0; transform: translateX(24px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+@keyframes equipToastOut {
+  from { opacity: 1; transform: translateX(0); }
+  to { opacity: 0; transform: translateX(24px); }
+}
+.equip-toast-head { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.equip-toast-emoji { font-size: 1.6rem; }
+.equip-toast-title { font-weight: 700; font-size: 0.85rem; }
+.equip-toast-slot { font-size: 0.62rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: .05em; }
+.equip-toast-compare {
+  font-size: 0.72rem;
+  color: var(--cor-ciano);
+  background: rgba(255,255,255,0.03);
+  border-radius: 8px;
+  padding: 6px 8px;
+  margin-bottom: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.equip-toast-label {
+  font-size: 0.6rem;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  margin-right: 6px;
+}
+.equip-toast-actions { display: flex; gap: 8px; }
+.equip-toast-btn {
+  flex: 1;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 7px 6px;
+  border-radius: 8px;
+  cursor: pointer;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text);
+  transition: transform .1s ease, border-color .15s ease;
+}
+.equip-toast-btn:hover { transform: translateY(-1px); }
+.equip-toast-yes { border-color: var(--secondary); color: var(--secondary); }
+.equip-toast-no { color: var(--text-dim); }
+
+@media (max-width: 600px) {
+  #toastRoot { left: 10px; right: 10px; top: 66px; }
+  .equip-toast { width: auto; }
+}

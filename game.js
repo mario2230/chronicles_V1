@@ -1139,23 +1139,54 @@ function obterItem(card, bonusOverride, nomeOverride, slotOverride) {
     return;
   }
 
-  // trocar de equipamento não descarta o antigo — ele vira reserva na mochila
+  // itens de equipamento não são mais equipados automaticamente. Vão pra
+  // reserva da mochila (então nada se perde), e um aviso pequeno pergunta
+  // se o jogador quer equipar agora — sem travar o jogo: as cartas continuam
+  // clicáveis por baixo, e se ele ignorar, o item só fica guardado.
   const slotFinal = ["arma", "armadura", "acessorio"].includes(slot) ? slot : "acessorio";
-  const anterior = state.hero.equipamentos[slotFinal];
-  if (anterior) {
-    addToEquipReserve({
-      tipo: "equipamento",
-      itemId: anterior.id,
-      nome: anterior.nome,
-      emoji: anterior.emoji || "🎒",
-      slot: slotFinal,
-      bonus: anterior.bonus,
-      conjunto: anterior.conjunto || null,
-    });
-  }
   const item = { id: card.id, nome, emoji: card.emoji, bonus, slot: slotFinal, conjunto };
-  state.hero.equipamentos[slotFinal] = item;
-  addStory(anterior ? `Você trocou de equipamento por ${nome}. O antigo foi para a mochila.` : `Você equipou ${nome}.`, "amarelo");
+  addToEquipReserve({ tipo: "equipamento", itemId: item.id, nome: item.nome, emoji: item.emoji, slot: slotFinal, bonus: item.bonus, conjunto: item.conjunto });
+  addStory(`🎒 Você guardou ${nome} na mochila.`, "amarelo");
+  showEquipPrompt(item);
+}
+
+// aviso pequeno e não-bloqueante (não é um modal cheio, não escurece a tela)
+// perguntando se o jogador quer equipar o item que acabou de pegar. Some
+// sozinho depois de um tempo se ignorado — nesse caso o item só continua
+// na mochila, que já é o comportamento seguro por padrão.
+function showEquipPrompt(item) {
+  const root = document.getElementById("toastRoot");
+  if (!root) return;
+
+  const atual = state.hero.equipamentos[item.slot];
+  const bonusTxt = (b) => Object.entries(b || {}).map(([k, v]) => `${k} ${v > 0 ? "+" : ""}${v}`).join(", ") || "—";
+
+  const id = "eqtoast_" + Math.random().toString(36).slice(2, 9);
+  const el = document.createElement("div");
+  el.className = "equip-toast";
+  el.id = id;
+  el.innerHTML = `
+    <div class="equip-toast-head">
+      <span class="equip-toast-emoji">${item.emoji}</span>
+      <div>
+        <div class="equip-toast-title">Equipar ${item.nome}?</div>
+        <div class="equip-toast-slot">${item.slot}</div>
+      </div>
+    </div>
+    <div class="equip-toast-compare">
+      <div><span class="equip-toast-label">novo</span> ${bonusTxt(item.bonus)}</div>
+      ${atual ? `<div><span class="equip-toast-label">atual</span> ${bonusTxt(atual.bonus)}</div>` : `<div class="equip-toast-label">nenhum equipado ainda</div>`}
+    </div>
+    <div class="equip-toast-actions">
+      <button class="equip-toast-btn equip-toast-yes">Equipar agora</button>
+      <button class="equip-toast-btn equip-toast-no">Deixar na mochila</button>
+    </div>`;
+  root.appendChild(el);
+
+  const remove = () => { el.classList.add("equip-toast-out"); setTimeout(() => el.remove(), 200); };
+  el.querySelector(".equip-toast-yes").addEventListener("click", () => { equiparDaMochila(item.id); remove(); });
+  el.querySelector(".equip-toast-no").addEventListener("click", remove);
+  setTimeout(remove, 9000); // some sozinho se ignorado — fica na mochila mesmo
 }
 
 // consome uma unidade de um item da mochila e aplica seu efeito. Funciona
