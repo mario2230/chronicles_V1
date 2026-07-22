@@ -586,7 +586,6 @@ function renderSkillBar() {
       <div class="${classes}"${onclick}>
         <span class="skill-emoji">${desbloqueada ? hab.emoji : "🔒"}</span>
         ${desbloqueada && ativa && cd > 0 ? `<span class="skill-cd">${cd}</span>` : ""}
-        ${!desbloqueada ? `<span class="skill-req">Nv${hab.nivelDesbloqueio}</span>` : ""}
         ${tooltip}
       </div>`;
   }).join("");
@@ -1100,6 +1099,18 @@ function applyStatDelta(delta, motivoPrefix) {
 // do próprio resultado sorteado, não em card.efeito.slot — sem isso, um
 // item de equipamento ganho por mistério não sabia seu slot e se perdia
 // silenciosamente (escrito em equipamentos[undefined]).
+// empilha um equipamento na reserva da mochila: se já existe uma cópia do
+// mesmo item (mesmo itemId), só soma quantidade em vez de criar uma linha
+// duplicada — evita a mochila enchendo de entradas repetidas do mesmo item.
+function addToEquipReserve(entry) {
+  const existente = state.hero.inventario.find((it) => it.tipo === "equipamento" && it.itemId === entry.itemId);
+  if (existente) {
+    existente.quantidade = (existente.quantidade || 1) + 1;
+  } else {
+    state.hero.inventario.push({ ...entry, quantidade: 1 });
+  }
+}
+
 function obterItem(card, bonusOverride, nomeOverride, slotOverride) {
   const nome = nomeOverride || card.efeito.nomeItem || card.nome;
   const bonus = bonusOverride || card.efeito.bonus || {};
@@ -1132,7 +1143,7 @@ function obterItem(card, bonusOverride, nomeOverride, slotOverride) {
   const slotFinal = ["arma", "armadura", "acessorio"].includes(slot) ? slot : "acessorio";
   const anterior = state.hero.equipamentos[slotFinal];
   if (anterior) {
-    state.hero.inventario.push({
+    addToEquipReserve({
       tipo: "equipamento",
       itemId: anterior.id,
       nome: anterior.nome,
@@ -1184,9 +1195,12 @@ function equiparDaMochila(itemId) {
   const entry = state.hero.inventario[idx];
   const atual = state.hero.equipamentos[entry.slot];
   state.hero.equipamentos[entry.slot] = { id: entry.itemId, nome: entry.nome, emoji: entry.emoji, bonus: entry.bonus, slot: entry.slot, conjunto: entry.conjunto || null };
-  state.hero.inventario.splice(idx, 1);
+
+  if ((entry.quantidade || 1) > 1) entry.quantidade -= 1;
+  else state.hero.inventario.splice(idx, 1);
+
   if (atual) {
-    state.hero.inventario.push({ tipo: "equipamento", itemId: atual.id, nome: atual.nome, emoji: atual.emoji || "🎒", slot: entry.slot, bonus: atual.bonus, conjunto: atual.conjunto || null });
+    addToEquipReserve({ tipo: "equipamento", itemId: atual.id, nome: atual.nome, emoji: atual.emoji || "🎒", slot: entry.slot, bonus: atual.bonus, conjunto: atual.conjunto || null });
   }
   addStory(`Você trocou de equipamento: agora usa ${entry.nome}.`, "amarelo");
   renderHero();
@@ -2622,7 +2636,18 @@ function renderCards() {
         c.elite ? "card-elite" : "",
         isFinal ? "card-final" : "",
       ].filter(Boolean).join(" ");
+      const cttTagColor = { inimigo: "var(--cor-vermelho)", chefe: "var(--cor-vermelho)", item: "var(--cor-amarelo)", artefato: "var(--cor-amarelo)", npc: "var(--cor-verde)", personagem: "var(--cor-verde)", misterio: "var(--cor-roxo)", escola: "var(--cor-roxo)", local: "var(--cor-azul)", evento: "var(--cor-laranja)", escolha: "var(--secondary)", minigame: "var(--primary)" }[c.tipo] || "var(--text-dim)";
+      const tooltipHtml = `
+        <div class="card-tooltip">
+          <div class="ctt-nome">
+            <span>${c.emoji}</span> ${c.nome}
+            <span class="ctt-tag" style="color:${cttTagColor};">${c.tipo}</span>
+          </div>
+          <div class="ctt-desc">${desc}</div>
+          ${preview.length ? `<div class="ctt-meta">${preview.map((p) => `<span class="cost-chip ${p.cls}">${p.text}</span>`).join("")}</div>` : ""}
+        </div>`;
       return `
+      <div class="game-card-wrap">
       <div class="${classes}" data-id="${c.id}" onclick="onCardClick('${c.id}')">
         <div class="card-top">
           <span class="card-emoji">${c.emoji}</span>
@@ -2640,9 +2665,11 @@ function renderCards() {
             : ""
         }
         <div class="card-name">${c.nome}</div>
-        <div class="card-type">${c.tipo}</div>
+        <div class="card-type card-type-${c.tipo}">${c.tipo}</div>
         <div class="card-desc">${desc}</div>
         ${preview.length ? `<div class="card-cost">${preview.map((p) => `<span class="cost-chip ${p.cls}">${p.text}</span>`).join("")}</div>` : ""}
+      </div>
+      ${tooltipHtml}
       </div>`;
     })
     .join("");
@@ -2892,9 +2919,10 @@ function inventoryModalContent() {
     ? reserva
         .map((it) => {
           const bonusTxt = Object.entries(it.bonus || {}).map(([k, v]) => `${k} ${v > 0 ? "+" : ""}${v}`).join(", ");
+          const qtyTag = (it.quantidade || 1) > 1 ? `<span class="item-qty">x${it.quantidade}</span>` : "";
           return `<div class="inv-item inv-item-actionable" onclick="equiparDaMochila('${it.itemId}')">
             <span class="slot">${it.slot}</span>
-            <span>${it.emoji} ${it.nome}<br><small style="color:#00E5FF">${bonusTxt}</small></span>
+            <span>${it.emoji} ${it.nome}${qtyTag}<br><small style="color:#00E5FF">${bonusTxt}</small></span>
             <span class="inv-swap-hint">trocar ›</span>
           </div>`;
         })

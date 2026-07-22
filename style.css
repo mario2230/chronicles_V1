@@ -9,7 +9,7 @@
   --primary: #00E5FF;
   --secondary: #A855F7;
   --text: #EEEEEE;
-  --text-dim: #8a8a8a;
+  --text-dim: #a3a3a3; /* 🔧 antes era #8a8a8a — mais claro pra ficar legível em telas pequenas/escuras */
   --border: #262626;
 
   --cor-verde: #4ADE80;
@@ -30,9 +30,9 @@
   --card-height: 226px;    /* altura de cada carta */
   --card-width-mobile: 124px;   /* largura em telas estreitas (media query lá embaixo) */
   --card-height-mobile: 206px;  /* altura em telas estreitas */
-  --card-gap: 10px;        /* espaço entre as 3 cartas */
+  --card-gap: 8px;        /* espaço entre as 3 cartas */
   --card-padding: 10px;    /* respiro interno da carta */
-  --card-footer-padding: 10px 18px; /* respiro do rodapé (topo/baixo esquerda/direita) */
+  --card-footer-padding: 8px 16px; /* respiro do rodapé (topo/baixo esquerda/direita) */
   --card-emoji-size: 1.55rem;    /* tamanho do emoji grande no topo da carta */
   --card-name-size: 0.78rem;    /* tamanho do nome da carta */
   --card-desc-size: 0.64rem;    /* tamanho do texto de descrição */
@@ -115,20 +115,31 @@ header.top h1 {
 main.panels {
   flex: 1;
   display: grid;
-  grid-template-columns: 250px 1fr 400px;
+  grid-template-columns: 280px 1fr 340px; /* 🔧 largura das colunas herói / árvore / história */
+  grid-template-rows: 1fr calc(var(--card-height) + 16px); /* linha 1 = conteúdo, linha 2 = altura fixa da fileira de cartas (16px = padding do .cards-wrap). Fixa de propósito: se ficasse "auto", o herói/história (que ocupam as duas linhas) podiam inflar essa linha e empurrar as cartas/ícones de habilidade pra baixo da linha divisória de verdade. */
   gap: 1px;
   background: var(--border);
   overflow: hidden;
   min-height: 0;
 }
 
+/* herói e história ocupam as DUAS linhas — descem até embaixo, ao lado da
+   fileira de cartas, em vez de deixar um vão vazio no canto (era esse o
+   "espaço vazio no canto das cartas"). Só a árvore fica só na linha 1;
+   a fileira de cartas ocupa a linha 2 na mesma coluna da árvore, então
+   fica naturalmente centralizada sob ela. */
+#heroPanel { grid-column: 1; grid-row: 1 / 3; }
+#treePanel { grid-column: 2; grid-row: 1; position: relative; z-index: 1; }
+#storyPanel { grid-column: 3; grid-row: 1 / 3; }
+.cards-wrap { grid-column: 2; grid-row: 2; }
+
 .panel {
   background: var(--bg);
   padding: 16px;
-  padding-bottom: 34px; /* reserva espaço pro anel dos ícones de habilidade que flutuam sobre a borda de baixo */
   overflow-y: auto;
   min-height: 0;
 }
+#treePanel { padding-bottom: 34px; } /* reserva espaço pro anel dos ícones de habilidade que flutuam sobre a borda de baixo */
 
 .panel h2 {
   font-size: 0.68rem;
@@ -164,21 +175,21 @@ main.panels {
 
 /* ---------- HERO PANEL ---------- */
 .hero-avatar {
-  font-size: 3.4rem;
+  font-size: 4.2rem; /* 🔧 avatar maior — painel agora é mais alto (desce até embaixo) */
   text-align: center;
-  margin-bottom: 6px;
+  margin-bottom: 10px;
   filter: drop-shadow(0 0 18px rgba(0,229,255,0.25));
 }
 .hero-name {
   text-align: center;
   font-weight: 700;
-  font-size: 1rem;
+  font-size: 1.15rem; /* 🔧 nome do herói */
 }
 .hero-class {
   text-align: center;
-  font-size: 0.75rem;
+  font-size: 0.78rem;
   color: var(--secondary);
-  margin-bottom: 16px;
+  margin-bottom: 22px;
 }
 
 .stat-bar-wrap { margin-bottom: 10px; }
@@ -488,8 +499,20 @@ main.panels {
    title nativo do navegador) e só aparece no hover.
    ============================================================ */
 .cards-wrap {
-  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px; /* 🔧 espaço entre os botões (reroll/música) e o bloco de cartas */
   flex-shrink: 0;
+  padding: 8px 16px; /* 🔧 respiro em volta de toda a fileira (botões + cartas) */
+  background: var(--bg); /* mesma cor dos painéis — sem isso, o cinza da borda do grid aparecia atrás dos botões */
+  position: relative;
+  z-index: 50; /* acima do #treePanel (z-index:1) — garante que o tooltip da carta e os ícones de habilidade sempre fiquem na frente da árvore, nunca por baixo/misturados */
+}
+.cards-center {
+  position: relative;
+  flex-shrink: 1;
+  min-width: 0;
 }
 .skill-bar {
   position: absolute;
@@ -498,6 +521,7 @@ main.panels {
   right: 0;
   transform: translateY(-50%);
   display: flex;
+  flex-wrap: nowrap;
   align-items: center;
   justify-content: center;
   gap: 22px;
@@ -556,19 +580,6 @@ main.panels {
   align-items: center;
   justify-content: center;
   padding: 0 3px;
-}
-.skill-req {
-  position: absolute;
-  bottom: -10px;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 0.54rem;
-  color: var(--text-dim);
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  padding: 0 5px;
-  white-space: nowrap;
 }
 
 /* tooltip customizado — só existe no DOM escondido (opacity 0 + pointer-
@@ -645,21 +656,80 @@ main.panels {
 footer.cards {
   flex-shrink: 0;
   position: relative;
-  z-index: 1;
-  border-top: 1px solid var(--border);
+  z-index: 7; /* precisa ficar ACIMA do .skill-bar (6) — senão tudo dentro do rodapé, inclusive o tooltip da carta, fica preso atrás dos ícones de habilidade */
   padding: var(--card-footer-padding);
-  padding-top: 30px; /* espaço pra metade de baixo dos ícones de habilidade, que ficam flutuando sobre esta borda */
+  padding-top: 26px; /* espaço pra metade de baixo dos ícones de habilidade, que ficam flutuando sobre a linha divisória do grid (a única linha agora) */
   display: flex;
   gap: var(--card-gap);
   justify-content: center;
   background: linear-gradient(180deg, transparent, rgba(255,255,255,0.015));
-  transition: border-color .6s ease, box-shadow .6s ease;
 }
-body.weather-chuva footer.cards, body.weather-tempestade footer.cards { border-top-color: #38BDF8; }
-body.weather-incendio footer.cards { border-top-color: #FB923C; }
-body.weather-eclipse footer.cards { border-top-color: #A855F7; }
-body.weather-cometa footer.cards, body.weather-festival footer.cards { border-top-color: #FACC15; }
-body.weather-praga footer.cards { border-top-color: #4ADE80; }
+
+/* ============================================================
+   TOOLTIP DA CARTA (hover) — mesma ideia do .skill-tooltip: passar o
+   mouse mostra a descrição completa (sem o corte de 2 linhas do rosto
+   da carta) e o resumo de ganho/custo, sem interferir no clique pra
+   jogar a carta. Precisa de um wrapper próprio porque .game-card usa
+   overflow:hidden (senão o tooltip, que aparece PARA FORA da carta,
+   seria cortado antes de aparecer).
+   ============================================================ */
+.game-card-wrap { position: relative; flex-shrink: 0; }
+.card-tooltip {
+  position: absolute;
+  bottom: calc(100% + 10px);
+  left: 50%;
+  transform: translateX(-50%) translateY(4px);
+  width: 230px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 12px;
+  text-align: left;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .15s ease, transform .15s ease;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  z-index: 9999; /* acima de tudo — modais, clima, árvore, o que for */
+}
+.game-card-wrap:hover .card-tooltip { opacity: 1; transform: translateX(-50%) translateY(0); }
+.card-tooltip::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 6px solid transparent;
+  border-top-color: var(--border);
+}
+.card-tooltip .ctt-nome {
+  font-weight: 700;
+  font-size: 0.8rem;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+.card-tooltip .ctt-tag {
+  font-size: 0.56rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 1px 6px;
+  border-radius: 999px;
+  border: 1px solid currentColor;
+  margin-left: auto;
+}
+.card-tooltip .ctt-desc {
+  font-size: 0.72rem;
+  color: var(--text-dim);
+  line-height: 1.45;
+  margin-bottom: 8px;
+  font-family: Georgia, 'Times New Roman', serif;
+}
+.card-tooltip .ctt-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
 
 .game-card {
   width: var(--card-width);
@@ -776,7 +846,7 @@ body.weather-praga footer.cards { border-top-color: #4ADE80; }
   border-radius: 50%;
   background: var(--primary);
   pointer-events: none;
-  z-index: 90;
+  z-index: 20; /* abaixo do bloco de cartas (z-index:50) — antes ficava por cima do tooltip da carta */
   animation: particleBurst .6s ease-out forwards;
 }
 .card-particle.c-verde { background: var(--cor-verde); }
@@ -822,11 +892,29 @@ body.weather-praga footer.cards { border-top-color: #4ADE80; }
   min-height: 2.3em;
   line-height: 1.15;
 }
-.game-card .card-type { font-size: 0.6rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: .05em; }
+.game-card .card-type {
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  font-weight: 700;
+  color: var(--text-dim); /* fallback, sobrescrito pelas classes abaixo */
+}
+/* 🔧 corzinha por tipo de carta — precisa do mesmo prefixo ".game-card" que
+   a regra acima (mesma especificidade), senão a regra de cima sempre
+   ganhava e nenhuma cor aparecia de verdade, mesmo com a classe certa. */
+.game-card .card-type-inimigo, .game-card .card-type-chefe { color: var(--cor-vermelho); }
+.game-card .card-type-item, .game-card .card-type-artefato { color: var(--cor-amarelo); }
+.game-card .card-type-npc, .game-card .card-type-personagem { color: var(--cor-verde); }
+.game-card .card-type-misterio, .game-card .card-type-escola { color: var(--cor-roxo); }
+.game-card .card-type-local { color: var(--cor-azul); }
+.game-card .card-type-evento { color: var(--cor-laranja); }
+.game-card .card-type-escolha { color: var(--secondary); }
+.game-card .card-type-minigame { color: var(--primary); }
 .game-card .card-desc {
   font-size: var(--card-desc-size);
   color: var(--text-dim);
-  line-height: 1.35;
+  font-weight: 500; /* 🔧 texto da descrição um pouco mais forte pra não ficar apagado */
+  line-height: 1.4;
   display: -webkit-box;
   -webkit-line-clamp: var(--card-desc-lines);
   -webkit-box-orient: vertical;
@@ -1408,7 +1496,8 @@ body.in-battle header.top button:not(.battle-btn) {
 
 /* ---------- RESPONSIVE ---------- */
 @media (max-width: 900px) {
-  main.panels { grid-template-columns: 1fr; grid-template-rows: auto auto 1fr; }
+  main.panels { grid-template-columns: 1fr; grid-template-rows: auto auto 1fr auto; }
+  #heroPanel, #treePanel, #storyPanel, .cards-wrap { grid-column: 1; grid-row: auto; }
   footer.cards { flex-wrap: wrap; }
   .game-card {
     width: var(--card-width-mobile); min-width: var(--card-width-mobile); max-width: var(--card-width-mobile);
@@ -1417,18 +1506,16 @@ body.in-battle header.top button:not(.battle-btn) {
 }
 
 .music-btn{
-    position: fixed;
-    right: 20px;
-    bottom: 20px;
-    width: 52px;
-    height: 52px;
+    position: relative;
+    width: 46px;
+    height: 46px;
     border-radius: 50%;
     border: 2px solid rgba(255,255,255,.08);
     background: linear-gradient(180deg, rgba(30,30,40,0.92), rgba(18,18,20,0.9));
     color: #f5d58b;
-    font-size: 22px;
+    font-size: 20px;
     cursor: pointer;
-    z-index: 9999;
+    flex-shrink: 0;
 
     display:flex;
     align-items:center;
@@ -1452,18 +1539,16 @@ body.in-battle header.top button:not(.battle-btn) {
 /* botão de reroll (espelhado ao botão de música, no lado esquerdo — mesmo
    tamanho e estilo, pra não parecer dois elementos de sistemas diferentes) */
 .reroll-btn{
-  position: fixed;
-  left: 20px;
-  bottom: 20px;
-  width: 52px;
-  height: 52px;
+  position: relative;
+  width: 46px;
+  height: 46px;
   border-radius: 50%;
   border: 2px solid rgba(255,255,255,.08);
   background: linear-gradient(180deg, rgba(30,30,40,0.92), rgba(18,18,20,0.9));
   color: #9ae6b4;
-  font-size: 20px;
+  font-size: 18px;
   cursor: pointer;
-  z-index: 9999;
+  flex-shrink: 0;
   display:flex;
   align-items:center;
   justify-content:center;
@@ -1532,9 +1617,9 @@ body.in-battle header.top button:not(.battle-btn) {
 }
 
 @media (max-width: 600px) {
-  .reroll-btn, .music-btn { left: 12px; bottom: 12px; width: 46px; height: 46px; font-size: 18px; }
-  .music-btn { left: auto; right: 12px; }
+  .reroll-btn, .music-btn { width: 38px; height: 38px; font-size: 16px; }
   .reroll-btn .reroll-costs { bottom: -8px; gap: 4px; font-size: 0.56rem; }
+  .cards-wrap { gap: 8px; padding: 6px 8px; }
 }
 /* ============================================================
    MINI GAMES — desafios curtos e visuais que quebram o ritmo normal
