@@ -30,11 +30,11 @@ const GAME_DATA = {
           "emoji": "🔮",
           "nivelDesbloqueio": 1,
           "tipo": "passiva",
-          "descricao": "Sua reserva de mana aumenta, mas o corpo do estudioso é frágil.",
+          "descricao": "Sua reserva de mana cresce muito mais rápido, mas seu corpo fica mais frágil para sustentar tanto poder.",
           "efeito": {
             "tipo": "passiva_stat",
             "bonus": {
-              "mana": 15
+              "mana": 24
             },
             "malus": {
               "defesa": -1
@@ -43,32 +43,30 @@ const GAME_DATA = {
         },
         {
           "id": "mago_2",
-          "nome": "Rajada Arcana",
+          "nome": "Sinais do Arcano",
           "emoji": "✨",
           "nivelDesbloqueio": 4,
-          "tipo": "ativa",
-          "cooldown": 2,
-          "descricao": "Dispara uma rajada de energia contra o inimigo atual em combate.",
+          "tipo": "passiva",
+          "descricao": "Seu talento faz cartas de mistério e artefatos aparecerem com muito mais frequência em sua rota.",
           "efeito": {
-            "tipo": "ativa_dano_combate",
-            "custoMana": 15,
-            "multiplicador": 1.8
+            "tipo": "passiva_peso_carta",
+            "boosts": [
+              { "tipo": "misterio", "mult": 1.45 },
+              { "tipo": "artefato", "mult": 1.3 }
+            ]
           }
         },
         {
           "id": "mago_3",
-          "nome": "Mente Estudada",
-          "emoji": "📖",
+          "nome": "Instinto Predatório Arcano",
+          "emoji": "🦉",
           "nivelDesbloqueio": 8,
           "tipo": "passiva",
-          "descricao": "Cada item novo descoberto expande sutilmente sua reserva mágica.",
+          "descricao": "Quando o inimigo se aproxima do fim, todo o seu dano em combate se torna letal contra alvos abaixo de 35% de vida.",
           "efeito": {
-            "tipo": "passiva_dinamico",
-            "stat": "mana",
-            "fonte": "itensDescobertos",
-            "divisor": 4,
-            "incremento": 2,
-            "max": 24
+            "tipo": "passiva_execucao",
+            "limiar": 0.35,
+            "bonus": 1.7
           }
         },
         {
@@ -76,13 +74,20 @@ const GAME_DATA = {
           "nome": "Meteoro",
           "emoji": "☄️",
           "nivelDesbloqueio": 14,
-          "tipo": "ativa",
-          "cooldown": 6,
-          "descricao": "Invoca um meteoro devastador sobre o inimigo atual.",
+          "tipo": "passiva",
+          "descricao": "Cada inimigo derrotado alimenta sua reserva arcana, aumentando sua mana e seu poder para as próximas escolhas.",
           "efeito": {
-            "tipo": "ativa_dano_combate",
-            "custoMana": 40,
-            "multiplicador": 3.2
+            "tipo": "passiva_condicao",
+            "condicao": {
+              "tipo": "inimigo_derrotado"
+            },
+            "bonus": {
+              "mana": 3
+            },
+            "cardBoosts": [
+              { "tipo": "escola", "mult": 1.25 }
+            ],
+            "maxStacks": 12
           }
         }
       ]
@@ -105,11 +110,11 @@ const GAME_DATA = {
           "emoji": "💢",
           "nivelDesbloqueio": 1,
           "tipo": "passiva",
-          "descricao": "Anos de combate endureceram seus golpes — ao custo de reflexos mais lentos.",
+          "descricao": "Anos de combate endureceram seus golpes, transformando cada impacto em uma ameaça real.",
           "efeito": {
             "tipo": "passiva_stat",
             "bonus": {
-              "ataque": 3
+              "ataque": 5
             },
             "malus": {
               "velocidade": -1
@@ -118,21 +123,16 @@ const GAME_DATA = {
         },
         {
           "id": "guerreiro_2",
-          "nome": "Grito de Guerra",
-          "emoji": "📢",
+          "nome": "Marcha de Ferro",
+          "emoji": "💥",
           "nivelDesbloqueio": 4,
-          "tipo": "ativa",
-          "cooldown": 3,
-          "descricao": "Um brado que aumenta seu ataque por algumas rodadas.",
+          "tipo": "passiva",
+          "descricao": "Seu caminho passa por locais de perigo e os caminhos mais hostis passam a oferecer mais oportunidades de fortalecimento.",
           "efeito": {
-            "tipo": "ativa_buff",
-            "custoMana": 8,
-            "buffs": [
-              {
-                "stat": "ataque",
-                "valor": 5,
-                "turnos": 3
-              }
+            "tipo": "passiva_peso_carta",
+            "boosts": [
+              { "tipo": "local", "mult": 1.35 },
+              { "tipo": "chefe", "mult": 1.2 }
             ]
           }
         },
@@ -142,14 +142,14 @@ const GAME_DATA = {
           "emoji": "🩸",
           "nivelDesbloqueio": 8,
           "tipo": "passiva",
-          "descricao": "Cada chefe derrotado deixa uma marca — e uma lição de defesa.",
+          "descricao": "Cada inimigo derrotado grava uma cicatriz de defesa na sua carne e no seu espírito.",
           "efeito": {
             "tipo": "passiva_dinamico",
             "stat": "defesa",
-            "fonte": "chefesDerrotados",
-            "divisor": 1,
-            "incremento": 1,
-            "max": 10
+            "fonte": "inimigosDerrotadosTotal",
+            "divisor": 2,
+            "incremento": 2,
+            "max": 18
           }
         },
         {
@@ -157,13 +157,17 @@ const GAME_DATA = {
           "nome": "Última Resistência",
           "emoji": "🛡️",
           "nivelDesbloqueio": 14,
-          "tipo": "ativa",
-          "cooldown": 8,
-          "descricao": "Recupera muita vida e se blinda contra o próximo golpe.",
+          "tipo": "passiva",
+          "descricao": "Cada inimigo derrotado reforça sua resistência, transformando cada vitória em uma camada extra de proteção.",
           "efeito": {
-            "tipo": "ativa_cura",
-            "custoMana": 20,
-            "cura": 40
+            "tipo": "passiva_condicao",
+            "condicao": {
+              "tipo": "inimigo_derrotado"
+            },
+            "bonus": {
+              "defesa": 1
+            },
+            "maxStacks": 10
           }
         }
       ]
@@ -186,11 +190,12 @@ const GAME_DATA = {
           "emoji": "🦅",
           "nivelDesbloqueio": 1,
           "tipo": "passiva",
-          "descricao": "Enxerga aberturas que outros não veem, mas negligencia a própria guarda.",
+          "descricao": "Enxerga aberturas que outros não veem, mas transforma cada fração de segundo em vantagem decisiva.",
           "efeito": {
             "tipo": "passiva_stat",
             "bonus": {
-              "velocidade": 3
+              "velocidade": 5,
+              "ataque": 2
             },
             "malus": {
               "defesa": -1
@@ -202,27 +207,26 @@ const GAME_DATA = {
           "nome": "Tiro Certeiro",
           "emoji": "🎯",
           "nivelDesbloqueio": 4,
-          "tipo": "ativa",
-          "cooldown": 2,
-          "descricao": "Um disparo preciso que ignora parte da armadura do inimigo.",
+          "tipo": "passiva",
+          "descricao": "Sua mira se torna mais forte quando a jornada se aproxima de chefes e locais de grande risco.",
           "efeito": {
-            "tipo": "ativa_dano_combate",
-            "custoMana": 10,
-            "multiplicador": 2
+            "tipo": "passiva_peso_carta",
+            "boosts": [
+              { "tipo": "chefe", "mult": 1.4 },
+              { "tipo": "local", "mult": 1.2 }
+            ]
           }
         },
         {
           "id": "arqueiro_3",
           "nome": "Reflexos Apurados",
-          "emoji": "⚡",
+          "emoji": "💨",
           "nivelDesbloqueio": 8,
           "tipo": "passiva",
-          "descricao": "Sua chance de acerto crítico aumenta permanentemente.",
+          "descricao": "Seus reflexos permitem esquivar por completo de 24% dos ataques inimigos.",
           "efeito": {
-            "tipo": "passiva_stat",
-            "bonus": {
-              "critBonus": 0.12
-            }
+            "tipo": "passiva_esquiva",
+            "chance": 0.24
           }
         },
         {
@@ -230,14 +234,18 @@ const GAME_DATA = {
           "nome": "Chuva de Flechas",
           "emoji": "🏹",
           "nivelDesbloqueio": 14,
-          "tipo": "ativa",
-          "cooldown": 5,
-          "descricao": "Dispara duas flechas em sequência contra o inimigo atual.",
+          "tipo": "passiva",
+          "descricao": "Cada inimigo derrotado afia sua precisão, deixando suas próximas escolhas ainda mais ferinas.",
           "efeito": {
-            "tipo": "ativa_dano_combate",
-            "custoMana": 25,
-            "multiplicador": 1.6,
-            "golpes": 2
+            "tipo": "passiva_condicao",
+            "condicao": {
+              "tipo": "inimigo_derrotado"
+            },
+            "bonus": {
+              "ataque": 1,
+              "velocidade": 1
+            },
+            "maxStacks": 8
           }
         }
       ]
@@ -260,14 +268,14 @@ const GAME_DATA = {
           "emoji": "🥷",
           "nivelDesbloqueio": 1,
           "tipo": "passiva",
-          "descricao": "Movimenta-se rápido demais para levar golpes sérios — mas isso cobra um preço na resistência.",
+          "descricao": "Movimenta-se rápido demais para levar golpes sérios, mas aprende a sobreviver sem se expor.",
           "efeito": {
             "tipo": "passiva_stat",
             "bonus": {
-              "velocidade": 2
+              "velocidade": 4
             },
             "malus": {
-              "vidaMax": -5
+              "vidaMax": -6
             }
           }
         },
@@ -276,29 +284,27 @@ const GAME_DATA = {
           "nome": "Sumiço",
           "emoji": "💨",
           "nivelDesbloqueio": 4,
-          "tipo": "ativa",
-          "cooldown": 4,
-          "descricao": "Escapa de um combate instantaneamente, sem risco.",
+          "tipo": "passiva",
+          "descricao": "Seu nome passa a ser associado a oportunidades raras, e cartas de artefato e escola aparecem com mais força.",
           "efeito": {
-            "tipo": "ativa_especial",
-            "acao": "fuga_garantida",
-            "custoMana": 12
+            "tipo": "passiva_peso_carta",
+            "boosts": [
+              { "tipo": "artefato", "mult": 1.4 },
+              { "tipo": "escola", "mult": 1.3 }
+            ]
           }
         },
         {
           "id": "ladino_3",
-          "nome": "Golpe de Sorte",
-          "emoji": "🍀",
+          "nome": "Contatos no Submundo",
+          "emoji": "🕸️",
           "nivelDesbloqueio": 8,
           "tipo": "passiva",
-          "descricao": "Quanto mais ouro carrega, mais confiante e letal fica seu golpe.",
+          "descricao": "Seus contatos reduzem muito o custo de rerolls de cartas e de subornos em combate.",
           "efeito": {
-            "tipo": "passiva_dinamico",
-            "stat": "ataque",
-            "fonte": "ouro",
-            "divisor": 60,
-            "incremento": 1,
-            "max": 8
+            "tipo": "passiva_desconto",
+            "reroll": 0.55,
+            "suborno": 0.35
           }
         },
         {
@@ -306,13 +312,20 @@ const GAME_DATA = {
           "nome": "Mão Leve",
           "emoji": "🖐️",
           "nivelDesbloqueio": 14,
-          "tipo": "ativa",
-          "cooldown": 5,
-          "descricao": "Rouba ouro do inimigo enquanto desfere um golpe rápido.",
+          "tipo": "passiva",
+          "descricao": "Cada inimigo derrotado enriquece suas rotas, abrindo espaço para mais ouro e mais opções de cartas.",
           "efeito": {
-            "tipo": "ativa_especial",
-            "acao": "roubo",
-            "custoMana": 15
+            "tipo": "passiva_condicao",
+            "condicao": {
+              "tipo": "inimigo_derrotado"
+            },
+            "bonus": {
+              "mana": 1
+            },
+            "cardBoosts": [
+              { "tipo": "artefato", "mult": 1.15 }
+            ],
+            "maxStacks": 12
           }
         }
       ]
@@ -335,12 +348,12 @@ const GAME_DATA = {
           "emoji": "✝️",
           "nivelDesbloqueio": 1,
           "tipo": "passiva",
-          "descricao": "Sua devoção fortalece corpo e espírito.",
+          "descricao": "Sua devoção fortalece corpo e espírito, tornando cada passo mais firme.",
           "efeito": {
             "tipo": "passiva_stat",
             "bonus": {
-              "defesa": 2,
-              "vidaMax": 10
+              "defesa": 4,
+              "vidaMax": 16
             }
           }
         },
@@ -349,13 +362,14 @@ const GAME_DATA = {
           "nome": "Mãos Sagradas",
           "emoji": "🙏",
           "nivelDesbloqueio": 4,
-          "tipo": "ativa",
-          "cooldown": 3,
-          "descricao": "Cura ferimentos com um toque abençoado.",
+          "tipo": "passiva",
+          "descricao": "Seu caminho se torna mais seguro quando você escolhe cartas de local e evento, pois a fé transforma cada oportunidade em recuperação.",
           "efeito": {
-            "tipo": "ativa_cura",
-            "custoMana": 12,
-            "cura": 35
+            "tipo": "passiva_peso_carta",
+            "boosts": [
+              { "tipo": "local", "mult": 1.3 },
+              { "tipo": "evento", "mult": 1.25 }
+            ]
           }
         },
         {
@@ -364,29 +378,33 @@ const GAME_DATA = {
           "emoji": "🕊️",
           "nivelDesbloqueio": 8,
           "tipo": "passiva",
-          "descricao": "Cada aliado conquistado fortalece sua defesa — proteger os outros também é se proteger.",
+          "descricao": "Cada aliado conquistado reforça sua defesa, como se o destino também se colocasse entre você e o mal.",
           "efeito": {
             "tipo": "passiva_dinamico",
             "stat": "defesa",
             "fonte": "aliados",
             "divisor": 1,
-            "incremento": 2,
-            "max": 12
+            "incremento": 4,
+            "max": 24
           }
         },
         {
           "id": "paladino_4",
-          "nome": "Julgamento Divino",
-          "emoji": "⚡",
+          "nome": "Bastião Divino",
+          "emoji": "🌟",
           "nivelDesbloqueio": 14,
-          "tipo": "ativa",
-          "cooldown": 7,
-          "descricao": "Um golpe sagrado que fere o inimigo e cura o portador ao mesmo tempo.",
+          "tipo": "passiva",
+          "descricao": "Cada aliado conquistado se torna uma barreira viva; a proteção cresce conforme sua companhia aumenta.",
           "efeito": {
-            "tipo": "ativa_cura",
-            "custoMana": 30,
-            "cura": 20,
-            "danoMultiplicador": 2
+            "tipo": "passiva_condicao",
+            "condicao": {
+              "tipo": "aliado_conquistado"
+            },
+            "bonus": {
+              "defesa": 2,
+              "vidaMax": 4
+            },
+            "maxStacks": 8
           }
         }
       ]
@@ -409,14 +427,14 @@ const GAME_DATA = {
           "emoji": "💀",
           "nivelDesbloqueio": 1,
           "tipo": "passiva",
-          "descricao": "Seu poder cresce ao preço da própria vitalidade.",
+          "descricao": "Seu poder cresce ao preço da própria vitalidade, fazendo cada vitória te consumir mais.",
           "efeito": {
             "tipo": "passiva_stat",
             "bonus": {
-              "ataque": 3
+              "ataque": 5
             },
             "malus": {
-              "vidaMax": -8
+              "vidaMax": -9
             }
           }
         },
@@ -425,14 +443,18 @@ const GAME_DATA = {
           "nome": "Drenar Vida",
           "emoji": "🩸",
           "nivelDesbloqueio": 4,
-          "tipo": "ativa",
-          "cooldown": 3,
-          "descricao": "Rouba a força vital do inimigo atual, curando parte do dano causado.",
+          "tipo": "passiva",
+          "descricao": "Cada inimigo derrotado deixa um resquício de poder em você, como se a morte lhe entregasse força.",
           "efeito": {
-            "tipo": "ativa_dano_combate",
-            "custoMana": 14,
-            "multiplicador": 1.5,
-            "drenoVida": 0.5
+            "tipo": "passiva_condicao",
+            "condicao": {
+              "tipo": "inimigo_derrotado"
+            },
+            "bonus": {
+              "ataque": 1,
+              "vidaMax": 2
+            },
+            "maxStacks": 10
           }
         },
         {
@@ -441,14 +463,14 @@ const GAME_DATA = {
           "emoji": "⚰️",
           "nivelDesbloqueio": 8,
           "tipo": "passiva",
-          "descricao": "Cada inimigo derrotado ao longo da jornada alimenta seu poder sombrio.",
+          "descricao": "Cada inimigo derrotado alimenta seu poder sombrio e transforma sua força em uma arma crescente.",
           "efeito": {
             "tipo": "passiva_dinamico",
             "stat": "ataque",
             "fonte": "inimigosDerrotadosTotal",
-            "divisor": 5,
-            "incremento": 1,
-            "max": 10
+            "divisor": 3,
+            "incremento": 2,
+            "max": 18
           }
         },
         {
@@ -456,13 +478,14 @@ const GAME_DATA = {
           "nome": "Pacto com a Morte",
           "emoji": "⚱️",
           "nivelDesbloqueio": 14,
-          "tipo": "ativa",
-          "cooldown": 10,
-          "descricao": "Um ritual desesperado que restaura vida às custas de muita mana.",
+          "tipo": "passiva",
+          "descricao": "Quando a jornada se torna mais sombria, sua presença faz os inimigos e os segredos se tornarem ainda mais valiosos.",
           "efeito": {
-            "tipo": "ativa_cura",
-            "custoMana": 35,
-            "cura": 55
+            "tipo": "passiva_peso_carta",
+            "boosts": [
+              { "tipo": "chefe", "mult": 1.5 },
+              { "tipo": "misterio", "mult": 1.35 }
+            ]
           }
         }
       ]
@@ -485,10 +508,10 @@ const GAME_DATA = {
           "emoji": "🌿",
           "nivelDesbloqueio": 1,
           "tipo": "passiva",
-          "descricao": "A natureza cura seus ferimentos lentamente a cada passo da jornada.",
+          "descricao": "A natureza cura seus ferimentos a cada passo da jornada, tornando a estrada menos cruel.",
           "efeito": {
             "tipo": "passiva_regen_vida",
-            "valor": 3
+            "valor": 6
           }
         },
         {
@@ -496,19 +519,18 @@ const GAME_DATA = {
           "nome": "Casca de Carvalho",
           "emoji": "🌳",
           "nivelDesbloqueio": 4,
-          "tipo": "ativa",
-          "cooldown": 3,
-          "descricao": "Sua pele endurece como casca de árvore por algumas rodadas.",
+          "tipo": "passiva",
+          "descricao": "Cada local explorado reforça sua resistência, como se a terra estivesse sempre lhe abraçando.",
           "efeito": {
-            "tipo": "ativa_buff",
-            "custoMana": 10,
-            "buffs": [
-              {
-                "stat": "defesa",
-                "valor": 6,
-                "turnos": 3
-              }
-            ]
+            "tipo": "passiva_condicao",
+            "condicao": {
+              "tipo": "local_visitado"
+            },
+            "bonus": {
+              "defesa": 1,
+              "vidaMax": 3
+            },
+            "maxStacks": 8
           }
         },
         {
@@ -517,14 +539,14 @@ const GAME_DATA = {
           "emoji": "🍃",
           "nivelDesbloqueio": 8,
           "tipo": "passiva",
-          "descricao": "Cada região explorada ensina seu corpo a se mover com mais naturalidade.",
+          "descricao": "Sua sintonia com o mundo faz eventos, mistérios e locais surgirem com bem mais frequência em seu caminho.",
           "efeito": {
-            "tipo": "passiva_dinamico",
-            "stat": "velocidade",
-            "fonte": "regioesVisitadas",
-            "divisor": 1,
-            "incremento": 1,
-            "max": 8
+            "tipo": "passiva_peso_carta",
+            "boosts": [
+              { "tipo": "evento", "mult": 1.7 },
+              { "tipo": "misterio", "mult": 1.45 },
+              { "tipo": "local", "mult": 1.4 }
+            ]
           }
         },
         {
@@ -532,13 +554,18 @@ const GAME_DATA = {
           "nome": "Renascimento Selvagem",
           "emoji": "🌸",
           "nivelDesbloqueio": 14,
-          "tipo": "ativa",
-          "cooldown": 8,
-          "descricao": "Uma explosão de vida natural restaura grande parte da sua vitalidade.",
+          "tipo": "passiva",
+          "descricao": "Cada escolha de evento e mistério devolve parte da sua força, transformando descoberta em renovação.",
           "efeito": {
-            "tipo": "ativa_cura",
-            "custoMana": 30,
-            "cura": 70
+            "tipo": "passiva_condicao",
+            "condicao": {
+              "tipo": "evento_escolhido"
+            },
+            "bonus": {
+              "vidaMax": 5,
+              "mana": 3
+            },
+            "maxStacks": 6
           }
         }
       ]
@@ -561,10 +588,10 @@ const GAME_DATA = {
           "emoji": "🎵",
           "nivelDesbloqueio": 1,
           "tipo": "passiva",
-          "descricao": "Sua melodia atrai a fortuna — inimigos derrotados rendem mais ouro.",
+          "descricao": "Sua melodia atrai a fortuna — inimigos derrotados rendem muito mais ouro.",
           "efeito": {
             "tipo": "passiva_ouro_bonus",
-            "percentual": 0.15
+            "percentual": 0.28
           }
         },
         {
@@ -572,24 +599,18 @@ const GAME_DATA = {
           "nome": "Melodia Inspiradora",
           "emoji": "🎶",
           "nivelDesbloqueio": 4,
-          "tipo": "ativa",
-          "cooldown": 3,
-          "descricao": "Uma canção que aumenta seu ataque e sua velocidade por algumas rodadas.",
+          "tipo": "passiva",
+          "descricao": "Cada personagem conhecido aumenta seu poder de escolha, como se a companhia trouxesse sorte ao caminho.",
           "efeito": {
-            "tipo": "ativa_buff",
-            "custoMana": 10,
-            "buffs": [
-              {
-                "stat": "ataque",
-                "valor": 4,
-                "turnos": 3
-              },
-              {
-                "stat": "velocidade",
-                "valor": 2,
-                "turnos": 3
-              }
-            ]
+            "tipo": "passiva_condicao",
+            "condicao": {
+              "tipo": "personagem_conhecido"
+            },
+            "bonus": {
+              "ataque": 1,
+              "velocidade": 1
+            },
+            "maxStacks": 6
           }
         },
         {
@@ -598,14 +619,14 @@ const GAME_DATA = {
           "emoji": "🎭",
           "nivelDesbloqueio": 8,
           "tipo": "passiva",
-          "descricao": "Cada personagem que você conhece expande sua reserva de mana.",
+          "descricao": "Cada personagem que você conhece expande sua reserva de mana e o torna mais difícil de parar.",
           "efeito": {
             "tipo": "passiva_dinamico",
             "stat": "mana",
             "fonte": "personagensConhecidos",
             "divisor": 1,
-            "incremento": 3,
-            "max": 21
+            "incremento": 5,
+            "max": 28
           }
         },
         {
@@ -613,13 +634,20 @@ const GAME_DATA = {
           "nome": "Bis!",
           "emoji": "🎤",
           "nivelDesbloqueio": 14,
-          "tipo": "ativa",
-          "cooldown": 6,
-          "descricao": "Uma apresentação tão boa que suas outras habilidades recarregam mais rápido.",
+          "tipo": "passiva",
+          "descricao": "Sua presença faz o ouro e as escolhas de cartas se multiplicarem quando a sorte sorri para o seu caminho.",
           "efeito": {
-            "tipo": "ativa_especial",
-            "acao": "resetar_cooldowns",
-            "custoMana": 25
+            "tipo": "passiva_condicao",
+            "condicao": {
+              "tipo": "ouro_acumulado"
+            },
+            "bonus": {
+              "mana": 2
+            },
+            "cardBoosts": [
+              { "tipo": "local", "mult": 1.2 }
+            ],
+            "maxStacks": 8
           }
         }
       ]
@@ -642,12 +670,12 @@ const GAME_DATA = {
           "emoji": "🥋",
           "nivelDesbloqueio": 1,
           "tipo": "passiva",
-          "descricao": "Anos de treino corporal endurecem defesa e reflexos.",
+          "descricao": "Anos de treino corporal endurecem defesa e reflexos, transformando equilíbrio em arma.",
           "efeito": {
             "tipo": "passiva_stat",
             "bonus": {
-              "defesa": 2,
-              "velocidade": 1
+              "defesa": 3,
+              "velocidade": 2
             }
           }
         },
@@ -656,13 +684,18 @@ const GAME_DATA = {
           "nome": "Punho de Ferro",
           "emoji": "👊",
           "nivelDesbloqueio": 4,
-          "tipo": "ativa",
-          "cooldown": 2,
-          "descricao": "Um golpe marcial rápido e contundente.",
+          "tipo": "passiva",
+          "descricao": "Cada novo local visitado endurece sua postura e melhora sua força diante das escolhas mais difíceis.",
           "efeito": {
-            "tipo": "ativa_dano_combate",
-            "custoMana": 8,
-            "multiplicador": 1.6
+            "tipo": "passiva_condicao",
+            "condicao": {
+              "tipo": "local_visitado"
+            },
+            "bonus": {
+              "ataque": 1,
+              "defesa": 1
+            },
+            "maxStacks": 6
           }
         },
         {
@@ -671,14 +704,14 @@ const GAME_DATA = {
           "emoji": "☯️",
           "nivelDesbloqueio": 8,
           "tipo": "passiva",
-          "descricao": "Quanto mais cheia sua reserva de mana (percentual), mais forte seu corpo e mente ficam.",
+          "descricao": "Quanto mais cheia sua reserva de mana, mais forte seu corpo e mente se tornam.",
           "efeito": {
             "tipo": "passiva_dinamico",
             "stat": "ataque",
             "fonte": "manaPercentual",
-            "divisor": 20,
+            "divisor": 15,
             "incremento": 1,
-            "max": 5
+            "max": 7
           }
         },
         {
@@ -686,14 +719,18 @@ const GAME_DATA = {
           "nome": "Fúria do Vazio",
           "emoji": "🌀",
           "nivelDesbloqueio": 14,
-          "tipo": "ativa",
-          "cooldown": 7,
-          "descricao": "Uma sequência de três golpes rápidos contra o inimigo atual.",
+          "tipo": "passiva",
+          "descricao": "Quando sua mana está cheia, seu espírito se torna uma corrente de impacto, reforçando as escolhas de caminho.",
           "efeito": {
-            "tipo": "ativa_dano_combate",
-            "custoMana": 30,
-            "multiplicador": 1.4,
-            "golpes": 3
+            "tipo": "passiva_condicao",
+            "condicao": {
+              "tipo": "mana_ativa"
+            },
+            "bonus": {
+              "ataque": 2,
+              "velocidade": 1
+            },
+            "maxStacks": 4
           }
         }
       ]

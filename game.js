@@ -218,6 +218,7 @@ function heroStat(base) {
   (h.buffsAtivos || []).forEach((b) => { if (b.stat === base) bonus += b.valor; });
   bonus += (h.habilidadesBonus && h.habilidadesBonus[base]) || 0;
   bonus += bonusDinamicoHabilidades(base);
+  bonus += bonusPassivasCondicao(base);
   return bonus;
 }
 
@@ -255,6 +256,25 @@ function bonusDinamicoHabilidades(stat) {
   });
   return total;
 }
+
+function getBonusExecucao(danoBase, vidaAtual, vidaMax) {
+  let bonus = 1;
+  getHabilidadesDesbloqueadas().forEach((hab) => {
+    if (hab.efeito.tipo !== "passiva_execucao") return;
+    const limiar = hab.efeito.limiar || 0.35;
+    if (vidaMax > 0 && vidaAtual / vidaMax <= limiar) bonus = Math.max(bonus, hab.efeito.bonus || 1);
+  });
+  return danoBase * bonus;
+}
+
+function getChanceEsquiva() {
+  let chance = 0;
+  getHabilidadesDesbloqueadas().forEach((hab) => {
+    if (hab.efeito.tipo === "passiva_esquiva") chance += hab.efeito.chance || 0;
+  });
+  return Math.min(0.85, chance);
+}
+
 function valorFonteDinamica(fonte) {
   switch (fonte) {
     case "itensDescobertos": return state.itensObtidos.size;
@@ -267,6 +287,35 @@ function valorFonteDinamica(fonte) {
     case "manaPercentual": return getManaMax() > 0 ? Math.round((state.hero.mana / getManaMax()) * 100) : 0;
     default: return 0;
   }
+}
+
+function valorFonteCondicaoPassiva(tipo) {
+  switch (tipo) {
+    case "inimigo_derrotado": return state.hero.inimigosDerrotadosTotal || 0;
+    case "local_visitado": return (state.passiveConditionCounters && state.passiveConditionCounters.local_visitado) || 0;
+    case "aliado_conquistado": return Object.values(state.personagens || {}).filter((p) => p.relacao > 0).length;
+    case "personagem_conhecido": return Object.keys(state.personagens || {}).length;
+    case "ouro_acumulado": return state.hero.ouro || 0;
+    case "mana_ativa": return getManaMax() > 0 ? Math.round((state.hero.mana / getManaMax()) * 100) : 0;
+    case "evento_escolhido": return (state.passiveConditionCounters && state.passiveConditionCounters.evento_escolhido) || 0;
+    default: return 0;
+  }
+}
+
+function bonusPassivasCondicao(stat) {
+  let total = 0;
+  getHabilidadesDesbloqueadas().forEach((hab) => {
+    if (hab.efeito.tipo !== "passiva_condicao") return;
+    const stacks = Math.max(0, Math.min(hab.efeito.maxStacks || 999, Math.floor(valorFonteCondicaoPassiva(hab.efeito.condicao && hab.efeito.condicao.tipo) || 0)));
+    total += (hab.efeito.bonus && hab.efeito.bonus[stat] ? hab.efeito.bonus[stat] : 0) * stacks;
+  });
+  return total;
+}
+
+function registrarCondicaoPassiva(tipo, qtd = 1) {
+  if (!state) return;
+  if (!state.passiveConditionCounters) state.passiveConditionCounters = {};
+  state.passiveConditionCounters[tipo] = (state.passiveConditionCounters[tipo] || 0) + qtd;
 }
 
 // chamada logo após state.hero.nivel++ (dentro de ganharExp). Aplica de
@@ -622,6 +671,25 @@ function computeWeight(card) {
   if (card.sinergiaTag) {
     card.sinergiaTag.forEach((t) => { if (state.tags[t]) w *= 1.55; });
   }
+
+  // passivas de classe podem aumentar o peso de certos tipos de carta,
+  // transformando a trajetória em uma escolha de build e não só em bônus.
+  getHabilidadesDesbloqueadas().forEach((hab) => {
+    if (hab.efeito.tipo === "passiva_peso_carta") {
+      (hab.efeito.boosts || []).forEach((boost) => {
+        if (boost.tipo === card.tipo) w *= boost.mult || 1;
+      });
+    }
+    if (hab.efeito.tipo === "passiva_condicao") {
+      const boosts = hab.efeito.cardBoosts || [];
+      boosts.forEach((boost) => {
+        if (boost.tipo === card.tipo) {
+          const stacks = Math.max(0, Math.min(hab.efeito.maxStacks || 999, Math.floor(valorFonteCondicaoPassiva(hab.efeito.condicao && hab.efeito.condicao.tipo) || 0)));
+          w *= Math.pow(boost.mult || 1, stacks || 1);
+        }
+      });
+    }
+  });
 
   // um personagem que o jogador não vê há muitos turnos volta a aparecer
   // com mais frequência — reforça o sistema de saudade/vínculo.
@@ -1101,6 +1169,15 @@ function resolverCombate(card) {
     const isCrit = rnd() < critChance;
     let dmgHeroi = Math.max(1, getAtaque() - defesaInimigo + sorteHeroi);
     if (isCrit) { dmgHeroi = Math.round(dmgHeroi * 1.7); criticos++; }
+    const chanceEsquiva = getChanceEsquiva();
+    const ativouEsquiva = chanceEsquiva > 0 && rnd() < chanceEsquiva;
+    if (ativouEsquiva) {
+      dmgHeroi = 0;
+      spawnFloatingText("🪶 esquiva", "dmg-heal");
+    } else {
+      const execBonus = getBonusExecucao(dmgHeroi, vidaInimigo, vidaInimigoMax);
+      if (execBonus > dmgHeroi) dmgHeroi = Math.round(execBonus);
+    }
     vidaInimigo -= dmgHeroi;
     dmgTotalCausado += dmgHeroi;
     if (dmgHeroi > maiorGolpeDado) maiorGolpeDado = dmgHeroi;
@@ -1161,6 +1238,8 @@ function resolverCombate(card) {
     if (itemCard) obterItem(itemCard);
   }
   if (ef.flagFinal) state.tags["flag_" + ef.flagFinal] = true;
+
+  registrarCondicaoPassiva("inimigo_derrotado", 1);
 }
 
 // texto flutuante de dano/cura sobre o painel do herói — o combate precisa
@@ -1325,6 +1404,14 @@ function resolverEscola(card) {
 function resolveCard(card, alternativas, escolhaOpcao) {
   addTreeNode(card, alternativas);
   const ef = card.efeito;
+
+  if (card.tipo === "local" || ef.tipo === "mudar_regiao") {
+    registrarCondicaoPassiva("local_visitado", 1);
+  }
+
+  if (card.efeito && card.efeito.tipo === "escolha") {
+    registrarCondicaoPassiva("evento_escolhido", 1);
+  }
 
   switch (ef.tipo) {
     case "escolha":
@@ -1518,8 +1605,14 @@ function battleTurnoInimigo() {
   }
   let dmg = Math.max(1, Math.round(b.inimigo.ataque * fase.mult) - getDefesa() + rndInt(-2, 2));
   if (b.defendendo) dmg = Math.max(1, Math.round(dmg * 0.4));
+  const chanceEsquiva = getChanceEsquiva();
+  if (chanceEsquiva > 0 && rnd() < chanceEsquiva) {
+    dmg = 0;
+    linhas.push(`🪶 Você esquiva do ataque de ${b.inimigo.nome}.`);
+  } else {
+    linhas.push(`${b.inimigo.emoji} ${b.inimigo.nome} causa ${dmg} de dano${b.defendendo ? " (reduzido pela defesa)" : ""}.`);
+  }
   state.hero.vida = Math.max(0, state.hero.vida - dmg);
-  linhas.push(`${b.inimigo.emoji} ${b.inimigo.nome} causa ${dmg} de dano${b.defendendo ? " (reduzido pela defesa)" : ""}.`);
   spawnFloatingText(`-${dmg}`, "dmg-neg");
   flashHeroPanel("hit");
   if (dmg >= Math.max(6, getVidaMax() * 0.16)) shakeScreen("normal");
@@ -1550,6 +1643,8 @@ function battleAction(tipo) {
     const isCrit = rnd() < critChance;
     let dmg = Math.max(1, getAtaque() - b.inimigo.defesa + rndInt(-2, 3));
     if (isCrit) dmg = Math.round(dmg * 1.7);
+    const execDmg = getBonusExecucao(dmg, b.inimigo.vida, b.inimigo.vidaMax);
+    if (execDmg > dmg) dmg = Math.round(execDmg);
     b.inimigo.vida = Math.max(0, b.inimigo.vida - dmg);
     pushBattleLog([isCrit ? `💥 Crítico! Você causa ${dmg} de dano.` : `⚔ Você causa ${dmg} de dano.`]);
     spawnFloatingText(isCrit ? `💥 -${dmg}` : `-${dmg}`, isCrit ? "dmg-crit" : "dmg-pos");
@@ -1566,6 +1661,8 @@ function battleAction(tipo) {
     // a magia ignora boa parte da defesa do inimigo — é o motivo de gastar
     // mana em vez de simplesmente atacar de novo.
     const dmg = Math.max(3, Math.round(getAtaque() * 1.5 + 5 - b.inimigo.defesa * 0.4) + rndInt(-1, 4));
+    const execDmg = getBonusExecucao(dmg, b.inimigo.vida, b.inimigo.vidaMax);
+    if (execDmg > dmg) dmg = Math.round(execDmg);
     b.inimigo.vida = Math.max(0, b.inimigo.vida - dmg);
     pushBattleLog([`✨ Você conjura um feitiço e causa ${dmg} de dano (-${CUSTO_MAGIA_BATALHA} mana).`]);
     spawnFloatingText(`✨ -${dmg}`, "dmg-crit");
@@ -2473,11 +2570,17 @@ function renderCards() {
           <span class="card-emoji">${c.emoji}</span>
           <span class="card-rarity rarity-${c.raridade}">${RARITY_LABEL[c.raridade]}</span>
         </div>
-        ${isNew ? '<span class="card-new">NOVO</span>' : ""}
-        ${isEscolha ? '<span class="card-choice-tag">💬 Decisão</span>' : ""}
-        ${isMinigame ? '<span class="card-minigame-tag">⚡ Desafio</span>' : ""}
-        ${c.elite ? '<span class="card-elite-tag">⚔ Especial</span>' : ""}
-        ${isFinal ? '<span class="card-final-tag">👑 Chefe Final</span>' : ""}
+        ${
+          isNew || isEscolha || isMinigame || c.elite || isFinal
+            ? `<div class="card-badges">
+                ${isNew ? '<span class="card-new">NOVO</span>' : ""}
+                ${isEscolha ? '<span class="card-choice-tag">💬 Decisão</span>' : ""}
+                ${isMinigame ? '<span class="card-minigame-tag">⚡ Desafio</span>' : ""}
+                ${c.elite ? '<span class="card-elite-tag">⚔ Especial</span>' : ""}
+                ${isFinal ? '<span class="card-final-tag">👑 Chefe Final</span>' : ""}
+              </div>`
+            : ""
+        }
         <div class="card-name">${c.nome}</div>
         <div class="card-type">${c.tipo}</div>
         <div class="card-desc">${desc}</div>
