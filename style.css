@@ -152,9 +152,17 @@ main.panels {
 
 /* o Diário é o coração narrativo do jogo (GDD §12) — merece mais espaço
    e um cabeçalho que pareça a capa de um livro, não apenas um rótulo
-   discreto de painel igual aos outros. */
+   discreto de painel igual aos outros. O painel também precisa ter peso
+   visual PRÓPRIO — não pode ler como um vazio ao lado da árvore/cartas,
+   que são cheias de brilho e cor. */
 #storyPanel {
-  background: radial-gradient(circle at 100% 0%, rgba(168,85,247,0.05), transparent 55%);
+  background:
+    radial-gradient(circle at 100% 0%, rgba(168,85,247,0.09), transparent 55%),
+    radial-gradient(circle at 0% 100%, rgba(0,229,255,0.05), transparent 50%),
+    linear-gradient(180deg, #101014 0%, var(--bg) 240px);
+  border-left: 1px solid rgba(168,85,247,0.22);
+  box-shadow: inset 12px 0 30px -28px rgba(168,85,247,0.6);
+  position: relative;
 }
 #storyPanel h2 {
   font-size: 1.05rem;
@@ -418,11 +426,14 @@ main.panels {
   flex-direction: column;
   align-items: center;
   text-align: center;
-  margin: 22px 0 16px;
-  padding-top: 14px;
-  border-top: 1px dashed var(--border);
+  margin: 24px 0 18px;
+  padding: 14px 10px;
+  background: linear-gradient(90deg, transparent, rgba(168,85,247,0.08), rgba(0,229,255,0.06), transparent);
+  border-top: 1px solid rgba(168,85,247,0.25);
+  border-bottom: 1px solid rgba(168,85,247,0.25);
+  border-radius: 6px;
 }
-.chapter-divider:first-child { margin-top: 0; padding-top: 0; border-top: none; }
+.chapter-divider:first-child { margin-top: 0; }
 .chapter-num {
   font-size: 0.6rem;
   letter-spacing: 0.14em;
@@ -442,11 +453,14 @@ main.panels {
 .story-entry {
   font-size: 0.92rem;
   line-height: 1.7;
-  margin-bottom: 16px;
-  padding-left: 14px;
-  border-left: 2px solid var(--border);
+  margin-bottom: 14px;
+  padding: 10px 14px;
+  border-left: 3px solid var(--border);
+  border-radius: 0 10px 10px 0;
   font-family: Georgia, 'Times New Roman', serif;
-  color: #f4f4f4;
+  color: var(--text);
+  background: rgba(255,255,255,0.03);
+  box-shadow: 0 1px 0 rgba(255,255,255,0.02) inset;
   animation: fadeIn .4s ease;
 }
 .story-meta {
@@ -467,18 +481,19 @@ main.panels {
    do resto do diário — a leitura precisa "bater diferente" nessas linhas */
 .story-marcante {
   font-size: 1.02rem;
-  padding: 12px 16px;
+  padding: 14px 18px;
   border-left-width: 4px;
-  background: linear-gradient(90deg, rgba(255,255,255,0.05), transparent 70%);
-  border-radius: 0 8px 8px 0;
+  background: linear-gradient(90deg, rgba(255,255,255,0.07), rgba(255,255,255,0.01) 75%);
+  border-radius: 0 10px 10px 0;
+  box-shadow: 0 4px 18px -8px rgba(0,0,0,0.6);
   position: relative;
 }
 .story-marcante::before {
   content: "";
   position: absolute;
   left: -4px; top: 0; bottom: 0; width: 4px;
-  box-shadow: 0 0 12px 1px currentColor;
-  opacity: 0.6;
+  box-shadow: 0 0 14px 2px currentColor;
+  opacity: 0.75;
 }
 
 /* ---------- RELACIONAMENTOS ---------- */
@@ -493,13 +508,13 @@ main.panels {
   justify-content: space-between;
   align-items: center;
 }
-.story-entry.c-verde { border-color: var(--cor-verde); color: #d3f8dd; }
-.story-entry.c-azul { border-color: var(--cor-azul); color: #d6f0fd; }
-.story-entry.c-vermelho { border-color: var(--cor-vermelho); color: #fddede; }
-.story-entry.c-roxo { border-color: var(--cor-roxo); color: #ecdcfd; }
-.story-entry.c-amarelo { border-color: var(--cor-amarelo); color: #fdf6d6; }
-.story-entry.c-cinza { border-color: var(--cor-cinza); color: #e2e2e2; }
-.story-entry.c-laranja { border-color: var(--cor-laranja); color: #fde2cf; }
+.story-entry.c-verde { border-left-color: var(--cor-verde); background: linear-gradient(90deg, rgba(74,222,128,0.10), rgba(255,255,255,0.02) 80%); }
+.story-entry.c-azul { border-left-color: var(--cor-azul); background: linear-gradient(90deg, rgba(56,189,248,0.10), rgba(255,255,255,0.02) 80%); }
+.story-entry.c-vermelho { border-left-color: var(--cor-vermelho); background: linear-gradient(90deg, rgba(248,113,113,0.10), rgba(255,255,255,0.02) 80%); }
+.story-entry.c-roxo { border-left-color: var(--cor-roxo); background: linear-gradient(90deg, rgba(168,85,247,0.10), rgba(255,255,255,0.02) 80%); }
+.story-entry.c-amarelo { border-left-color: var(--cor-amarelo); background: linear-gradient(90deg, rgba(250,204,21,0.10), rgba(255,255,255,0.02) 80%); }
+.story-entry.c-cinza { border-left-color: var(--cor-cinza); background: linear-gradient(90deg, rgba(156,163,175,0.10), rgba(255,255,255,0.02) 80%); }
+.story-entry.c-laranja { border-left-color: var(--cor-laranja); background: linear-gradient(90deg, rgba(251,146,60,0.10), rgba(255,255,255,0.02) 80%); }
 
 @keyframes fadeIn { from { opacity: 0; transform: translateX(6px);} to { opacity: 1; transform: translateX(0);} }
 
