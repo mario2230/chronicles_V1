@@ -489,6 +489,63 @@ function usarHabilidade(habId) {
   renderAll();
 }
 
+function formatarResumoStats(map) {
+  if (!map) return "";
+  const labels = { ataque: "ataque", defesa: "defesa", velocidade: "velocidade", mana: "mana", vidaMax: "vida max", vida: "vida" };
+  return Object.entries(map)
+    .filter(([, valor]) => valor !== 0)
+    .map(([chave, valor]) => {
+      const label = labels[chave] || chave;
+      const sinal = valor > 0 ? "+" : "";
+      return `${sinal}${valor} ${label}`;
+    })
+    .join(", ");
+}
+
+function resumoEfeitoHabilidade(hab, desbloqueada) {
+  const ef = hab.efeito || {};
+  switch (ef.tipo) {
+    case "passiva_stat": {
+      const bonus = formatarResumoStats(ef.bonus);
+      const malus = formatarResumoStats(ef.malus);
+      const partes = [];
+      if (bonus) partes.push(`bonus: ${bonus}`);
+      if (malus) partes.push(`malus: ${malus}`);
+      return partes.join(" · ");
+    }
+    case "passiva_peso_carta": {
+      return (ef.boosts || []).map((b) => `${b.tipo} x${(b.mult || 1).toFixed(2)}`).join(", ");
+    }
+    case "passiva_dinamico": {
+      if (!desbloqueada) {
+        return `+${ef.incremento || 0} ${ef.stat || "stat"} a cada ${ef.divisor || 1} ${ef.fonte || "pontos"}${ef.max ? `, até +${ef.max}` : ""}`;
+      }
+      const valorAtual = Math.min(ef.max || 999, Math.max(0, Math.floor(valorFonteDinamica(ef.fonte) / (ef.divisor || 1)) * (ef.incremento || 0)));
+      return `atualmente ${valorAtual >= 0 ? `+${valorAtual}` : valorAtual} ${ef.stat || "stat"}`;
+    }
+    case "passiva_condicao": {
+      const bonus = formatarResumoStats(ef.bonus);
+      const cards = (ef.cardBoosts || []).map((b) => `${b.tipo} x${(b.mult || 1).toFixed(2)}`).join(", ");
+      const cond = ef.condicao && ef.condicao.tipo ? `quando ${ef.condicao.tipo.replace(/_/g, " ")}` : "";
+      const partes = [];
+      if (bonus) partes.push(`bonus: ${bonus}`);
+      if (cards) partes.push(`cartas ${cards}`);
+      if (cond) partes.push(cond);
+      return partes.join(" · ");
+    }
+    case "passiva_regen_vida":
+      return `+${ef.valor || 0} vida por turno`;
+    case "passiva_ouro_bonus":
+      return `+${Math.round((ef.percentual || 0) * 100)}% ouro`;
+    case "passiva_execucao":
+      return `x${(ef.bonus || 1).toFixed(2)} de dano abaixo de ${Math.round((ef.limiar || 0.35) * 100)}% de vida`;
+    case "passiva_esquiva":
+      return `${Math.round((ef.chance || 0) * 100)}% de chance de esquivar`;
+    default:
+      return "";
+  }
+}
+
 function renderSkillBar() {
   const el = document.getElementById("skillBar");
   if (!el) return;
@@ -517,10 +574,11 @@ function renderSkillBar() {
       if (semMana) meta.push(`<span style="color:var(--cor-vermelho)">Mana insuficiente</span>`);
     }
 
+    const efeitoResumo = resumoEfeitoHabilidade(hab, desbloqueada);
     const tooltip = `
       <div class="skill-tooltip ${ativa ? "stt-ativa" : "stt-passiva"}">
         <div class="stt-nome"><span>${hab.emoji}</span> ${hab.nome} <span class="stt-tag">${ativa ? "ativa" : "passiva"}</span></div>
-        <div class="stt-desc">${hab.descricao}</div>
+        <div class="stt-desc">${hab.descricao}${efeitoResumo ? `<div style="margin-top:6px;color:var(--cor-ciano);">${efeitoResumo}</div>` : ""}</div>
         <div class="stt-meta">${meta.join("")}</div>
       </div>`;
 
