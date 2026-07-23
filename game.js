@@ -371,6 +371,29 @@ function tickCooldownsHabilidade() {
 
 // ponto de entrada único pra qualquer habilidade ATIVA clicada na barra
 // acima das cartas. Passivas não passam por aqui (estão sempre "ligadas").
+// magias sem escola (ex: Faísca Arcana) funcionam pra qualquer um; magias
+// de escola causam bem mais dano se o herói já estudou aquela escola —
+// isso é o que torna "escola de piromancia" uma escolha real, e não só
+// um bônus de status esquecido no painel do herói.
+function getEscolaBonusMagia(spell) {
+  if (!spell.escola) return 1;
+  const conhece = (state.hero.escolas || []).some((e) => e.id === spell.escola);
+  return conhece ? 1.65 : 0.8;
+}
+
+function getSpellDamage(spell) {
+  const base = spell.danoBase + Math.round(getAtaque() * 0.3); // escala com o build do herói, não só com o nível
+  return Math.max(1, Math.round(base * getEscolaBonusMagia(spell)));
+}
+
+// a melhor magia que o herói consegue pagar agora — usado tanto pra
+// sugerir a UI quanto pro "golpe de abertura" mágico no combate instantâneo.
+function melhorMagiaDisponivel() {
+  const pagaveis = (DATA.spells || []).filter((s) => state.hero.mana >= s.custoMana);
+  if (!pagaveis.length) return null;
+  return pagaveis.reduce((melhor, s) => (getSpellDamage(s) > getSpellDamage(melhor) ? s : melhor), pagaveis[0]);
+}
+
 function usarHabilidade(habId) {
   if (state.gameOver) return;
   const hab = getHabilidadesClasse().find((h) => h.id === habId);
@@ -1281,6 +1304,19 @@ function resolverCombate(card) {
   // acerta mais forte, com mais frequência, e isso precisa ser visível.
   const critChance = Math.min(0.45, 0.08 + getVelocidade() * 0.012);
 
+  // magia de abertura: se o herói tem mana pra pagar alguma magia, ela é
+  // conjurada automaticamente antes do combate corpo a corpo começar — é
+  // assim que a mana (e as escolas estudadas) importam também nos
+  // combates instantâneos, não só nas batalhas em turnos contra chefes.
+  const magiaAbertura = melhorMagiaDisponivel();
+  if (magiaAbertura) {
+    state.hero.mana -= magiaAbertura.custoMana;
+    let danoMagia = getSpellDamage(magiaAbertura);
+    vidaInimigo -= danoMagia;
+    if (magiaAbertura.drenoVida) curar(Math.round(danoMagia * magiaAbertura.drenoVida));
+    spawnFloatingText(`${magiaAbertura.emoji} -${danoMagia}`, "dmg-crit");
+  }
+
   let rounds = 0;
   let dmgTotalCausado = 0;
   let dmgTotalSofrido = 0;
@@ -1755,14 +1791,14 @@ function battleTurnoInimigo() {
 
 // custo de mana da magia de combate: fixo e baixo o bastante pra qualquer
 // classe conseguir usar algumas vezes, mesmo as com pouca mana máxima.
-const CUSTO_MAGIA_BATALHA = 12;
 
 function battleAction(tipo) {
   const b = state.battle;
   if (!b || b.fim) return;
 
   if (tipo === "item") { b.showItemMenu = true; renderBattleModal(); return; }
-  if (tipo === "voltar") { b.showItemMenu = false; renderBattleModal(); return; }
+  if (tipo === "magia") { b.showSpellMenu = true; renderBattleModal(); return; }
+  if (tipo === "voltar") { b.showItemMenu = false; b.showSpellMenu = false; renderBattleModal(); return; }
 
   if (tipo === "atacar") {
     const critChance = Math.min(0.45, 0.08 + getVelocidade() * 0.012);
@@ -1777,21 +1813,6 @@ function battleAction(tipo) {
   } else if (tipo === "defender") {
     b.defendendo = true;
     pushBattleLog(["🛡 Você se prepara para o próximo golpe."]);
-  } else if (tipo === "magia") {
-    if (state.hero.mana < CUSTO_MAGIA_BATALHA) {
-      pushBattleLog([`✨ Mana insuficiente (precisa de ${CUSTO_MAGIA_BATALHA}).`]);
-      renderBattleModal();
-      return;
-    }
-    state.hero.mana -= CUSTO_MAGIA_BATALHA;
-    // a magia ignora boa parte da defesa do inimigo — é o motivo de gastar
-    // mana em vez de simplesmente atacar de novo.
-    const dmg = Math.max(3, Math.round(getAtaque() * 1.5 + 5 - b.inimigo.defesa * 0.4) + rndInt(-1, 4));
-    const execDmg = getBonusExecucao(dmg, b.inimigo.vida, b.inimigo.vidaMax);
-    if (execDmg > dmg) dmg = Math.round(execDmg);
-    b.inimigo.vida = Math.max(0, b.inimigo.vida - dmg);
-    pushBattleLog([`✨ Você conjura um feitiço e causa ${dmg} de dano (-${CUSTO_MAGIA_BATALHA} mana).`]);
-    spawnFloatingText(`✨ -${dmg}`, "dmg-crit");
   } else if (tipo === "subornar") {
     const custo = custoSuborno(b.inimigo);
     if (state.hero.ouro < custo) {
@@ -1825,6 +1846,46 @@ function battleAction(tipo) {
     return;
   }
 
+  battleTurnoInimigo();
+}
+
+// conjura uma magia específica durante a batalha em turnos — dano escala
+// com o ataque do herói e é multiplicado se ele já domina a escola daquela
+// magia (ver getEscolaBonusMagia). Consome o turno do herói como qualquer
+// outra ação.
+function battleConjurarMagia(spellId) {
+  const b = state.battle;
+  if (!b || b.fim) return;
+  const spell = (DATA.spells || []).find((s) => s.id === spellId);
+  if (!spell) return;
+  if (state.hero.mana < spell.custoMana) {
+    pushBattleLog([`${spell.emoji} Mana insuficiente para conjurar ${spell.nome}.`]);
+    renderBattleModal();
+    return;
+  }
+  state.hero.mana -= spell.custoMana;
+  b.showSpellMenu = false;
+
+  let dmg = getSpellDamage(spell);
+  dmg = Math.max(1, dmg - Math.round(b.inimigo.defesa * 0.3));
+  const execDmg = getBonusExecucao(dmg, b.inimigo.vida, b.inimigo.vidaMax);
+  if (execDmg > dmg) dmg = Math.round(execDmg);
+  b.inimigo.vida = Math.max(0, b.inimigo.vida - dmg);
+  if (spell.drenoVida) curar(Math.round(dmg * spell.drenoVida));
+
+  const dominaEscola = spell.escola && getEscolaBonusMagia(spell) > 1;
+  pushBattleLog([`${spell.emoji} Você conjura ${spell.nome} e causa ${dmg} de dano${dominaEscola ? " (escola dominada!)" : ""}.`]);
+  spawnFloatingText(`${spell.emoji} -${dmg}`, "dmg-crit");
+
+  if (b.inimigo.vida <= 0) {
+    b.fim = "vitoria";
+    pushBattleLog([`${b.inimigo.emoji} ${b.inimigo.nome} foi derrotado!`]);
+    renderBattleModal();
+    setTimeout(finalizarBatalha, 1100);
+    return;
+  }
+
+  renderBattleModal();
   battleTurnoInimigo();
 }
 
@@ -1889,10 +1950,22 @@ function renderBattleModal() {
                 }
                 <button class="battle-btn voltar-btn" onclick="battleAction('voltar')">‹ Voltar</button>
               </div>`
+            : b.showSpellMenu
+            ? `<div class="battle-actions battle-item-menu">
+                ${(DATA.spells || [])
+                  .map((s) => {
+                    const fraco = h.mana < s.custoMana;
+                    const domina = s.escola && getEscolaBonusMagia(s) > 1;
+                    const dano = getSpellDamage(s);
+                    return `<button class="battle-btn item-btn ${fraco ? "battle-btn-fraco" : ""}" onclick="battleConjurarMagia('${s.id}')">${s.emoji} ${s.nome}${domina ? " 🌟" : ""} <small>(${s.custoMana} mana · ~${dano} dano)</small></button>`;
+                  })
+                  .join("")}
+                <button class="battle-btn voltar-btn" onclick="battleAction('voltar')">‹ Voltar</button>
+              </div>`
             : `<div class="battle-actions">
                 <button class="battle-btn atacar" onclick="battleAction('atacar')">⚔ Atacar</button>
                 <button class="battle-btn defender" onclick="battleAction('defender')">🛡 Defender</button>
-                <button class="battle-btn magia ${h.mana < CUSTO_MAGIA_BATALHA ? "battle-btn-fraco" : ""}" onclick="battleAction('magia')">✨ Magia <small>(${CUSTO_MAGIA_BATALHA} mana)</small></button>
+                <button class="battle-btn magia" onclick="battleAction('magia')">🔮 Magias</button>
                 <button class="battle-btn item" onclick="battleAction('item')">🧪 Usar Item</button>
                 <button class="battle-btn fugir" onclick="battleAction('fugir')">🏃 Fugir</button>
                 <button class="battle-btn subornar ${h.ouro < custoSuborno(b.inimigo) ? "battle-btn-fraco" : ""}" onclick="battleAction('subornar')">💰 Subornar <small>(${custoSuborno(b.inimigo)})</small></button>

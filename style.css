@@ -557,7 +557,7 @@ main.panels {
   flex-wrap: nowrap;
   align-items: center;
   justify-content: center;
-  gap: 22px;
+  gap: 14px;
   z-index: 6;
   pointer-events: none; /* o container não captura clique, só cada ícone */
 }

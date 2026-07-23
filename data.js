@@ -11,6 +11,13 @@
    ============================================================ */
 
 const GAME_DATA = {
+  "spells": [
+    { "id": "faisca_arcana", "nome": "Faísca Arcana", "emoji": "✨", "escola": null, "danoBase": 8, "custoMana": 8 },
+    { "id": "bola_de_fogo", "nome": "Bola de Fogo", "emoji": "🔥", "escola": "piromancia", "danoBase": 14, "custoMana": 14 },
+    { "id": "toque_sombrio", "nome": "Toque Sombrio", "emoji": "☠", "escola": "necromancia", "danoBase": 12, "custoMana": 12, "drenoVida": 0.4 },
+    { "id": "lamina_ilusoria", "nome": "Lâmina Ilusória", "emoji": "🌙", "escola": "ilusionismo", "danoBase": 11, "custoMana": 11 },
+    { "id": "raio_encadeado", "nome": "Raio Encadeado", "emoji": "⚡", "escola": "elementalismo", "danoBase": 17, "custoMana": 17 }
+  ],
   "classes": [
     {
       "id": "mago",
@@ -70,6 +77,34 @@ const GAME_DATA = {
           }
         },
         {
+          "id": "mago_5",
+          "nome": "Sobrecarga Arcana",
+          "emoji": "🌀",
+          "nivelDesbloqueio": 6,
+          "tipo": "ativa",
+          "descricao": "Canaliza energia bruta pelas próprias veias, aumentando temporariamente sua força ofensiva.",
+          "efeito": {
+            "tipo": "ativa_buff",
+            "buffs": [{ "stat": "ataque", "valor": 4, "turnos": 3 }],
+            "custoMana": 10,
+            "cooldown": 4
+          }
+        },
+        {
+          "id": "mago_6",
+          "nome": "Explosão de Mana",
+          "emoji": "💥",
+          "nivelDesbloqueio": 11,
+          "tipo": "ativa",
+          "descricao": "Libera toda a mana acumulada em uma única explosão devastadora — cara, mas letal.",
+          "efeito": {
+            "tipo": "ativa_dano_combate",
+            "multiplicador": 2.2,
+            "custoMana": 24,
+            "cooldown": 5
+          }
+        },
+        {
           "id": "mago_4",
           "nome": "Meteoro",
           "emoji": "☄️",
@@ -89,7 +124,8 @@ const GAME_DATA = {
             ],
             "maxStacks": 12
           }
-        }
+        },
+        
       ]
     },
     {
@@ -153,6 +189,34 @@ const GAME_DATA = {
           }
         },
         {
+          "id": "guerreiro_5",
+          "nome": "Investida Brutal",
+          "emoji": "🐂",
+          "nivelDesbloqueio": 6,
+          "tipo": "ativa",
+          "descricao": "Avança com todo o peso do corpo contra o inimigo, ignorando a própria defesa em troca de dano bruto.",
+          "efeito": {
+            "tipo": "ativa_dano_combate",
+            "multiplicador": 1.8,
+            "custoMana": 8,
+            "cooldown": 3
+          }
+        },
+        {
+          "id": "guerreiro_6",
+          "nome": "Fúria Sanguinária",
+          "emoji": "🩸",
+          "nivelDesbloqueio": 11,
+          "tipo": "ativa",
+          "descricao": "Entra em um estado de fúria que aumenta força e velocidade por alguns turnos.",
+          "efeito": {
+            "tipo": "ativa_buff",
+            "buffs": [{ "stat": "ataque", "valor": 6, "turnos": 3 }, { "stat": "velocidade", "valor": 2, "turnos": 3 }],
+            "custoMana": 12,
+            "cooldown": 5
+          }
+        },
+        {
           "id": "guerreiro_4",
           "nome": "Última Resistência",
           "emoji": "🛡️",
@@ -169,7 +233,8 @@ const GAME_DATA = {
             },
             "maxStacks": 10
           }
-        }
+        },
+        
       ]
     },
     {
@@ -230,6 +295,35 @@ const GAME_DATA = {
           }
         },
         {
+          "id": "arqueiro_5",
+          "nome": "Tiro Duplo",
+          "emoji": "🏹",
+          "nivelDesbloqueio": 6,
+          "tipo": "ativa",
+          "descricao": "Dispara duas flechas em sequência rápida, sacrificando força individual por volume.",
+          "efeito": {
+            "tipo": "ativa_dano_combate",
+            "multiplicador": 1.3,
+            "custoMana": 10,
+            "golpes": 2,
+            "cooldown": 3
+          }
+        },
+        {
+          "id": "arqueiro_6",
+          "nome": "Flecha Perfurante",
+          "emoji": "🎯",
+          "nivelDesbloqueio": 11,
+          "tipo": "ativa",
+          "descricao": "Um tiro carregado que atravessa qualquer armadura no caminho.",
+          "efeito": {
+            "tipo": "ativa_dano_combate",
+            "multiplicador": 2.3,
+            "custoMana": 18,
+            "cooldown": 5
+          }
+        },
+        {
           "id": "arqueiro_4",
           "nome": "Chuva de Flechas",
           "emoji": "🏹",
@@ -247,7 +341,8 @@ const GAME_DATA = {
             },
             "maxStacks": 8
           }
-        }
+        },
+        
       ]
     },
     {
@@ -308,6 +403,34 @@ const GAME_DATA = {
           }
         },
         {
+          "id": "ladino_5",
+          "nome": "Golpe Furtivo",
+          "emoji": "🗡️",
+          "nivelDesbloqueio": 6,
+          "tipo": "ativa",
+          "descricao": "Ataca um ponto vulnerável que só quem se move nas sombras consegue enxergar.",
+          "efeito": {
+            "tipo": "ativa_dano_combate",
+            "multiplicador": 2.0,
+            "custoMana": 9,
+            "cooldown": 3
+          }
+        },
+        {
+          "id": "ladino_6",
+          "nome": "Sumiço",
+          "emoji": "💨",
+          "nivelDesbloqueio": 11,
+          "tipo": "ativa",
+          "descricao": "Desaparece por completo, escapando de qualquer combate sem sofrer um único golpe.",
+          "efeito": {
+            "tipo": "ativa_especial",
+            "acao": "fuga_garantida",
+            "custoMana": 14,
+            "cooldown": 6
+          }
+        },
+        {
           "id": "ladino_4",
           "nome": "Mão Leve",
           "emoji": "🖐️",
@@ -327,7 +450,8 @@ const GAME_DATA = {
             ],
             "maxStacks": 12
           }
-        }
+        },
+        
       ]
     },
     {
@@ -389,6 +513,35 @@ const GAME_DATA = {
           }
         },
         {
+          "id": "paladino_5",
+          "nome": "Golpe Sagrado",
+          "emoji": "⚔️",
+          "nivelDesbloqueio": 6,
+          "tipo": "ativa",
+          "descricao": "Um golpe abençoado que fere o inimigo e devolve parte do dano como vida.",
+          "efeito": {
+            "tipo": "ativa_dano_combate",
+            "multiplicador": 1.7,
+            "custoMana": 10,
+            "drenoVida": 0.3,
+            "cooldown": 3
+          }
+        },
+        {
+          "id": "paladino_6",
+          "nome": "Escudo da Fé",
+          "emoji": "🛡️",
+          "nivelDesbloqueio": 11,
+          "tipo": "ativa",
+          "descricao": "Ergue uma barreira sagrada que reforça defesa e vitalidade por alguns turnos.",
+          "efeito": {
+            "tipo": "ativa_buff",
+            "buffs": [{ "stat": "defesa", "valor": 6, "turnos": 4 }, { "stat": "vidaMax", "valor": 10, "turnos": 4 }],
+            "custoMana": 14,
+            "cooldown": 5
+          }
+        },
+        {
           "id": "paladino_4",
           "nome": "Bastião Divino",
           "emoji": "🌟",
@@ -406,7 +559,8 @@ const GAME_DATA = {
             },
             "maxStacks": 8
           }
-        }
+        },
+        
       ]
     },
     {
@@ -474,6 +628,36 @@ const GAME_DATA = {
           }
         },
         {
+          "id": "necromante_5",
+          "nome": "Explosão Necrótica",
+          "emoji": "☠️",
+          "nivelDesbloqueio": 6,
+          "tipo": "ativa",
+          "descricao": "Rompe a carne do inimigo com energia da morte, drenando metade do dano causado como vida.",
+          "efeito": {
+            "tipo": "ativa_dano_combate",
+            "multiplicador": 1.6,
+            "custoMana": 10,
+            "drenoVida": 0.5,
+            "cooldown": 3
+          }
+        },
+        {
+          "id": "necromante_6",
+          "nome": "Ceifar Almas",
+          "emoji": "🌑",
+          "nivelDesbloqueio": 11,
+          "tipo": "ativa",
+          "descricao": "Arranca uma fração da força vital do inimigo, ferindo-o e restaurando sua própria vida.",
+          "efeito": {
+            "tipo": "ativa_cura",
+            "cura": 18,
+            "custoMana": 16,
+            "danoMultiplicador": 1.4,
+            "cooldown": 5
+          },
+        },
+        {
           "id": "necromante_4",
           "nome": "Pacto com a Morte",
           "emoji": "⚱️",
@@ -487,7 +671,8 @@ const GAME_DATA = {
               { "tipo": "misterio", "mult": 1.35 }
             ]
           }
-        }
+        },
+        
       ]
     },
     {
@@ -550,6 +735,34 @@ const GAME_DATA = {
           }
         },
         {
+          "id": "druida_5",
+          "nome": "Investida Selvagem",
+          "emoji": "🐾",
+          "nivelDesbloqueio": 6,
+          "tipo": "ativa",
+          "descricao": "Canaliza o instinto de uma fera para atacar com força bruta.",
+          "efeito": {
+            "tipo": "ativa_dano_combate",
+            "multiplicador": 1.6,
+            "custoMana": 9,
+            "cooldown": 3
+          }
+        },
+        {
+          "id": "druida_6",
+          "nome": "Renascimento Selvagem",
+          "emoji": "🌿",
+          "nivelDesbloqueio": 11,
+          "tipo": "ativa",
+          "descricao": "A natureza responde ao seu chamado e restaura uma grande quantidade de vida.",
+          "efeito": {
+            "tipo": "ativa_cura",
+            "cura": 40,
+            "custoMana": 18,
+            "cooldown": 6
+          }
+        },
+        {
           "id": "druida_4",
           "nome": "Renascimento Selvagem",
           "emoji": "🌸",
@@ -567,7 +780,8 @@ const GAME_DATA = {
             },
             "maxStacks": 6
           }
-        }
+        },
+        
       ]
     },
     {
@@ -630,6 +844,34 @@ const GAME_DATA = {
           }
         },
         {
+          "id": "bardo_5",
+          "nome": "Acorde Dissonante",
+          "emoji": "🎸",
+          "nivelDesbloqueio": 6,
+          "tipo": "ativa",
+          "descricao": "Um som capaz de ferir tanto quanto qualquer lâmina.",
+          "efeito": {
+            "tipo": "ativa_dano_combate",
+            "multiplicador": 1.5,
+            "custoMana": 9,
+            "cooldown": 3
+          }
+        },
+        {
+          "id": "bardo_6",
+          "nome": "Mão Leve",
+          "emoji": "🖐️",
+          "nivelDesbloqueio": 11,
+          "tipo": "ativa",
+          "descricao": "Aproveita a distração da música para roubar ouro do oponente durante o combate.",
+          "efeito": {
+            "tipo": "ativa_especial",
+            "acao": "roubo",
+            "custoMana": 10,
+            "cooldown": 4
+          }
+        },
+        {
           "id": "bardo_4",
           "nome": "Bis!",
           "emoji": "🎤",
@@ -649,7 +891,8 @@ const GAME_DATA = {
             ],
             "maxStacks": 8
           }
-        }
+        },
+        
       ]
     },
     {
@@ -714,6 +957,35 @@ const GAME_DATA = {
             "max": 7
           }
         },
+         {
+          "id": "monge_5",
+          "nome": "Punho Relâmpago",
+          "emoji": "👊",
+          "nivelDesbloqueio": 6,
+          "tipo": "ativa",
+          "descricao": "Uma sequência de três golpes rápidos, cada um mais fraco, mas quase impossíveis de evitar todos.",
+          "efeito": {
+            "tipo": "ativa_dano_combate",
+            "multiplicador": 0.9,
+            "custoMana": 10,
+            "golpes": 3,
+            "cooldown": 4
+          }
+        },
+        {
+          "id": "monge_6",
+          "nome": "Respiração Interior",
+          "emoji": "🧘",
+          "nivelDesbloqueio": 11,
+          "tipo": "ativa",
+          "descricao": "Uma técnica de respiração que restaura vitalidade através do controle total do próprio corpo.",
+          "efeito": {
+            "tipo": "ativa_cura",
+            "cura": 25,
+            "custoMana": 12,
+            "cooldown": 4
+          }
+        },
         {
           "id": "monge_4",
           "nome": "Fúria do Vazio",
@@ -732,7 +1004,8 @@ const GAME_DATA = {
             },
             "maxStacks": 4
           }
-        }
+        },
+       
       ]
     }
   ],
