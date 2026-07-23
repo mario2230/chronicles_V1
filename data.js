@@ -16,7 +16,11 @@ const GAME_DATA = {
     { "id": "bola_de_fogo", "nome": "Bola de Fogo", "emoji": "🔥", "escola": "piromancia", "danoBase": 14, "custoMana": 14 },
     { "id": "toque_sombrio", "nome": "Toque Sombrio", "emoji": "☠", "escola": "necromancia", "danoBase": 12, "custoMana": 12, "drenoVida": 0.4 },
     { "id": "lamina_ilusoria", "nome": "Lâmina Ilusória", "emoji": "🌙", "escola": "ilusionismo", "danoBase": 11, "custoMana": 11 },
-    { "id": "raio_encadeado", "nome": "Raio Encadeado", "emoji": "⚡", "escola": "elementalismo", "danoBase": 17, "custoMana": 17 }
+    { "id": "raio_encadeado", "nome": "Raio Encadeado", "emoji": "⚡", "escola": "elementalismo", "danoBase": 17, "custoMana": 17 },
+    { "id": "inferno_pessoal", "nome": "Inferno Pessoal", "emoji": "🔥", "escola": "piromancia", "danoBase": 25, "custoMana": 22, "requerRank": 3 },
+    { "id": "drenar_alma", "nome": "Drenar Alma", "emoji": "💀", "escola": "necromancia", "danoBase": 20, "custoMana": 20, "drenoVida": 0.6, "requerRank": 3 },
+    { "id": "espelhos_multiplos", "nome": "Espelhos Múltiplos", "emoji": "🪞", "escola": "ilusionismo", "danoBase": 22, "custoMana": 19, "requerRank": 3 },
+    { "id": "tempestade_arcana", "nome": "Tempestade Arcana", "emoji": "⛈", "escola": "elementalismo", "danoBase": 28, "custoMana": 26, "requerRank": 3 }
   ],
   "classes": [
     {
@@ -1168,7 +1172,11 @@ const GAME_DATA = {
         "machado_de_raizes",
         "couraça_do_viajante",
         "medalhao_dos_ancestrais",
-        "bivaque_tatico"
+        "bivaque_tatico",
+        "estudar_piromancia",
+        "estudar_necromancia",
+        "estudar_ilusionismo",
+        "estudar_elementalismo"
       ]
     },
     {
@@ -5716,6 +5724,7 @@ const GAME_DATA = {
         "Um piromante itinerante se oferece para lhe ensinar os fundamentos das chamas — avisando, com um sorriso torto, que você vai se queimar algumas vezes no caminho."
       ],
       "cor": "vermelho",
+      "condicao": { "tagAusente": "escola_piromancia" },
       "efeito": {
         "tipo": "escola",
         "escolaId": "piromancia",
@@ -5723,6 +5732,23 @@ const GAME_DATA = {
           "ataque": 3
         }
       }
+    },
+    {
+      "id": "estudar_piromancia",
+      "emoji": "🔥",
+      "nome": "Prática de Piromancia",
+      "tipo": "escola",
+      "raridade": "incomum",
+      "weight": 14,
+      "regiaoOrigem": ["templo", "ruinas"],
+      "minNivel": 3,
+      "condicao": { "tag": "escola_piromancia", "minimo": 1 },
+      "historia": [
+        "Você repete os gestos que o piromante ensinou até as chamas responderem sem hesitar.",
+        "Cada tentativa queima um pouco menos e acerta um pouco mais o alvo."
+      ],
+      "cor": "vermelho",
+      "efeito": { "tipo": "estudarEscola", "escolaId": "piromancia", "relacaoGanho": [8, 16] }
     },
     {
       "id": "escola_necromancia",
@@ -5741,6 +5767,7 @@ const GAME_DATA = {
         "Entre os túmulos, uma voz sem corpo ensina a ouvir os mortos — e, vez ou outra, a se recusar a permanecer quieta diante deles."
       ],
       "cor": "roxo",
+      "condicao": { "tagAusente": "escola_necromancia" },
       "efeito": {
         "tipo": "escola",
         "escolaId": "necromancia",
@@ -5748,6 +5775,23 @@ const GAME_DATA = {
           "vidaMax": 15
         }
       }
+    },
+    {
+      "id": "estudar_necromancia",
+      "emoji": "☠",
+      "nome": "Prática de Necromancia",
+      "tipo": "escola",
+      "raridade": "incomum",
+      "weight": 14,
+      "regiaoOrigem": ["cemiterio", "pantano"],
+      "minNivel": 3,
+      "condicao": { "tag": "escola_necromancia", "minimo": 1 },
+      "historia": [
+        "As vozes dos mortos ficam mais claras a cada vez que você se permite escutar.",
+        "Você aprende a distinguir um sussurro de aviso de um de convite."
+      ],
+      "cor": "roxo",
+      "efeito": { "tipo": "estudarEscola", "escolaId": "necromancia", "relacaoGanho": [8, 16] }
     },
     {
       "id": "escola_ilusionismo",
@@ -5766,6 +5810,7 @@ const GAME_DATA = {
         "Uma figura encapuzada desaparece e reaparece três vezes seguidas antes de aceitar lhe ensinar a arte de enganar os olhos."
       ],
       "cor": "azul",
+      "condicao": { "tagAusente": "escola_ilusionismo" },
       "efeito": {
         "tipo": "escola",
         "escolaId": "ilusionismo",
@@ -5773,6 +5818,23 @@ const GAME_DATA = {
           "velocidade": 3
         }
       }
+    },
+    {
+      "id": "estudar_ilusionismo",
+      "emoji": "🌙",
+      "nome": "Prática de Ilusionismo",
+      "tipo": "escola",
+      "raridade": "incomum",
+      "weight": 14,
+      "regiaoOrigem": ["floresta", "caverna"],
+      "minNivel": 3,
+      "condicao": { "tag": "escola_ilusionismo", "minimo": 1 },
+      "historia": [
+        "Você treina até seu próprio reflexo hesitar em segui-lo.",
+        "A ilusão perfeita não engana o inimigo — faz o inimigo duvidar de si mesmo."
+      ],
+      "cor": "azul",
+      "efeito": { "tipo": "estudarEscola", "escolaId": "ilusionismo", "relacaoGanho": [8, 16] }
     },
     {
       "id": "escola_elementalismo",
@@ -5791,6 +5853,7 @@ const GAME_DATA = {
         "Um velho elementalista canaliza um raio pela própria mão só para provar que os elementos podem ser domados por quem tem paciência."
       ],
       "cor": "azul",
+      "condicao": { "tagAusente": "escola_elementalismo" },
       "efeito": {
         "tipo": "escola",
         "escolaId": "elementalismo",
@@ -5798,6 +5861,23 @@ const GAME_DATA = {
           "mana": 20
         }
       }
+    },
+    {
+      "id": "estudar_elementalismo",
+      "emoji": "⚡",
+      "nome": "Prática de Elementalismo",
+      "tipo": "escola",
+      "raridade": "incomum",
+      "weight": 14,
+      "regiaoOrigem": ["montanha", "deserto"],
+      "minNivel": 3,
+      "condicao": { "tag": "escola_elementalismo", "minimo": 1 },
+      "historia": [
+        "Você canaliza um pouco mais de energia a cada tentativa, sem se queimar dessa vez.",
+        "Os elementos ainda resistem, mas cada vez menos."
+      ],
+      "cor": "azul",
+      "efeito": { "tipo": "estudarEscola", "escolaId": "elementalismo", "relacaoGanho": [8, 16] }
     },
     {
       "id": "cajado_piromante",

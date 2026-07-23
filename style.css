@@ -276,6 +276,20 @@ main.panels {
   gap: 6px;
 }
 .equip-item .slot { color: var(--text-dim); text-transform: uppercase; font-size: 0.6rem; letter-spacing: .05em;}
+.equip-item.escola-item {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 3px;
+}
+.escola-rank-tag {
+  align-self: flex-start;
+  font-size: 0.6rem;
+  font-weight: 700;
+  color: var(--secondary);
+  border: 1px solid var(--secondary);
+  border-radius: 999px;
+  padding: 1px 7px;
+}
 .empty-note { color: var(--text-dim); font-size: 0.7rem; font-style: italic; }
 
 /* ---------- TREE PANEL ---------- */
@@ -1548,6 +1562,12 @@ body.in-battle header.top button:not(.battle-btn) {
    disabled de verdade pra não parecer que o botão sumiu/quebrou. */
 .battle-btn.battle-btn-fraco { opacity: 0.45; }
 .battle-btn.battle-btn-fraco:hover { transform: none; border-color: var(--border); color: var(--text); }
+.battle-btn.battle-btn-bloqueado { opacity: 0.4; cursor: not-allowed; font-style: italic; }
+.battle-btn.battle-btn-bloqueado:hover { transform: none; }
+.battle-btn.spell-exclusiva {
+  border-color: var(--secondary);
+  box-shadow: 0 0 12px -2px rgba(168,85,247,0.4);
+}
 .battle-btn.item-btn { justify-content: space-between; }
 .battle-btn.voltar-btn { background: transparent; }
 .item-qty { color: var(--primary); font-weight: 800; }

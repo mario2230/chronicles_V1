@@ -375,10 +375,50 @@ function tickCooldownsHabilidade() {
 // de escola causam bem mais dano se o herói já estudou aquela escola —
 // isso é o que torna "escola de piromancia" uma escolha real, e não só
 // um bônus de status esquecido no painel do herói.
+// Rank de estudo de uma escola de magia — não é só "sabe ou não sabe":
+// quanto mais o jogador pratica (cartas de "estudo"), mais alto o rank,
+// e maior o multiplicador de dano das magias daquela escola. A partir do
+// rank 3 ("Adepto"), a escola libera sua 2ª magia exclusiva (spell.requerRank).
+const ESCOLA_RANKS = [
+  { min: 0, rank: 1, nome: "Iniciado", mult: 1.15 },
+  { min: 25, rank: 2, nome: "Aprendiz", mult: 1.35 },
+  { min: 55, rank: 3, nome: "Adepto", mult: 1.55 },
+  { min: 95, rank: 4, nome: "Mestre", mult: 1.75 },
+  { min: 145, rank: 5, nome: "Arquimago", mult: 2.0 },
+];
+function escolaRankInfo(relacao) {
+  let t = ESCOLA_RANKS[0];
+  for (const tier of ESCOLA_RANKS) if ((relacao || 0) >= tier.min) t = tier;
+  return t;
+}
+function getEscolaEntry(escolaId) {
+  return (state.hero.escolas || []).find((e) => e.id === escolaId) || null;
+}
+// soma pontos de estudo a uma escola já iniciada e avisa na história se
+// isso empurrou o herói pro próximo rank (e, no rank 3, avisa que a magia
+// exclusiva da escola foi liberada).
+function ganharRelacaoEscola(escolaId, quantidade) {
+  const entry = getEscolaEntry(escolaId);
+  if (!entry) return;
+  const antes = escolaRankInfo(entry.relacao);
+  entry.relacao = (entry.relacao || 0) + quantidade;
+  const depois = escolaRankInfo(entry.relacao);
+  if (depois.rank > antes.rank) {
+    const magiaMsg = depois.rank === 3 ? " Suas magias exclusivas de escola foram liberadas!" : "";
+    addStory(`📈 ${entry.nome} evoluiu para rank ${depois.rank} — ${depois.nome}.${magiaMsg}`, "roxo");
+  }
+}
+function spellDisponivel(spell) {
+  if (!spell.requerRank) return true;
+  const entry = getEscolaEntry(spell.escola);
+  return !!entry && escolaRankInfo(entry.relacao).rank >= spell.requerRank;
+}
+
 function getEscolaBonusMagia(spell) {
   if (!spell.escola) return 1;
-  const conhece = (state.hero.escolas || []).some((e) => e.id === spell.escola);
-  return conhece ? 1.65 : 0.8;
+  const entry = getEscolaEntry(spell.escola);
+  if (!entry) return 0.8; // penalidade por conjurar uma escola que nunca estudou
+  return escolaRankInfo(entry.relacao).mult;
 }
 
 function getSpellDamage(spell) {
@@ -389,7 +429,7 @@ function getSpellDamage(spell) {
 // a melhor magia que o herói consegue pagar agora — usado tanto pra
 // sugerir a UI quanto pro "golpe de abertura" mágico no combate instantâneo.
 function melhorMagiaDisponivel() {
-  const pagaveis = (DATA.spells || []).filter((s) => state.hero.mana >= s.custoMana);
+  const pagaveis = (DATA.spells || []).filter((s) => state.hero.mana >= s.custoMana && spellDisponivel(s));
   if (!pagaveis.length) return null;
   return pagaveis.reduce((melhor, s) => (getSpellDamage(s) > getSpellDamage(melhor) ? s : melhor), pagaveis[0]);
 }
@@ -1549,7 +1589,7 @@ function resolverEscola(card) {
     return;
   }
   state.tags[tagId] = 1;
-  state.hero.escolas.push({ id: ef.escolaId, nome: card.nome, emoji: card.emoji });
+  state.hero.escolas.push({ id: ef.escolaId, nome: card.nome, emoji: card.emoji, relacao: 0 });
 
   const b = ef.bonus || {};
   if (b.ataque) state.hero.ataqueBase += b.ataque;
@@ -1559,6 +1599,17 @@ function resolverEscola(card) {
   if (b.mana) { state.hero.manaMax += b.mana; state.hero.mana += b.mana; }
 
   addStory(pickStoryLine(card), card.cor);
+}
+
+// cartas repetíveis de "estudo" — só aparecem depois de já ter ingressado
+// na escola (condicao.tag) e empurram o rank pra frente aos poucos.
+function resolverEstudoEscola(card) {
+  const ef = card.efeito;
+  const entry = getEscolaEntry(ef.escolaId);
+  if (!entry) { addStory(pickStoryLine(card), card.cor); return; }
+  const ganho = rndInt(ef.relacaoGanho[0], ef.relacaoGanho[1]);
+  ganharRelacaoEscola(ef.escolaId, ganho);
+  addStory(`${pickStoryLine(card)} (+${ganho} estudo)`, card.cor);
 }
 
 function resolveCard(card, alternativas, escolhaOpcao) {
@@ -1629,6 +1680,9 @@ function resolveCard(card, alternativas, escolhaOpcao) {
       break;
     case "escola":
       resolverEscola(card);
+      break;
+    case "estudarEscola":
+      resolverEstudoEscola(card);
       break;
     default:
       addStory(pickStoryLine(card), card.cor);
@@ -1954,10 +2008,16 @@ function renderBattleModal() {
             ? `<div class="battle-actions battle-item-menu">
                 ${(DATA.spells || [])
                   .map((s) => {
+                    if (!spellDisponivel(s)) {
+                      const entry = getEscolaEntry(s.escola);
+                      const rankAtual = entry ? escolaRankInfo(entry.relacao).rank : 0;
+                      return `<button class="battle-btn item-btn battle-btn-bloqueado" disabled>${s.emoji} ${s.nome} 🔒 <small>requer rank ${s.requerRank} de ${entry ? entry.nome : s.escola} (atual: ${rankAtual})</small></button>`;
+                    }
                     const fraco = h.mana < s.custoMana;
                     const domina = s.escola && getEscolaBonusMagia(s) > 1;
                     const dano = getSpellDamage(s);
-                    return `<button class="battle-btn item-btn ${fraco ? "battle-btn-fraco" : ""}" onclick="battleConjurarMagia('${s.id}')">${s.emoji} ${s.nome}${domina ? " 🌟" : ""} <small>(${s.custoMana} mana · ~${dano} dano)</small></button>`;
+                    const exclusiva = s.requerRank ? "spell-exclusiva" : "";
+                    return `<button class="battle-btn item-btn ${fraco ? "battle-btn-fraco" : ""} ${exclusiva}" onclick="battleConjurarMagia('${s.id}')">${s.emoji} ${s.nome}${s.requerRank ? " ⭐" : ""}${domina ? " 🌟" : ""} <small>(${s.custoMana} mana · ~${dano} dano)</small></button>`;
                   })
                   .join("")}
                 <button class="battle-btn voltar-btn" onclick="battleAction('voltar')">‹ Voltar</button>
@@ -2552,8 +2612,18 @@ function renderHero() {
     <div class="empty-note codex-link" onclick="showInventoryModal()">${h.inventario.filter((i) => i.tipo === "consumivel").reduce((s, i) => s + i.quantidade, 0)} consumíveis, ${h.inventario.filter((i) => i.tipo === "equipamento").length} em reserva — abrir Mochila ›</div>
 
     ${h.escolas.length ? `
-    <div class="hero-section-title">Escola</div>
-    <div class="equip-list">${h.escolas.map((e) => `<div class="equip-item"><span>${e.emoji} ${e.nome}</span></div>`).join("")}</div>
+    <div class="hero-section-title">Escolas</div>
+    <div class="equip-list">${h.escolas.map((e) => {
+      const info = escolaRankInfo(e.relacao);
+      const idxAtual = ESCOLA_RANKS.findIndex((t) => t.rank === info.rank);
+      const prox = ESCOLA_RANKS[idxAtual + 1];
+      const prog = prox ? `${e.relacao}/${prox.min}` : "rank máximo";
+      return `<div class="equip-item escola-item">
+        <span>${e.emoji} ${e.nome}</span>
+        <span class="escola-rank-tag">Rank ${info.rank} · ${info.nome}</span>
+        <small style="color:var(--text-dim)">${prog}${info.rank < 3 ? " · magias em rank 3" : ""}</small>
+      </div>`;
+    }).join("")}</div>
     ` : ""}
 
     <div class="hero-section-title">Descobertas</div>
@@ -2746,6 +2816,10 @@ function buildCardPreview(card) {
       break;
     case "escola":
       push("📚 ensinamento", "chip-neutral");
+      break;
+    case "estudarEscola":
+      push("📖 estudo de escola", "chip-neutral");
+      push("📈 avança seu rank", "chip-pos");
       break;
     default:
       break;
