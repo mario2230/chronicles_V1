@@ -899,6 +899,12 @@ footer.cards {
   justify-content: space-between;
   align-items: flex-start;
 }
+.card-top-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
 .game-card .card-emoji { font-size: var(--card-emoji-size); }
 .game-card .card-rarity {
   font-size: 0.54rem;
@@ -984,7 +990,7 @@ footer.cards {
 .cost-chip.chip-risk { color: var(--cor-laranja); background: rgba(251,146,60,0.10); }
 .cost-chip.chip-risk-alto { color: var(--cor-vermelho); background: rgba(248,113,113,0.16); }
 .game-card .card-new {
-  align-self: flex-start;
+  align-self: flex-end;
   font-size: 0.58rem;
   color: var(--bg);
   background: var(--primary);

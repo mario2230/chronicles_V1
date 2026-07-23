@@ -158,6 +158,7 @@ function novoEstado(classeId, seed) {
     turno: 0,
     gameOver: false,
     regiao: "aldeia",
+    turnoEntrouRegiao: 0, // usado pra aumentar a chance de chefe quanto mais tempo o jogador fica na mesma região
     hero: {
       nome: classe.nome,
       classeId: classe.id,
@@ -706,11 +707,24 @@ function computeWeight(card) {
   }
 
   // incentivo à descoberta: cartas nunca vistas se destacam bastante;
-  // cartas vistas poucas vezes ainda recebem um empurrão menor. O bônus
-  // desaparece gradualmente em vez de cair a zero de uma vez.
+  // cartas vistas poucas vezes ainda recebem um empurrão menor, que vai
+  // diminuindo aos poucos em vez de cair a zero de uma vez — isso equilibra
+  // "mostrar coisa nova" com não deixar o sorteio previsível demais.
   const vistas = state.vezesVista[card.id] || 0;
-  if (vistas === 0) w *= 1.8;
-  else if (vistas < 3) w *= 1.25;
+  if (vistas === 0) w *= 2.3;
+  else if (vistas < 3) w *= 1.5;
+  else if (vistas < 5) w *= 1.15;
+
+  // quanto mais turnos o jogador passa na mesma região, maior a chance de
+  // um chefe/subchefe daquela região aparecer — a demora "chama atenção"
+  // do perigo local, em vez do chefe só depender de sorte pura no sorteio.
+  if (card.tipo === "chefe") {
+    const turnosNaRegiao = state.turno - (state.turnoEntrouRegiao || 0);
+    if (turnosNaRegiao > 4) {
+      const excedente = Math.min(turnosNaRegiao - 4, 20); // satura pra não virar garantido
+      w *= 1 + excedente * 0.18;
+    }
+  }
 
   // evento global ativo
   if (state.activeEvent) {
@@ -1530,6 +1544,7 @@ function resolveCard(card, alternativas, escolhaOpcao) {
     case "mudar_regiao":
       state.regiao = ef.regiao;
       state.regioesVisitadas.add(ef.regiao);
+      state.turnoEntrouRegiao = state.turno;
       addChapter(ef.regiao);
       addStory(pickStoryLine(card), card.cor);
       break;
@@ -1664,7 +1679,8 @@ function iniciarBatalha(card, alternativas) {
 
   const ef = card.efeito;
   const dificuldade = currentFase().dificuldade;
-  const vidaMax = Math.round(ef.vidaInimigo * dificuldade);
+  const eliteMult = card.elite ? 1.35 : 1;
+  const vidaMax = Math.round(ef.vidaInimigo * dificuldade * eliteMult);
 
   state.battle = {
     card,
@@ -1674,8 +1690,8 @@ function iniciarBatalha(card, alternativas) {
       emoji: card.emoji,
       vidaMax,
       vida: vidaMax,
-      ataque: Math.round(ef.ataqueInimigo * (1 + (dificuldade - 1) * 0.6)),
-      defesa: ef.defesaInimigo,
+      ataque: Math.round(ef.ataqueInimigo * (1 + (dificuldade - 1) * 0.6) * (card.elite ? 1.15 : 1)),
+      defesa: ef.defesaInimigo + (card.elite ? 1 : 0),
     },
     rodada: 1,
     defendendo: false,
@@ -1897,17 +1913,26 @@ function finalizarBatalha() {
 
   if (fim === "vitoria") {
     const ouroBase = rndInt(card.efeito.ouroDrop[0], card.efeito.ouroDrop[1]);
-    const ouro = Math.round(ouroBase * multiplicadorOuroPassivo());
+    const ouro = Math.round((card.elite ? ouroBase * 1.4 : ouroBase) * multiplicadorOuroPassivo());
     state.hero.ouro += ouro;
     state.hero.inimigosDerrotadosTotal = (state.hero.inimigosDerrotadosTotal || 0) + 1;
-    ganharExp(card.efeito.expDrop);
-    addStory(`👑 ${pickStoryLine(card)} (+${ouro} ouro, +${card.efeito.expDrop} exp)`, card.cor, true);
+    const expGanho = card.elite ? Math.round(card.efeito.expDrop * 1.4) : card.efeito.expDrop;
+    ganharExp(expGanho);
+    if (card.efeito.fragmentosDrop) ajustarFragmentos(card.efeito.fragmentosDrop);
+
+    const bonusEquip = heroStat("ataque");
+    let sufixoBuild = "";
+    if (bonusEquip >= 3) sufixoBuild = ` Seu equipamento sozinho contribuiu com +${bonusEquip} de ataque no combate.`;
+
+    const prefixo = card.tipo === "chefe" ? "👑 " : card.elite ? "⚔ Inimigo Especial derrotado! " : "";
+    addStory(`${prefixo}${pickStoryLine(card)} (+${ouro} ouro, +${expGanho} exp)${sufixoBuild}`, card.cor, card.tipo === "chefe" || !!card.elite);
     if (card.efeito.contadorTag) state.tags[card.efeito.contadorTag] = (state.tags[card.efeito.contadorTag] || 0) + 1;
-    state.derrotados.add(card.id);
+    if (card.tipo === "chefe") state.derrotados.add(card.id);
     if (card.efeito.itemGarantido) {
       const it = DATA.cards.find((c) => c.id === card.efeito.itemGarantido);
       if (it) obterItem(it);
     }
+    registrarCondicaoPassiva("inimigo_derrotado", 1);
     // chefes com flagFinal não encerram mais a run sozinhos — o jogador
     // decide depois da vitória, em showFinalChoiceModal().
     if (card.efeito.flagFinal) venceuChefeFinal = true;
@@ -2284,12 +2309,11 @@ function onCardClick(cardId) {
   if (!card) return;
   const alternativas = state.currentCards.filter((c) => c.id !== cardId);
 
-  // chefes e subchefes viram combate em turnos; inimigos comuns e elites
-  // continuam resolvendo instantaneamente, como sempre. Chefes que carregam
-  // um final da história não recebem mais um aviso especial de "sem volta"
-  // — a decisão de aceitar aquele final ou continuar a run acontece depois
-  // da vitória, em showFinalChoiceModal().
-  if (card.tipo === "chefe") {
+  // toda carta de combate — inimigo comum, elite ou chefe — agora vira
+  // batalha em turnos. Antes só chefes tinham esse tratamento; a diferença
+  // de intensidade entre eles continua vindo dos próprios stats/multiplicadores
+  // (vida, ataque, recompensas), não de um sistema de resolução diferente.
+  if (card.efeito.tipo === "combate") {
     iniciarBatalha(card, alternativas);
     return;
   }
@@ -2690,12 +2714,14 @@ function renderCards() {
       <div class="${classes}" data-id="${c.id}" onclick="onCardClick('${c.id}')">
         <div class="card-top">
           <span class="card-emoji">${c.emoji}</span>
-          <span class="card-rarity rarity-${c.raridade}">${RARITY_LABEL[c.raridade]}</span>
+          <div class="card-top-right">
+            <span class="card-rarity rarity-${c.raridade}">${RARITY_LABEL[c.raridade]}</span>
+            ${isNew ? '<span class="card-new">NOVO</span>' : ""}
+          </div>
         </div>
         ${
-          isNew || isEscolha || isMinigame || c.elite || isFinal
+          isEscolha || isMinigame || c.elite || isFinal
             ? `<div class="card-badges">
-                ${isNew ? '<span class="card-new">NOVO</span>' : ""}
                 ${isEscolha ? '<span class="card-choice-tag">💬 Decisão</span>' : ""}
                 ${isMinigame ? '<span class="card-minigame-tag">⚡ Desafio</span>' : ""}
                 ${c.elite ? '<span class="card-elite-tag">⚔ Especial</span>' : ""}
@@ -3213,6 +3239,7 @@ function loadGame() {
     if (!state.hero.habilidadesBonus) state.hero.habilidadesBonus = {};
     if (!state.hero.cooldownsHabilidade) state.hero.cooldownsHabilidade = {};
     if (!state.hero.inimigosDerrotadosTotal) state.hero.inimigosDerrotadosTotal = 0;
+    if (state.turnoEntrouRegiao == null) state.turnoEntrouRegiao = state.turno;
     // saves antigos não passaram por verificarNovasHabilidades nos level-ups
     // já ocorridos — roda uma vez na carga pra aplicar o que já deveria ter
     // sido desbloqueado (idempotente: cada habilidade só aplica bônus 1x).
