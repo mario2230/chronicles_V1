@@ -104,6 +104,38 @@ function rnd() { return state.rng(); }
 function rndInt(min, max) { return Math.floor(rnd() * (max - min + 1)) + min; }
 function pickRandom(arr) { return arr[Math.floor(rnd() * arr.length)]; }
 
+/* ============================================================
+   NARRADOR — pequenas vinhetas de texto que aparecem por cima da
+   tela em momentos marcantes (nova região, lugar raro encontrado).
+   A ideia é reforçar a sensação de "isto é a MINHA história", indo
+   além do diário — o diário registra, o narrador comenta.
+   ============================================================ */
+const NARRADOR_REGIAO_TEMPLATES = [
+  (h, l) => `Assim começa mais um capítulo da lenda de ${h}: os primeiros passos em ${l}.`,
+  (h, l) => `Nenhum mapa preparou ${h} para o que encontraria em ${l}.`,
+  (h, l) => `${l}. Um nome novo na história que ${h} está escrevendo.`,
+  (h, l) => `A jornada de ${h} ganha mais uma página: ${l} se abre diante dos seus olhos.`,
+  (h, l) => `Poucos ousariam seguir até aqui. ${h} apenas seguiu em frente — e ${l} finalmente se revela.`,
+];
+const NARRADOR_LOCAL_TEMPLATES = [
+  (h, l) => `${h} encontra ${l} — e sabe, de imediato, que este lugar vai ficar na memória.`,
+  (h, l) => `Poucos chegam tão longe quanto ${h} chegou para ver ${l} com os próprios olhos.`,
+  (h, l) => `${l}. Um lugar que parece ter esperado justamente por ${h}.`,
+  (h, l) => `Há histórias que se contam sobre ${l}. A partir de hoje, a de ${h} também faz parte delas.`,
+];
+
+function narrarMomento(texto) {
+  const el = document.createElement("div");
+  el.className = "narrator-vignette";
+  el.innerHTML = `<div class="narrator-line">${texto}</div>`;
+  document.body.appendChild(el);
+  setTimeout(() => el.classList.add("show"), 20);
+  setTimeout(() => {
+    el.classList.remove("show");
+    setTimeout(() => el.remove(), 900);
+  }, 4200);
+}
+
 // escolhe uma linha de história sem repetir até esgotar todas as variações
 // disponíveis para aquela carta — evita que o Diário pareça repetitivo depois
 // de algumas horas de jogo.
@@ -285,7 +317,7 @@ function valorFonteDinamica(fonte) {
     case "aliados": return Object.values(state.personagens || {}).filter((p) => p.relacao > 0).length;
     case "personagensConhecidos": return Object.keys(state.personagens || {}).length;
     case "inimigosDerrotadosTotal": return state.hero.inimigosDerrotadosTotal || 0;
-    case "manaPercentual": return getManaMax() > 0 ? Math.round((state.hero.mana / getManaMax()) * 100) : 0;
+    case "manaPercentual": return state.hero.manaMax > 0 ? Math.round((state.hero.mana / state.hero.manaMax) * 100) : 0;
     default: return 0;
   }
 }
@@ -297,7 +329,7 @@ function valorFonteCondicaoPassiva(tipo) {
     case "aliado_conquistado": return Object.values(state.personagens || {}).filter((p) => p.relacao > 0).length;
     case "personagem_conhecido": return Object.keys(state.personagens || {}).length;
     case "ouro_acumulado": return state.hero.ouro || 0;
-    case "mana_ativa": return getManaMax() > 0 ? Math.round((state.hero.mana / getManaMax()) * 100) : 0;
+    case "mana_ativa": return state.hero.manaMax > 0 ? Math.round((state.hero.mana / state.hero.manaMax) * 100) : 0;
     case "evento_escolhido": return (state.passiveConditionCounters && state.passiveConditionCounters.evento_escolhido) || 0;
     default: return 0;
   }
@@ -350,7 +382,15 @@ function aplicarRegenPassivas() {
     if (hab.efeito.tipo === "passiva_regen_vida" && hab.efeito.valor) {
       curar(hab.efeito.valor);
     }
+    if (hab.efeito.tipo === "passiva_regen_mana" && hab.efeito.valor) {
+      state.hero.mana = Math.min(getManaMax(), state.hero.mana + hab.efeito.valor);
+    }
   });
+  // regeneração natural de mana: pequena, mas garante que mana nunca fique
+  // "morta" — todo mundo recupera um pouco só por continuar a jornada,
+  // independente de classe ou item.
+  const regenNatural = Math.max(1, Math.round(getManaMax() * 0.04));
+  state.hero.mana = Math.min(getManaMax(), state.hero.mana + regenNatural);
 }
 
 // bônus percentual de ouro vindo de passivas (ex.: Bardo). Usado nos dois
@@ -500,6 +540,12 @@ function usarHabilidade(habId) {
     (ef.buffs || [ef]).forEach((b) => {
       state.hero.buffsAtivos.push({ stat: b.stat, valor: b.valor, turnosRestantes: b.turnos || 3, nome: hab.nome });
     });
+    if (state.battle) {
+      pushBattleLog([`${hab.emoji} Você usa ${hab.nome}.`]);
+      renderBattleModal();
+      battleTurnoInimigo();
+      return;
+    }
     addStory(`${hab.emoji} Você usa ${hab.nome}.`, "roxo");
     renderAll();
     return;
@@ -512,6 +558,12 @@ function usarHabilidade(habId) {
       state.battle.inimigo.vida = Math.max(0, state.battle.inimigo.vida - dano);
       pushBattleLog([`${hab.emoji} ${hab.nome} causa ${dano} de dano e cura ${ef.cura} de vida!`]);
       if (encerraComVitoria()) return;
+      renderBattleModal();
+      battleTurnoInimigo();
+      return;
+    }
+    if (state.battle) {
+      pushBattleLog([`${hab.emoji} Você usa ${hab.nome} e recupera ${ef.cura} de vida.`]);
       renderBattleModal();
       battleTurnoInimigo();
       return;
@@ -544,6 +596,12 @@ function usarHabilidade(habId) {
       Object.keys(state.hero.cooldownsHabilidade).forEach((k) => {
         state.hero.cooldownsHabilidade[k] = Math.max(0, (state.hero.cooldownsHabilidade[k] || 0) - 2);
       });
+      if (state.battle) {
+        pushBattleLog([`${hab.emoji} ${hab.nome}: recargas reduzidas!`]);
+        renderBattleModal();
+        battleTurnoInimigo();
+        return;
+      }
       addStory(`${hab.emoji} ${hab.nome}: recargas de todas as habilidades reduzidas!`, "roxo");
       renderAll();
       return;
@@ -1628,13 +1686,25 @@ function resolveCard(card, alternativas, escolhaOpcao) {
     case "escolha":
       resolveEscolha(card, escolhaOpcao);
       break;
-    case "mudar_regiao":
+    case "mudar_regiao": {
+      const eraRegiaoNova = !state.regioesVisitadas.has(ef.regiao);
       state.regiao = ef.regiao;
       state.regioesVisitadas.add(ef.regiao);
       state.turnoEntrouRegiao = state.turno;
       addChapter(ef.regiao);
       addStory(pickStoryLine(card), card.cor);
+      const metaRegiao = REGIAO_META[ef.regiao] || { emoji: "🌍", nome: ef.regiao };
+      if (eraRegiaoNova) {
+        const manaBonus = Math.round(getManaMax() * 0.15);
+        if (manaBonus > 0) {
+          state.hero.mana = Math.min(getManaMax(), state.hero.mana + manaBonus);
+        }
+        narrarMomento(pickRandom(NARRADOR_REGIAO_TEMPLATES)(state.hero.nome, `${metaRegiao.emoji} ${metaRegiao.nome}`));
+      } else if (card.tipo === "local" && ["epica", "lendaria", "mitica"].includes(card.raridade)) {
+        narrarMomento(pickRandom(NARRADOR_LOCAL_TEMPLATES)(state.hero.nome, `${card.emoji} ${card.nome}`));
+      }
       break;
+    }
     case "combate":
       resolverCombate(card);
       break;
@@ -1852,7 +1922,8 @@ function battleAction(tipo) {
 
   if (tipo === "item") { b.showItemMenu = true; renderBattleModal(); return; }
   if (tipo === "magia") { b.showSpellMenu = true; renderBattleModal(); return; }
-  if (tipo === "voltar") { b.showItemMenu = false; b.showSpellMenu = false; renderBattleModal(); return; }
+  if (tipo === "habilidade") { b.showHabilidadeMenu = true; renderBattleModal(); return; }
+  if (tipo === "voltar") { b.showItemMenu = false; b.showSpellMenu = false; b.showHabilidadeMenu = false; renderBattleModal(); return; }
 
   if (tipo === "atacar") {
     const critChance = Math.min(0.45, 0.08 + getVelocidade() * 0.012);
@@ -2022,10 +2093,29 @@ function renderBattleModal() {
                   .join("")}
                 <button class="battle-btn voltar-btn" onclick="battleAction('voltar')">‹ Voltar</button>
               </div>`
+            : b.showHabilidadeMenu
+            ? `<div class="battle-actions battle-item-menu">
+                ${(() => {
+                  const ativas = getHabilidadesClasse().filter((hab) => hab.tipo === "ativa" && state.hero.nivel >= hab.nivelDesbloqueio);
+                  if (!ativas.length) return '<div class="empty-note">Nenhuma habilidade ativa desbloqueada ainda.</div>';
+                  return ativas
+                    .map((hab) => {
+                      const cd = (state.hero.cooldownsHabilidade && state.hero.cooldownsHabilidade[hab.id]) || 0;
+                      const semMana = h.mana < (hab.efeito.custoMana || 0);
+                      if (cd > 0) {
+                        return `<button class="battle-btn item-btn battle-btn-bloqueado" disabled>${hab.emoji} ${hab.nome} ⏳ <small>recarregando (${cd}t)</small></button>`;
+                      }
+                      return `<button class="battle-btn item-btn ${semMana ? "battle-btn-fraco" : ""}" onclick="usarHabilidade('${hab.id}')">${hab.emoji} ${hab.nome} <small>(${hab.efeito.custoMana || 0} mana)</small></button>`;
+                    })
+                    .join("");
+                })()}
+                <button class="battle-btn voltar-btn" onclick="battleAction('voltar')">‹ Voltar</button>
+              </div>`
             : `<div class="battle-actions">
                 <button class="battle-btn atacar" onclick="battleAction('atacar')">⚔ Atacar</button>
                 <button class="battle-btn defender" onclick="battleAction('defender')">🛡 Defender</button>
                 <button class="battle-btn magia" onclick="battleAction('magia')">🔮 Magias</button>
+                <button class="battle-btn habilidade" onclick="battleAction('habilidade')">⭐ Habilidades</button>
                 <button class="battle-btn item" onclick="battleAction('item')">🧪 Usar Item</button>
                 <button class="battle-btn fugir" onclick="battleAction('fugir')">🏃 Fugir</button>
                 <button class="battle-btn subornar ${h.ouro < custoSuborno(b.inimigo) ? "battle-btn-fraco" : ""}" onclick="battleAction('subornar')">💰 Subornar <small>(${custoSuborno(b.inimigo)})</small></button>

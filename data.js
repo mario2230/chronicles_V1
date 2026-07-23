@@ -12,15 +12,84 @@
 
 const GAME_DATA = {
   "spells": [
-    { "id": "faisca_arcana", "nome": "Faísca Arcana", "emoji": "✨", "escola": null, "danoBase": 8, "custoMana": 8 },
-    { "id": "bola_de_fogo", "nome": "Bola de Fogo", "emoji": "🔥", "escola": "piromancia", "danoBase": 14, "custoMana": 14 },
-    { "id": "toque_sombrio", "nome": "Toque Sombrio", "emoji": "☠", "escola": "necromancia", "danoBase": 12, "custoMana": 12, "drenoVida": 0.4 },
-    { "id": "lamina_ilusoria", "nome": "Lâmina Ilusória", "emoji": "🌙", "escola": "ilusionismo", "danoBase": 11, "custoMana": 11 },
-    { "id": "raio_encadeado", "nome": "Raio Encadeado", "emoji": "⚡", "escola": "elementalismo", "danoBase": 17, "custoMana": 17 },
-    { "id": "inferno_pessoal", "nome": "Inferno Pessoal", "emoji": "🔥", "escola": "piromancia", "danoBase": 25, "custoMana": 22, "requerRank": 3 },
-    { "id": "drenar_alma", "nome": "Drenar Alma", "emoji": "💀", "escola": "necromancia", "danoBase": 20, "custoMana": 20, "drenoVida": 0.6, "requerRank": 3 },
-    { "id": "espelhos_multiplos", "nome": "Espelhos Múltiplos", "emoji": "🪞", "escola": "ilusionismo", "danoBase": 22, "custoMana": 19, "requerRank": 3 },
-    { "id": "tempestade_arcana", "nome": "Tempestade Arcana", "emoji": "⛈", "escola": "elementalismo", "danoBase": 28, "custoMana": 26, "requerRank": 3 }
+    {
+      "id": "faisca_arcana",
+      "nome": "Faísca Arcana",
+      "emoji": "✨",
+      "escola": null,
+      "danoBase": 8,
+      "custoMana": 8
+    },
+    {
+      "id": "bola_de_fogo",
+      "nome": "Bola de Fogo",
+      "emoji": "🔥",
+      "escola": "piromancia",
+      "danoBase": 14,
+      "custoMana": 14
+    },
+    {
+      "id": "toque_sombrio",
+      "nome": "Toque Sombrio",
+      "emoji": "☠",
+      "escola": "necromancia",
+      "danoBase": 12,
+      "custoMana": 12,
+      "drenoVida": 0.4
+    },
+    {
+      "id": "lamina_ilusoria",
+      "nome": "Lâmina Ilusória",
+      "emoji": "🌙",
+      "escola": "ilusionismo",
+      "danoBase": 11,
+      "custoMana": 11
+    },
+    {
+      "id": "raio_encadeado",
+      "nome": "Raio Encadeado",
+      "emoji": "⚡",
+      "escola": "elementalismo",
+      "danoBase": 17,
+      "custoMana": 17
+    },
+    {
+      "id": "inferno_pessoal",
+      "nome": "Inferno Pessoal",
+      "emoji": "🔥",
+      "escola": "piromancia",
+      "danoBase": 25,
+      "custoMana": 22,
+      "requerRank": 3
+    },
+    {
+      "id": "drenar_alma",
+      "nome": "Drenar Alma",
+      "emoji": "💀",
+      "escola": "necromancia",
+      "danoBase": 20,
+      "custoMana": 20,
+      "drenoVida": 0.6,
+      "requerRank": 3
+    },
+    {
+      "id": "espelhos_multiplos",
+      "nome": "Espelhos Múltiplos",
+      "emoji": "🪞",
+      "escola": "ilusionismo",
+      "danoBase": 22,
+      "custoMana": 19,
+      "requerRank": 3
+    },
+    {
+      "id": "tempestade_arcana",
+      "nome": "Tempestade Arcana",
+      "emoji": "⛈",
+      "escola": "elementalismo",
+      "danoBase": 28,
+      "custoMana": 26,
+      "requerRank": 3
+    }
   ],
   "classes": [
     {
@@ -62,8 +131,14 @@ const GAME_DATA = {
           "efeito": {
             "tipo": "passiva_peso_carta",
             "boosts": [
-              { "tipo": "misterio", "mult": 1.45 },
-              { "tipo": "artefato", "mult": 1.3 }
+              {
+                "tipo": "misterio",
+                "mult": 1.45
+              },
+              {
+                "tipo": "artefato",
+                "mult": 1.3
+              }
             ]
           }
         },
@@ -89,7 +164,13 @@ const GAME_DATA = {
           "descricao": "Canaliza energia bruta pelas próprias veias, aumentando temporariamente sua força ofensiva.",
           "efeito": {
             "tipo": "ativa_buff",
-            "buffs": [{ "stat": "ataque", "valor": 4, "turnos": 3 }],
+            "buffs": [
+              {
+                "stat": "ataque",
+                "valor": 4,
+                "turnos": 3
+              }
+            ],
             "custoMana": 10,
             "cooldown": 4
           }
@@ -124,12 +205,14 @@ const GAME_DATA = {
               "mana": 3
             },
             "cardBoosts": [
-              { "tipo": "escola", "mult": 1.25 }
+              {
+                "tipo": "escola",
+                "mult": 1.25
+              }
             ],
             "maxStacks": 12
           }
-        },
-        
+        }
       ]
     },
     {
@@ -171,8 +254,14 @@ const GAME_DATA = {
           "efeito": {
             "tipo": "passiva_peso_carta",
             "boosts": [
-              { "tipo": "local", "mult": 1.35 },
-              { "tipo": "chefe", "mult": 1.2 }
+              {
+                "tipo": "local",
+                "mult": 1.35
+              },
+              {
+                "tipo": "chefe",
+                "mult": 1.2
+              }
             ]
           }
         },
@@ -215,7 +304,18 @@ const GAME_DATA = {
           "descricao": "Entra em um estado de fúria que aumenta força e velocidade por alguns turnos.",
           "efeito": {
             "tipo": "ativa_buff",
-            "buffs": [{ "stat": "ataque", "valor": 6, "turnos": 3 }, { "stat": "velocidade", "valor": 2, "turnos": 3 }],
+            "buffs": [
+              {
+                "stat": "ataque",
+                "valor": 6,
+                "turnos": 3
+              },
+              {
+                "stat": "velocidade",
+                "valor": 2,
+                "turnos": 3
+              }
+            ],
             "custoMana": 12,
             "cooldown": 5
           }
@@ -237,8 +337,7 @@ const GAME_DATA = {
             },
             "maxStacks": 10
           }
-        },
-        
+        }
       ]
     },
     {
@@ -281,8 +380,14 @@ const GAME_DATA = {
           "efeito": {
             "tipo": "passiva_peso_carta",
             "boosts": [
-              { "tipo": "chefe", "mult": 1.4 },
-              { "tipo": "local", "mult": 1.2 }
+              {
+                "tipo": "chefe",
+                "mult": 1.4
+              },
+              {
+                "tipo": "local",
+                "mult": 1.2
+              }
             ]
           }
         },
@@ -345,8 +450,7 @@ const GAME_DATA = {
             },
             "maxStacks": 8
           }
-        },
-        
+        }
       ]
     },
     {
@@ -388,8 +492,14 @@ const GAME_DATA = {
           "efeito": {
             "tipo": "passiva_peso_carta",
             "boosts": [
-              { "tipo": "artefato", "mult": 1.4 },
-              { "tipo": "escola", "mult": 1.3 }
+              {
+                "tipo": "artefato",
+                "mult": 1.4
+              },
+              {
+                "tipo": "escola",
+                "mult": 1.3
+              }
             ]
           }
         },
@@ -415,7 +525,7 @@ const GAME_DATA = {
           "descricao": "Ataca um ponto vulnerável que só quem se move nas sombras consegue enxergar.",
           "efeito": {
             "tipo": "ativa_dano_combate",
-            "multiplicador": 2.0,
+            "multiplicador": 2,
             "custoMana": 9,
             "cooldown": 3
           }
@@ -450,12 +560,14 @@ const GAME_DATA = {
               "mana": 1
             },
             "cardBoosts": [
-              { "tipo": "artefato", "mult": 1.15 }
+              {
+                "tipo": "artefato",
+                "mult": 1.15
+              }
             ],
             "maxStacks": 12
           }
-        },
-        
+        }
       ]
     },
     {
@@ -495,8 +607,14 @@ const GAME_DATA = {
           "efeito": {
             "tipo": "passiva_peso_carta",
             "boosts": [
-              { "tipo": "local", "mult": 1.3 },
-              { "tipo": "evento", "mult": 1.25 }
+              {
+                "tipo": "local",
+                "mult": 1.3
+              },
+              {
+                "tipo": "evento",
+                "mult": 1.25
+              }
             ]
           }
         },
@@ -540,7 +658,18 @@ const GAME_DATA = {
           "descricao": "Ergue uma barreira sagrada que reforça defesa e vitalidade por alguns turnos.",
           "efeito": {
             "tipo": "ativa_buff",
-            "buffs": [{ "stat": "defesa", "valor": 6, "turnos": 4 }, { "stat": "vidaMax", "valor": 10, "turnos": 4 }],
+            "buffs": [
+              {
+                "stat": "defesa",
+                "valor": 6,
+                "turnos": 4
+              },
+              {
+                "stat": "vidaMax",
+                "valor": 10,
+                "turnos": 4
+              }
+            ],
             "custoMana": 14,
             "cooldown": 5
           }
@@ -563,8 +692,7 @@ const GAME_DATA = {
             },
             "maxStacks": 8
           }
-        },
-        
+        }
       ]
     },
     {
@@ -659,7 +787,7 @@ const GAME_DATA = {
             "custoMana": 16,
             "danoMultiplicador": 1.4,
             "cooldown": 5
-          },
+          }
         },
         {
           "id": "necromante_4",
@@ -671,12 +799,17 @@ const GAME_DATA = {
           "efeito": {
             "tipo": "passiva_peso_carta",
             "boosts": [
-              { "tipo": "chefe", "mult": 1.5 },
-              { "tipo": "misterio", "mult": 1.35 }
+              {
+                "tipo": "chefe",
+                "mult": 1.5
+              },
+              {
+                "tipo": "misterio",
+                "mult": 1.35
+              }
             ]
           }
-        },
-        
+        }
       ]
     },
     {
@@ -732,9 +865,18 @@ const GAME_DATA = {
           "efeito": {
             "tipo": "passiva_peso_carta",
             "boosts": [
-              { "tipo": "evento", "mult": 1.7 },
-              { "tipo": "misterio", "mult": 1.45 },
-              { "tipo": "local", "mult": 1.4 }
+              {
+                "tipo": "evento",
+                "mult": 1.7
+              },
+              {
+                "tipo": "misterio",
+                "mult": 1.45
+              },
+              {
+                "tipo": "local",
+                "mult": 1.4
+              }
             ]
           }
         },
@@ -784,8 +926,7 @@ const GAME_DATA = {
             },
             "maxStacks": 6
           }
-        },
-        
+        }
       ]
     },
     {
@@ -891,12 +1032,14 @@ const GAME_DATA = {
               "mana": 2
             },
             "cardBoosts": [
-              { "tipo": "local", "mult": 1.2 }
+              {
+                "tipo": "local",
+                "mult": 1.2
+              }
             ],
             "maxStacks": 8
           }
-        },
-        
+        }
       ]
     },
     {
@@ -961,7 +1104,7 @@ const GAME_DATA = {
             "max": 7
           }
         },
-         {
+        {
           "id": "monge_5",
           "nome": "Punho Relâmpago",
           "emoji": "👊",
@@ -1008,8 +1151,7 @@ const GAME_DATA = {
             },
             "maxStacks": 4
           }
-        },
-       
+        }
       ]
     }
   ],
@@ -1176,7 +1318,9 @@ const GAME_DATA = {
         "estudar_piromancia",
         "estudar_necromancia",
         "estudar_ilusionismo",
-        "estudar_elementalismo"
+        "estudar_elementalismo",
+        "fonte_de_mana",
+        "cristal_de_foco"
       ]
     },
     {
@@ -2274,7 +2418,10 @@ const GAME_DATA = {
         "gigante_pedra",
         "escola_elementalismo",
         "arquearia_caca",
-        "vale_cristalino_entrada"
+        "vale_cristalino_entrada",
+        "fonte_de_mana",
+        "cristal_de_foco",
+        "po_de_estrelas"
       ]
     },
     {
@@ -2357,7 +2504,9 @@ const GAME_DATA = {
         "abismo_fenda",
         "morcego_vampiro",
         "morcego_rei",
-        "cristaleira"
+        "cristaleira",
+        "fonte_de_mana",
+        "cristal_de_foco"
       ]
     },
     {
@@ -2689,7 +2838,10 @@ const GAME_DATA = {
         "cronica_dos_reis",
         "orin_ensinamento",
         "zelote_fanatico",
-        "reliquia_esquecida_templo"
+        "reliquia_esquecida_templo",
+        "fonte_de_mana",
+        "cristal_de_foco",
+        "santuario_arcano"
       ]
     },
     {
@@ -2960,7 +3112,8 @@ const GAME_DATA = {
         "vessa_encontro",
         "contrabandista",
         "senhor_das_areias",
-        "persuasao_mercador"
+        "persuasao_mercador",
+        "po_de_estrelas"
       ]
     },
     {
@@ -4325,7 +4478,8 @@ const GAME_DATA = {
         "talisma_da_capital",
         "arauto_capital",
         "juramento_capital",
-        "guarda_corrompido"
+        "guarda_corrompido",
+        "santuario_arcano"
       ]
     },
     {
@@ -5724,7 +5878,9 @@ const GAME_DATA = {
         "Um piromante itinerante se oferece para lhe ensinar os fundamentos das chamas — avisando, com um sorriso torto, que você vai se queimar algumas vezes no caminho."
       ],
       "cor": "vermelho",
-      "condicao": { "tagAusente": "escola_piromancia" },
+      "condicao": {
+        "tagAusente": "escola_piromancia"
+      },
       "efeito": {
         "tipo": "escola",
         "escolaId": "piromancia",
@@ -5740,15 +5896,28 @@ const GAME_DATA = {
       "tipo": "escola",
       "raridade": "incomum",
       "weight": 14,
-      "regiaoOrigem": ["templo", "ruinas"],
+      "regiaoOrigem": [
+        "templo",
+        "ruinas"
+      ],
       "minNivel": 3,
-      "condicao": { "tag": "escola_piromancia", "minimo": 1 },
+      "condicao": {
+        "tag": "escola_piromancia",
+        "minimo": 1
+      },
       "historia": [
         "Você repete os gestos que o piromante ensinou até as chamas responderem sem hesitar.",
         "Cada tentativa queima um pouco menos e acerta um pouco mais o alvo."
       ],
       "cor": "vermelho",
-      "efeito": { "tipo": "estudarEscola", "escolaId": "piromancia", "relacaoGanho": [8, 16] }
+      "efeito": {
+        "tipo": "estudarEscola",
+        "escolaId": "piromancia",
+        "relacaoGanho": [
+          8,
+          16
+        ]
+      }
     },
     {
       "id": "escola_necromancia",
@@ -5767,7 +5936,9 @@ const GAME_DATA = {
         "Entre os túmulos, uma voz sem corpo ensina a ouvir os mortos — e, vez ou outra, a se recusar a permanecer quieta diante deles."
       ],
       "cor": "roxo",
-      "condicao": { "tagAusente": "escola_necromancia" },
+      "condicao": {
+        "tagAusente": "escola_necromancia"
+      },
       "efeito": {
         "tipo": "escola",
         "escolaId": "necromancia",
@@ -5783,15 +5954,28 @@ const GAME_DATA = {
       "tipo": "escola",
       "raridade": "incomum",
       "weight": 14,
-      "regiaoOrigem": ["cemiterio", "pantano"],
+      "regiaoOrigem": [
+        "cemiterio",
+        "pantano"
+      ],
       "minNivel": 3,
-      "condicao": { "tag": "escola_necromancia", "minimo": 1 },
+      "condicao": {
+        "tag": "escola_necromancia",
+        "minimo": 1
+      },
       "historia": [
         "As vozes dos mortos ficam mais claras a cada vez que você se permite escutar.",
         "Você aprende a distinguir um sussurro de aviso de um de convite."
       ],
       "cor": "roxo",
-      "efeito": { "tipo": "estudarEscola", "escolaId": "necromancia", "relacaoGanho": [8, 16] }
+      "efeito": {
+        "tipo": "estudarEscola",
+        "escolaId": "necromancia",
+        "relacaoGanho": [
+          8,
+          16
+        ]
+      }
     },
     {
       "id": "escola_ilusionismo",
@@ -5810,7 +5994,9 @@ const GAME_DATA = {
         "Uma figura encapuzada desaparece e reaparece três vezes seguidas antes de aceitar lhe ensinar a arte de enganar os olhos."
       ],
       "cor": "azul",
-      "condicao": { "tagAusente": "escola_ilusionismo" },
+      "condicao": {
+        "tagAusente": "escola_ilusionismo"
+      },
       "efeito": {
         "tipo": "escola",
         "escolaId": "ilusionismo",
@@ -5826,15 +6012,28 @@ const GAME_DATA = {
       "tipo": "escola",
       "raridade": "incomum",
       "weight": 14,
-      "regiaoOrigem": ["floresta", "caverna"],
+      "regiaoOrigem": [
+        "floresta",
+        "caverna"
+      ],
       "minNivel": 3,
-      "condicao": { "tag": "escola_ilusionismo", "minimo": 1 },
+      "condicao": {
+        "tag": "escola_ilusionismo",
+        "minimo": 1
+      },
       "historia": [
         "Você treina até seu próprio reflexo hesitar em segui-lo.",
         "A ilusão perfeita não engana o inimigo — faz o inimigo duvidar de si mesmo."
       ],
       "cor": "azul",
-      "efeito": { "tipo": "estudarEscola", "escolaId": "ilusionismo", "relacaoGanho": [8, 16] }
+      "efeito": {
+        "tipo": "estudarEscola",
+        "escolaId": "ilusionismo",
+        "relacaoGanho": [
+          8,
+          16
+        ]
+      }
     },
     {
       "id": "escola_elementalismo",
@@ -5853,7 +6052,9 @@ const GAME_DATA = {
         "Um velho elementalista canaliza um raio pela própria mão só para provar que os elementos podem ser domados por quem tem paciência."
       ],
       "cor": "azul",
-      "condicao": { "tagAusente": "escola_elementalismo" },
+      "condicao": {
+        "tagAusente": "escola_elementalismo"
+      },
       "efeito": {
         "tipo": "escola",
         "escolaId": "elementalismo",
@@ -5869,15 +6070,28 @@ const GAME_DATA = {
       "tipo": "escola",
       "raridade": "incomum",
       "weight": 14,
-      "regiaoOrigem": ["montanha", "deserto"],
+      "regiaoOrigem": [
+        "montanha",
+        "deserto"
+      ],
       "minNivel": 3,
-      "condicao": { "tag": "escola_elementalismo", "minimo": 1 },
+      "condicao": {
+        "tag": "escola_elementalismo",
+        "minimo": 1
+      },
       "historia": [
         "Você canaliza um pouco mais de energia a cada tentativa, sem se queimar dessa vez.",
         "Os elementos ainda resistem, mas cada vez menos."
       ],
       "cor": "azul",
-      "efeito": { "tipo": "estudarEscola", "escolaId": "elementalismo", "relacaoGanho": [8, 16] }
+      "efeito": {
+        "tipo": "estudarEscola",
+        "escolaId": "elementalismo",
+        "relacaoGanho": [
+          8,
+          16
+        ]
+      }
     },
     {
       "id": "cajado_piromante",
@@ -10825,6 +11039,121 @@ const GAME_DATA = {
             "tag": "estrategia_exploradora"
           }
         ]
+      }
+    },
+    {
+      "id": "fonte_de_mana",
+      "emoji": "💠",
+      "nome": "Fonte de Mana",
+      "tipo": "misterio",
+      "raridade": "rara",
+      "weight": 12,
+      "regiaoOrigem": [
+        "templo",
+        "caverna",
+        "ruinas",
+        "reino_congelado"
+      ],
+      "minNivel": 2,
+      "historia": [
+        "Uma fonte de água cristalina brilha com uma luz azulada tênue.",
+        "Ao aproximar a mão da água, você sente sua mente se aclarar instantaneamente."
+      ],
+      "cor": "roxo",
+      "efeito": {
+        "tipo": "misterio",
+        "resultados": [
+          {
+            "chance": 55,
+            "mana": 30
+          },
+          {
+            "chance": 30,
+            "mana": 18,
+            "exp": 6
+          },
+          {
+            "chance": 15,
+            "vida": 6
+          }
+        ]
+      }
+    },
+    {
+      "id": "cristal_de_foco",
+      "emoji": "🔷",
+      "nome": "Cristal de Foco",
+      "tipo": "item",
+      "raridade": "incomum",
+      "weight": 20,
+      "regiaoOrigem": [
+        "aldeia",
+        "montanha",
+        "caverna",
+        "templo"
+      ],
+      "minNivel": 1,
+      "historia": [
+        "O cristal pulsa suavemente ao ser segurado, alinhando seus pensamentos.",
+        "Uma clareza repentina toma conta da sua mente."
+      ],
+      "cor": "amarelo",
+      "efeito": {
+        "tipo": "item",
+        "slot": "consumivel",
+        "cura": 0,
+        "mana": 28,
+        "nomeItem": "Cristal de Foco"
+      }
+    },
+    {
+      "id": "po_de_estrelas",
+      "emoji": "✨",
+      "nome": "Pó de Estrelas",
+      "tipo": "item",
+      "raridade": "rara",
+      "weight": 12,
+      "regiaoOrigem": [
+        "montanha",
+        "deserto",
+        "reino_congelado"
+      ],
+      "minNivel": 3,
+      "historia": [
+        "O pó reluz mesmo sem luz nenhuma por perto — resquício de algo caído do céu.",
+        "Ao tocar a pele, ele se dissolve num calor mágico reconfortante."
+      ],
+      "cor": "amarelo",
+      "efeito": {
+        "tipo": "item",
+        "slot": "consumivel",
+        "cura": 10,
+        "mana": 22,
+        "nomeItem": "Pó de Estrelas"
+      }
+    },
+    {
+      "id": "santuario_arcano",
+      "emoji": "🔮",
+      "nome": "Santuário Arcano",
+      "tipo": "local",
+      "raridade": "epica",
+      "weight": 8,
+      "regiaoOrigem": [
+        "templo",
+        "capital",
+        "reino_congelado"
+      ],
+      "minNivel": 4,
+      "historia": [
+        "Runas antigas cobrem cada centímetro das paredes deste pequeno santuário esquecido.",
+        "O ar aqui vibra de um jeito que só quem já usou magia consegue perceber."
+      ],
+      "cor": "roxo",
+      "efeito": {
+        "tipo": "recompensa_leve",
+        "mana": 35,
+        "exp": 6
       }
     }
   ],
