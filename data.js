@@ -2415,7 +2415,7 @@ const GAME_DATA = {
       "id": "sacerdote_caido",
       "emoji": "👻",
       "nome": "Sacerdote Caído",
-      "tipo": "inimigo",
+      "tipo": "chefe",
       "raridade": "rara",
       "weight": 18,
       "regiaoOrigem": [
@@ -2430,9 +2430,9 @@ const GAME_DATA = {
       "cor": "vermelho",
       "efeito": {
         "tipo": "combate",
-        "vidaInimigo": 38,
-        "ataqueInimigo": 9,
-        "defesaInimigo": 3,
+        "vidaInimigo": 338,
+        "ataqueInimigo": 15,
+        "defesaInimigo": 13,
         "ouroDrop": [
           10,
           18
@@ -2874,7 +2874,7 @@ const GAME_DATA = {
       "id": "morcego_vampiro",
       "emoji": "🦇",
       "nome": "Morcego Vampiro",
-      "tipo": "inimigo",
+      "tipo": "chefe",
       "raridade": "comum",
       "weight": 65,
       "regiaoOrigem": [
@@ -2889,8 +2889,8 @@ const GAME_DATA = {
       "cor": "vermelho",
       "efeito": {
         "tipo": "combate",
-        "vidaInimigo": 20,
-        "ataqueInimigo": 7,
+        "vidaInimigo": 220,
+        "ataqueInimigo": 27,
         "defesaInimigo": 1,
         "ouroDrop": [
           2,
@@ -4877,7 +4877,7 @@ const GAME_DATA = {
       "nome": "Lâmina do Juramento Sombrio",
       "tipo": "artefato",
       "raridade": "lendaria",
-      "weight": 0,
+      "weight": 1,
       "oculta": true,
       "regiaoOrigem": [
         "ruinas",
@@ -4991,7 +4991,7 @@ const GAME_DATA = {
       "id": "necromante_iniciante",
       "emoji": "☠",
       "nome": "Necromante Iniciante",
-      "tipo": "inimigo",
+      "tipo": "chefe",
       "raridade": "rara",
       "weight": 16,
       "regiaoOrigem": [
@@ -5006,9 +5006,9 @@ const GAME_DATA = {
       "cor": "vermelho",
       "efeito": {
         "tipo": "combate",
-        "vidaInimigo": 40,
-        "ataqueInimigo": 10,
-        "defesaInimigo": 4,
+        "vidaInimigo": 110,
+        "ataqueInimigo": 50,
+        "defesaInimigo": 1,
         "ouroDrop": [
           10,
           20
@@ -6269,7 +6269,7 @@ const GAME_DATA = {
       "id": "lobo_alfa",
       "emoji": "🐺",
       "nome": "Lobo Alfa",
-      "tipo": "inimigo",
+      "tipo": "chefe",
       "raridade": "rara",
       "weight": 16,
       "regiaoOrigem": [
@@ -6283,9 +6283,9 @@ const GAME_DATA = {
       "cor": "vermelho",
       "efeito": {
         "tipo": "combate",
-        "vidaInimigo": 36,
-        "ataqueInimigo": 9,
-        "defesaInimigo": 3,
+        "vidaInimigo": 76,
+        "ataqueInimigo": 20,
+        "defesaInimigo": 9,
         "ouroDrop": [
           7,
           15
@@ -6299,7 +6299,7 @@ const GAME_DATA = {
       "id": "espectro_da_torre",
       "emoji": "🏚",
       "nome": "Espectro da Torre",
-      "tipo": "inimigo",
+      "tipo": "chefe",
       "raridade": "rara",
       "weight": 12,
       "regiaoOrigem": [
@@ -6313,8 +6313,8 @@ const GAME_DATA = {
       "cor": "vermelho",
       "efeito": {
         "tipo": "combate",
-        "vidaInimigo": 62,
-        "ataqueInimigo": 13,
+        "vidaInimigo": 202,
+        "ataqueInimigo": 25,
         "defesaInimigo": 6,
         "ouroDrop": [
           16,
@@ -6538,7 +6538,7 @@ const GAME_DATA = {
       "id": "goblin_xama",
       "emoji": "🔮",
       "nome": "Xamã Goblin",
-      "tipo": "inimigo",
+      "tipo": "chefe",
       "raridade": "rara",
       "weight": 14,
       "elite": true,
@@ -6555,9 +6555,9 @@ const GAME_DATA = {
       "cor": "vermelho",
       "efeito": {
         "tipo": "combate",
-        "vidaInimigo": 30,
-        "ataqueInimigo": 9,
-        "defesaInimigo": 3,
+        "vidaInimigo": 230,
+        "ataqueInimigo": 19,
+        "defesaInimigo": 10,
         "ouroDrop": [
           8,
           16
@@ -6570,7 +6570,7 @@ const GAME_DATA = {
       "id": "javali_ancestral",
       "emoji": "🐗",
       "nome": "Javali Ancestral",
-      "tipo": "inimigo",
+      "tipo": "chefe",
       "raridade": "rara",
       "weight": 14,
       "elite": true,
@@ -6586,9 +6586,9 @@ const GAME_DATA = {
       "cor": "vermelho",
       "efeito": {
         "tipo": "combate",
-        "vidaInimigo": 42,
-        "ataqueInimigo": 11,
-        "defesaInimigo": 4,
+        "vidaInimigo": 242,
+        "ataqueInimigo": 21,
+        "defesaInimigo": 14,
         "ouroDrop": [
           9,
           18
@@ -7393,7 +7393,7 @@ const GAME_DATA = {
       "id": "golem_granito",
       "emoji": "🗿",
       "nome": "Golem de Granito",
-      "tipo": "inimigo",
+      "tipo": "chefe",
       "raridade": "incomum",
       "weight": 20,
       "regiaoOrigem": [
@@ -7409,9 +7409,9 @@ const GAME_DATA = {
       "cor": "cinza",
       "efeito": {
         "tipo": "combate",
-        "vidaInimigo": 80,
-        "ataqueInimigo": 8,
-        "defesaInimigo": 6,
+        "vidaInimigo": 180,
+        "ataqueInimigo": 28,
+        "defesaInimigo": 4,
         "ouroDrop": [
           5,
           10
@@ -7423,7 +7423,7 @@ const GAME_DATA = {
       "id": "espectro_lamentoso",
       "emoji": "👻",
       "nome": "Espectro Lamentoso",
-      "tipo": "inimigo",
+      "tipo": "chefe",
       "raridade": "rara",
       "weight": 15,
       "regiaoOrigem": [
@@ -7438,8 +7438,8 @@ const GAME_DATA = {
       "cor": "roxo",
       "efeito": {
         "tipo": "combate",
-        "vidaInimigo": 30,
-        "ataqueInimigo": 16,
+        "vidaInimigo": 230,
+        "ataqueInimigo": 14,
         "defesaInimigo": 8,
         "ouroDrop": [
           0,
@@ -7481,7 +7481,7 @@ const GAME_DATA = {
       "id": "cavaleiro_sem_cabeca",
       "emoji": "🎃",
       "nome": "Cavaleiro Decapitado",
-      "tipo": "inimigo",
+      "tipo": "chefe",
       "raridade": "rara",
       "weight": 10,
       "regiaoOrigem": [
@@ -7496,9 +7496,9 @@ const GAME_DATA = {
       "cor": "vermelho",
       "efeito": {
         "tipo": "combate",
-        "vidaInimigo": 65,
-        "ataqueInimigo": 15,
-        "defesaInimigo": 4,
+        "vidaInimigo": 165,
+        "ataqueInimigo": 26,
+        "defesaInimigo": 14,
         "ouroDrop": [
           15,
           30
@@ -8965,7 +8965,7 @@ const GAME_DATA = {
       "id": "abissal_rastejante",
       "emoji": "🦑",
       "nome": "Rastejante Abissal",
-      "tipo": "inimigo",
+      "tipo": "chefe",
       "raridade": "rara",
       "weight": 18,
       "regiaoOrigem": [
@@ -8979,9 +8979,9 @@ const GAME_DATA = {
       "cor": "roxo",
       "efeito": {
         "tipo": "combate",
-        "vidaInimigo": 105,
-        "ataqueInimigo": 20,
-        "defesaInimigo": 9,
+        "vidaInimigo": 205,
+        "ataqueInimigo": 25,
+        "defesaInimigo": 12,
         "ouroDrop": [
           20,
           35
