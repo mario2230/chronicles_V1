@@ -105,16 +105,22 @@ function rndInt(min, max) { return Math.floor(rnd() * (max - min + 1)) + min; }
 function pickRandom(arr) { return arr[Math.floor(rnd() * arr.length)]; }
 
 /* ============================================================
-   NARRADOR — pequenas vinhetas de texto que aparecem por cima da
-   tela em momentos marcantes (nova região, lugar raro encontrado).
-   A ideia é reforçar a sensação de "isto é a MINHA história", indo
-   além do diário — o diário registra, o narrador comenta.
+   NARRADOR — um recurso ativo que comenta a jornada em cima da tela
+   sempre que algo com peso narrativo acontece: entrar numa região nova,
+   achar um lugar raro, tomar uma decisão, encontrar alguém, resolver um
+   mistério ou derrubar um chefe. As linhas NUNCA são texto solto: elas
+   sempre usam o nome/emoji da carta que o jogador acabou de pegar (e, com
+   `state.narradorMemoria`, também o evento marcante anterior), então o
+   narrador está literalmente escrevendo a história com o que foi jogado —
+   não comentando em genérico por cima. O Diário continua registrando
+   tudo em texto corrido; o narrador é o destaque visual dos momentos que
+   merecem virar página.
    ============================================================ */
 const NARRADOR_REGIAO_TEMPLATES = [
-  (h, l) => `Assim começa mais um capítulo da lenda de ${h}: os primeiros passos em ${l}.`,
-  (h, l) => `Nenhum mapa preparou ${h} para o que encontraria em ${l}.`,
+  (h, l, mem) => (mem ? `Depois de ${mem}, ${h} finalmente chega em ${l}.` : `Assim começa mais um capítulo da lenda de ${h}: os primeiros passos em ${l}.`),
+  (h, l, mem) => (mem ? `${mem} fica para trás. À frente, apenas ${l}.` : `Nenhum mapa preparou ${h} para o que encontraria em ${l}.`),
   (h, l) => `${l}. Um nome novo na história que ${h} está escrevendo.`,
-  (h, l) => `A jornada de ${h} ganha mais uma página: ${l} se abre diante dos seus olhos.`,
+  (h, l, mem) => (mem ? `Com ${mem} ainda fresco na memória, ${h} segue adiante — e ${l} se abre no horizonte.` : `A jornada de ${h} ganha mais uma página: ${l} se abre diante dos seus olhos.`),
   (h, l) => `Poucos ousariam seguir até aqui. ${h} apenas seguiu em frente — e ${l} finalmente se revela.`,
 ];
 const NARRADOR_LOCAL_TEMPLATES = [
@@ -123,8 +129,64 @@ const NARRADOR_LOCAL_TEMPLATES = [
   (h, l) => `${l}. Um lugar que parece ter esperado justamente por ${h}.`,
   (h, l) => `Há histórias que se contam sobre ${l}. A partir de hoje, a de ${h} também faz parte delas.`,
 ];
+const NARRADOR_ESCOLHA_TEMPLATES = [
+  (h, l, opc) => `${h} decide: ${opc}. ${l} não vai ser esquecido tão cedo.`,
+  (h, l, opc) => `Diante de ${l}, ${h} escolhe seu caminho — ${opc}.`,
+  (h, l, opc) => `${opc}. É essa a marca que ${h} deixa em ${l}.`,
+  (h, l, opc) => `Não existe volta depois disso: ${opc}, e ${l} vira parte da lenda de ${h}.`,
+];
+const NARRADOR_MISTERIO_TEMPLATES = [
+  (h, l) => `${l} guardava um segredo. ${h} agora carrega parte dele.`,
+  (h, l) => `Nem tudo em ${l} pode ser explicado — mas ${h} decidiu investigar mesmo assim.`,
+  (h, l) => `${h} mexe onde talvez não devesse: ${l} revela algo que poucos veem.`,
+  (h, l) => `Um mistério como ${l} muda quem o enfrenta. ${h} sente isso.`,
+];
+const NARRADOR_PERSONAGEM_TEMPLATES = [
+  (h, l) => `${h} cruza o caminho de ${l} pela primeira vez — o começo de algo que ainda vai se desenrolar.`,
+  (h, l) => `${l}. Um nome que ${h} não vai esquecer tão cedo.`,
+  (h, l) => `Nem toda jornada é feita sozinha. ${h} acaba de conhecer ${l}.`,
+];
+const NARRADOR_CHEFE_TEMPLATES = [
+  (h, l) => `${l} cai diante de ${h}. Uma batalha assim vira lenda sozinha.`,
+  (h, l) => `${h} encara ${l} e vence. Poucos podem dizer o mesmo.`,
+  (h, l) => `A queda de ${l} marca este capítulo da história de ${h} para sempre.`,
+];
+const NARRADOR_ARTEFATO_TEMPLATES = [
+  (h, l) => `${l}. Um achado assim não acontece todo dia — e agora pertence a ${h}.`,
+  (h, l) => `${h} ergue ${l} e sente o peso do que acabou de encontrar.`,
+  (h, l) => `Histórias vão se contar sobre como ${h} encontrou ${l}.`,
+];
 
+// guarda os últimos eventos marcantes para o narrador conseguir costurar
+// continuidade ("depois de X, agora Y") em vez de comentar cada carta como
+// se fosse a primeira da run.
+function getMemoriaNarradorAnterior() {
+  const mem = state.narradorMemoria;
+  if (!mem || !mem.length) return null;
+  return mem[mem.length - 1].label;
+}
+function registrarMemoriaNarrador(card) {
+  if (!state.narradorMemoria) state.narradorMemoria = [];
+  state.narradorMemoria.push({ label: `${card.emoji} ${card.nome}`, tipo: card.tipo, turno: state.turno });
+  if (state.narradorMemoria.length > 5) state.narradorMemoria.shift();
+}
+
+// como o narrador agora comenta bem mais eventos, duas vinhetas podem ser
+// disparadas em turnos consecutivos antes da primeira terminar de sumir.
+// Uma fila garante que elas sempre apareçam em sequência, nunca uma por
+// cima da outra. Um teto pequeno evita que a fila fique gigante e
+// "atrasada" se o jogador clicar muito rápido.
+let narradorFila = [];
+let narradorMostrando = false;
 function narrarMomento(texto) {
+  narradorFila.push(texto);
+  if (narradorFila.length > 3) narradorFila.shift();
+  processarFilaNarrador();
+}
+function processarFilaNarrador() {
+  if (narradorMostrando || !narradorFila.length) return;
+  narradorMostrando = true;
+  const texto = narradorFila.shift();
   const el = document.createElement("div");
   el.className = "narrator-vignette";
   el.innerHTML = `<div class="narrator-line">${texto}</div>`;
@@ -132,9 +194,14 @@ function narrarMomento(texto) {
   setTimeout(() => el.classList.add("show"), 20);
   setTimeout(() => {
     el.classList.remove("show");
-    setTimeout(() => el.remove(), 900);
+    setTimeout(() => {
+      el.remove();
+      narradorMostrando = false;
+      processarFilaNarrador();
+    }, 900);
   }, 4200);
 }
+
 
 // escolhe uma linha de história sem repetir até esgotar todas as variações
 // disponíveis para aquela carta — evita que o Diário pareça repetitivo depois
@@ -235,6 +302,7 @@ function novoEstado(classeId, seed) {
     activeEventTurnsLeft: 0,
     currentCards: [],
     seenLines: {},
+    narradorMemoria: [], // últimos eventos marcantes (para o narrador costurar continuidade)
     faseAnunciada: 1,
     battle: null,
     minigame: null,
@@ -1150,6 +1218,7 @@ function resolverPersonagem(card) {
   const ef = card.efeito;
   const personagem = DATA.characters && DATA.characters.find((p) => p.id === ef.personagemId);
   const nomeExibicao = personagem ? `${personagem.emoji} ${personagem.nome}` : card.nome;
+  const primeiraVez = getRelacao(ef.personagemId).lastSeenTurno == null;
 
   addStory(`${nomeExibicao} — ${pickStoryLine(card)}`, card.cor);
 
@@ -1167,6 +1236,9 @@ function resolverPersonagem(card) {
   if (ef.itemGarantido) {
     const itemCard = DATA.cards.find((c) => c.id === ef.itemGarantido);
     if (itemCard) obterItem(itemCard);
+  }
+  if (primeiraVez) {
+    narrarMomento(pickRandom(NARRADOR_PERSONAGEM_TEMPLATES)(state.hero.nome, nomeExibicao));
   }
 }
 
@@ -1598,7 +1670,7 @@ function resolveEscolha(card, opcao) {
   if (opcao.custoFragmentos) {
     if ((state.hero.fragmentos || 0) < opcao.custoFragmentos) {
       addStory(`Você precisa de ${opcao.custoFragmentos} fragmentos cristalinos para isso.`, "cinza");
-      return;
+      return null;
     }
     ajustarFragmentos(-opcao.custoFragmentos);
   }
@@ -1634,6 +1706,7 @@ function resolveEscolha(card, opcao) {
     state.hero.vida = 0;
     addStory(`💀 O peso dessa escolha foi fatal.`, "vermelho");
   }
+  return texto;
 }
 
 // Escolas de magia: compromisso permanente assumido uma única vez. Concede
@@ -1673,6 +1746,7 @@ function resolverEstudoEscola(card) {
 function resolveCard(card, alternativas, escolhaOpcao) {
   addTreeNode(card, alternativas);
   const ef = card.efeito;
+  const memAnterior = getMemoriaNarradorAnterior();
 
   if (card.tipo === "local" || ef.tipo === "mudar_regiao") {
     registrarCondicaoPassiva("local_visitado", 1);
@@ -1683,9 +1757,14 @@ function resolveCard(card, alternativas, escolhaOpcao) {
   }
 
   switch (ef.tipo) {
-    case "escolha":
-      resolveEscolha(card, escolhaOpcao);
+    case "escolha": {
+      const textoEscolha = resolveEscolha(card, escolhaOpcao);
+      if (textoEscolha) {
+        const rotuloOpcao = (escolhaOpcao && escolhaOpcao.label) || textoEscolha;
+        narrarMomento(pickRandom(NARRADOR_ESCOLHA_TEMPLATES)(state.hero.nome, `${card.emoji} ${card.nome}`, rotuloOpcao));
+      }
       break;
+    }
     case "mudar_regiao": {
       const eraRegiaoNova = !state.regioesVisitadas.has(ef.regiao);
       state.regiao = ef.regiao;
@@ -1699,7 +1778,7 @@ function resolveCard(card, alternativas, escolhaOpcao) {
         if (manaBonus > 0) {
           state.hero.mana = Math.min(getManaMax(), state.hero.mana + manaBonus);
         }
-        narrarMomento(pickRandom(NARRADOR_REGIAO_TEMPLATES)(state.hero.nome, `${metaRegiao.emoji} ${metaRegiao.nome}`));
+        narrarMomento(pickRandom(NARRADOR_REGIAO_TEMPLATES)(state.hero.nome, `${metaRegiao.emoji} ${metaRegiao.nome}`, memAnterior));
       } else if (card.tipo === "local" && ["epica", "lendaria", "mitica"].includes(card.raridade)) {
         narrarMomento(pickRandom(NARRADOR_LOCAL_TEMPLATES)(state.hero.nome, `${card.emoji} ${card.nome}`));
       }
@@ -1728,6 +1807,9 @@ function resolveCard(card, alternativas, escolhaOpcao) {
       }
       obterItem(card);
       addStory(pickStoryLine(card), card.cor);
+      if (["epica", "lendaria", "mitica"].includes(card.raridade) || card.tipo === "artefato") {
+        narrarMomento(pickRandom(NARRADOR_ARTEFATO_TEMPLATES)(state.hero.nome, `${card.emoji} ${card.nome}`));
+      }
       break;
     case "npc":
       if (ef.ouro) {
@@ -1747,6 +1829,7 @@ function resolveCard(card, alternativas, escolhaOpcao) {
       break;
     case "misterio":
       resolverMisterio(card);
+      narrarMomento(pickRandom(NARRADOR_MISTERIO_TEMPLATES)(state.hero.nome, `${card.emoji} ${card.nome}`));
       break;
     case "escola":
       resolverEscola(card);
@@ -1762,6 +1845,7 @@ function resolveCard(card, alternativas, escolhaOpcao) {
     card.desbloqueia.forEach((id) => state.availableCardIds.add(id));
   }
   if (ef.fragmentos) ajustarFragmentos(ef.fragmentos);
+  registrarMemoriaNarrador(card);
 }
 
 /* ============================================================
@@ -2156,6 +2240,10 @@ function finalizarBatalha() {
       if (it) obterItem(it);
     }
     registrarCondicaoPassiva("inimigo_derrotado", 1);
+    if (card.tipo === "chefe") {
+      narrarMomento(pickRandom(NARRADOR_CHEFE_TEMPLATES)(state.hero.nome, `${card.emoji} ${card.nome}`));
+    }
+    registrarMemoriaNarrador(card);
     // chefes com flagFinal não encerram mais a run sozinhos — o jogador
     // decide depois da vitória, em showFinalChoiceModal().
     if (card.efeito.flagFinal) venceuChefeFinal = true;
@@ -3461,6 +3549,7 @@ function loadGame() {
     state.availableCardIds = new Set(parsed.availableCardIds);
     state.rng = mulberry32(parsed.seed + parsed.turno); // continuidade aproximada
     if (!state.seenLines) state.seenLines = {};
+    if (!state.narradorMemoria) state.narradorMemoria = [];
     if (!state.faseAnunciada) state.faseAnunciada = currentFase().numero;
     if (!state.lastDrawnTurno) state.lastDrawnTurno = {};
     if (!state.vezesVista) {
