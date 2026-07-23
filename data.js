@@ -8661,7 +8661,7 @@ const GAME_DATA = {
       "id": "espectro_da_cripta",
       "emoji": "👻",
       "nome": "Espectro da Cripta",
-      "tipo": "inimigo",
+      "tipo": "chefe",
       "raridade": "incomum",
       "weight": 26,
       "regiaoOrigem": [
@@ -8675,7 +8675,7 @@ const GAME_DATA = {
       "cor": "cinza",
       "efeito": {
         "tipo": "combate",
-        "vidaInimigo": 105,
+        "vidaInimigo": 175,
         "ataqueInimigo": 20,
         "defesaInimigo": 9,
         "ouroDrop": [
@@ -8689,7 +8689,7 @@ const GAME_DATA = {
       "id": "cavaleiro_amaldicoado",
       "emoji": "🐴",
       "nome": "Cavaleiro Amaldiçoado",
-      "tipo": "inimigo",
+      "tipo": "chefe",
       "raridade": "rara",
       "weight": 10,
       "elite": true,
@@ -8704,9 +8704,9 @@ const GAME_DATA = {
       "cor": "vermelho",
       "efeito": {
         "tipo": "combate",
-        "vidaInimigo": 106,
-        "ataqueInimigo": 20,
-        "defesaInimigo": 9,
+        "vidaInimigo": 206,
+        "ataqueInimigo": 40,
+        "defesaInimigo": 14,
         "ouroDrop": [
           22,
           36
@@ -9329,7 +9329,7 @@ const GAME_DATA = {
       "id": "urso_pardo",
       "emoji": "🐻",
       "nome": "Urso Pardo",
-      "tipo": "inimigo",
+      "tipo": "chefe",
       "raridade": "incomum",
       "weight": 24,
       "regiaoOrigem": [
@@ -9344,7 +9344,7 @@ const GAME_DATA = {
       "cor": "vermelho",
       "efeito": {
         "tipo": "combate",
-        "vidaInimigo": 44,
+        "vidaInimigo": 74,
         "ataqueInimigo": 10,
         "defesaInimigo": 3,
         "ouroDrop": [
@@ -9547,7 +9547,7 @@ const GAME_DATA = {
       "id": "cavaleiro_ossuario",
       "emoji": "🦴",
       "nome": "Cavaleiro Ossuário",
-      "tipo": "inimigo",
+      "tipo": "chefe",
       "raridade": "rara",
       "weight": 14,
       "regiaoOrigem": [
@@ -9622,7 +9622,7 @@ const GAME_DATA = {
       "id": "astro_cego",
       "emoji": "👁️",
       "nome": "Astro Cego",
-      "tipo": "inimigo",
+      "tipo": "chefe",
       "raridade": "epica",
       "weight": 7,
       "regiaoOrigem": [
@@ -9635,9 +9635,9 @@ const GAME_DATA = {
       "cor": "roxo",
       "efeito": {
         "tipo": "combate",
-        "vidaInimigo": 92,
-        "ataqueInimigo": 19,
-        "defesaInimigo": 7,
+        "vidaInimigo": 145,
+        "ataqueInimigo": 39,
+        "defesaInimigo": 2,
         "ouroDrop": [
           25,
           42
@@ -9754,7 +9754,7 @@ const GAME_DATA = {
       "id": "sentinela_de_vidro",
       "emoji": "🗿",
       "nome": "Sentinela de Vidro",
-      "tipo": "inimigo",
+      "tipo": "chefe",
       "raridade": "incomum",
       "weight": 29,
       "regiaoOrigem": [
@@ -9767,8 +9767,8 @@ const GAME_DATA = {
       "cor": "vermelho",
       "efeito": {
         "tipo": "combate",
-        "vidaInimigo": 58,
-        "ataqueInimigo": 12,
+        "vidaInimigo": 78,
+        "ataqueInimigo": 14,
         "defesaInimigo": 5,
         "ouroDrop": [
           8,
@@ -10141,7 +10141,7 @@ const GAME_DATA = {
       "id": "aranha_do_trovao",
       "emoji": "🕷️",
       "nome": "Aranha do Trovão",
-      "tipo": "inimigo",
+      "tipo": "chefe",
       "raridade": "incomum",
       "weight": 25,
       "regiaoOrigem": [
@@ -10169,7 +10169,7 @@ const GAME_DATA = {
       "id": "corsario_das_bruma",
       "emoji": "🏴‍☠️",
       "nome": "Corsário das Brumas",
-      "tipo": "inimigo",
+      "tipo": "chefe",
       "raridade": "rara",
       "weight": 18,
       "regiaoOrigem": [
@@ -10182,7 +10182,7 @@ const GAME_DATA = {
       "cor": "vermelho",
       "efeito": {
         "tipo": "combate",
-        "vidaInimigo": 68,
+        "vidaInimigo": 128,
         "ataqueInimigo": 14,
         "defesaInimigo": 5,
         "ouroDrop": [
@@ -10197,7 +10197,7 @@ const GAME_DATA = {
       "id": "escorpiao_de_onix",
       "emoji": "🦂",
       "nome": "Escorpião de Ônix",
-      "tipo": "inimigo",
+      "tipo": "chefe",
       "raridade": "rara",
       "weight": 19,
       "regiaoOrigem": [
