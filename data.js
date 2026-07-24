@@ -11488,7 +11488,7 @@ const GAME_DATA = {
       "emoji": "💰",
       "titulo": "Midas Amaldiçoado",
       "condicao": "ouro",
-      "ouroMinimo": 760,
+      "ouroMinimo": 1600,
       "texto": "Sua ganância engoliu a própria alma. Você agora é uma estátua viva de ouro maciço, guardando um tesouro que não pode gastar."
     },
     {
