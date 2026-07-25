@@ -2225,7 +2225,8 @@ const GAME_DATA = {
         "nevoa_costeira",
         "pescador_costa",
         "resgate_naufragos",
-        "mare_baixa"
+        "mare_baixa",
+        "arquipelago_entrada"
       ]
     },
     {
@@ -2421,7 +2422,8 @@ const GAME_DATA = {
         "vale_cristalino_entrada",
         "fonte_de_mana",
         "cristal_de_foco",
-        "po_de_estrelas"
+        "po_de_estrelas",
+        "reino_congelado_portal"
       ]
     },
     {
@@ -4479,7 +4481,8 @@ const GAME_DATA = {
         "arauto_capital",
         "juramento_capital",
         "guarda_corrompido",
-        "santuario_arcano"
+        "santuario_arcano",
+        "cidade_portoes"
       ]
     },
     {
@@ -5733,7 +5736,11 @@ const GAME_DATA = {
         "vulcao",
         "capital",
         "abismo",
-        "planicie"
+        "planicie",
+        "estrada",
+        "cidade",
+        "reino_congelado",
+        "arquipelago"
       ],
       "minNivel": 1,
       "historia": [
@@ -11155,6 +11162,620 @@ const GAME_DATA = {
         "mana": 35,
         "exp": 6
       }
+    },
+
+    {
+      "id": "estrada_cruzamento",
+      "emoji": "🛤",
+      "nome": "Cruzamento da Estrada",
+      "tipo": "local",
+      "raridade": "comum",
+      "weight": 14,
+      "inicial": true,
+      "regiaoOrigem": ["aldeia", "floresta", "planicie"],
+      "minNivel": 2,
+      "historia": [
+        "Um cruzamento de estradas se abre à sua frente, cada caminho levando a lugares desconhecidos.",
+        "Marcos de pedra gastos pelo tempo apontam para direções que você nunca explorou."
+      ],
+      "cor": "amarelo",
+      "efeito": { "tipo": "mudar_regiao", "regiao": "estrada" },
+      "desbloqueia": ["taverna_javali", "mendigo_misterioso", "goblin_gatuno", "cavaleiro_sem_cabeca", "cidade_portoes", "carroca_quebrada", "patrulha_da_estrada", "marco_de_pedra"]
+    },
+    {
+      "id": "carroca_quebrada",
+      "emoji": "🛒",
+      "nome": "Carroça Quebrada",
+      "tipo": "npc",
+      "raridade": "incomum",
+      "weight": 20,
+      "regiaoOrigem": ["estrada", "aldeia"],
+      "minNivel": 2,
+      "historia": [
+        "Um mercador amaldiçoa a roda quebrada de sua carroça, mercadorias espalhadas pela estrada.",
+        "Ele aceita ajuda com evidente alívio e insiste em recompensar você."
+      ],
+      "cor": "amarelo",
+      "efeito": { "tipo": "recompensa_leve", "ouro": [10, 20], "exp": 8 }
+    },
+    {
+      "id": "patrulha_da_estrada",
+      "emoji": "🗡",
+      "nome": "Patrulha da Estrada",
+      "tipo": "inimigo",
+      "raridade": "incomum",
+      "weight": 26,
+      "regiaoOrigem": ["estrada"],
+      "minNivel": 3,
+      "historia": [
+        "A patrulha se dispersa assim que percebe que escolheu o alvo errado.",
+        "Você derruba o líder do bando; os demais fogem sem olhar para trás."
+      ],
+      "cor": "vermelho",
+      "efeito": {
+        "tipo": "combate",
+        "vidaInimigo": 34,
+        "ataqueInimigo": 9,
+        "defesaInimigo": 4,
+        "ouroDrop": [8, 16],
+        "expDrop": 16
+      }
+    },
+    {
+      "id": "marco_de_pedra",
+      "emoji": "🪧",
+      "nome": "Marco de Pedra",
+      "tipo": "evento",
+      "raridade": "comum",
+      "weight": 30,
+      "regiaoOrigem": ["estrada", "planicie", "deserto"],
+      "minNivel": 1,
+      "historia": [
+        "Um marco de pedra gasto conta, em runas quase apagadas, a distância até lugares que você ainda não visitou.",
+        "Alguém gravou um aviso rabiscado sobre perigos adiante — você guarda a informação."
+      ],
+      "cor": "cinza",
+      "efeito": { "tipo": "recompensa_leve", "exp": 5 }
+    },
+
+    {
+      "id": "cidade_portoes",
+      "emoji": "🏛️",
+      "nome": "Portões da Cidade Grande",
+      "tipo": "local",
+      "raridade": "rara",
+      "weight": 10,
+      "regiaoOrigem": ["estrada", "capital"],
+      "minNivel": 4,
+      "historia": [
+        "Muralhas altas cercam a maior cidade que você já viu, portões abertos recebendo uma multidão de viajantes.",
+        "O barulho e o cheiro da cidade grande são avassaladores depois de tanto tempo na estrada."
+      ],
+      "cor": "azul",
+      "efeito": { "tipo": "mudar_regiao", "regiao": "cidade" },
+      "desbloqueia": ["bomba_fumaca", "laminas_gêmeas", "mercado_da_cidade", "guarda_da_cidade", "ladrao_de_bolsos", "arena_da_cidade"]
+    },
+    {
+      "id": "mercado_da_cidade",
+      "emoji": "🏪",
+      "nome": "Mercado da Cidade",
+      "tipo": "npc",
+      "raridade": "incomum",
+      "weight": 24,
+      "regiaoOrigem": ["cidade"],
+      "minNivel": 4,
+      "historia": [
+        "Barracas se espremem lado a lado, vendendo de tudo — de especiarias raras a relíquias duvidosas.",
+        "Um vendedor experiente reconhece um cliente disposto a pagar bem."
+      ],
+      "cor": "amarelo",
+      "efeito": { "tipo": "item", "slot": "acessorio", "nomeItem": "Amuleto do Mercador", "bonus": { "ouro": 0, "defesa": 2 }, "custoOuro": 22 }
+    },
+    {
+      "id": "guarda_da_cidade",
+      "emoji": "🛡",
+      "nome": "Guarda da Cidade",
+      "tipo": "inimigo",
+      "raridade": "incomum",
+      "weight": 24,
+      "regiaoOrigem": ["cidade"],
+      "minNivel": 4,
+      "historia": [
+        "O guarda baixa a lança, reconhecendo que perdeu a disputa.",
+        "Você se afasta antes que reforços apareçam."
+      ],
+      "cor": "vermelho",
+      "efeito": {
+        "tipo": "combate",
+        "vidaInimigo": 42,
+        "ataqueInimigo": 11,
+        "defesaInimigo": 6,
+        "ouroDrop": [10, 18],
+        "expDrop": 20
+      }
+    },
+    {
+      "id": "ladrao_de_bolsos",
+      "emoji": "🤏",
+      "nome": "Ladrão de Bolsos",
+      "tipo": "escolha",
+      "raridade": "incomum",
+      "weight": 18,
+      "regiaoOrigem": ["cidade", "estrada"],
+      "minNivel": 3,
+      "historia": ["Você sente uma mão leve demais perto do seu bolso na multidão."],
+      "cor": "roxo",
+      "efeito": {
+        "tipo": "escolha",
+        "intro": "Uma criança magra tenta, sem muito talento, roubar sua bolsa em meio à multidão. Ela te encara, hesitante entre fugir e implorar.",
+        "opcoes": [
+          {
+            "id": "perdoar",
+            "label": "🤲 Deixá-la ir",
+            "dica": "Sem punição — talvez ela lembre disso.",
+            "historia": ["Você solta o pulso dela. A criança desaparece na multidão, olhando para trás uma última vez."],
+            "tag": "caminho_compaixao",
+            "exp": 5
+          },
+          {
+            "id": "entregar",
+            "label": "🛡 Entregar à guarda",
+            "dica": "Ordem mantida, mas a criança não vai esquecer.",
+            "historia": ["Você entrega a criança a um guarda próximo, que agradece com uma pequena recompensa."],
+            "ouro": [5, 10],
+            "tag": "leal_a_coroa"
+          }
+        ]
+      }
+    },
+    {
+      "id": "arena_da_cidade",
+      "emoji": "🏟",
+      "nome": "Arena da Cidade Grande",
+      "tipo": "chefe",
+      "raridade": "epica",
+      "weight": 5,
+      "regiaoOrigem": ["cidade"],
+      "minNivel": 6,
+      "historia": [
+        "A multidão explode em aplausos quando seu adversário finalmente cai.",
+        "Você é declarado campeão da arena por mais uma noite."
+      ],
+      "cor": "vermelho",
+      "efeito": {
+        "tipo": "combate",
+        "vidaInimigo": 78,
+        "ataqueInimigo": 15,
+        "defesaInimigo": 7,
+        "ouroDrop": [35, 55],
+        "expDrop": 40,
+        "itemGarantido": "cinturao_do_campeao"
+      }
+    },
+    {
+      "id": "cinturao_do_campeao",
+      "emoji": "🏆",
+      "nome": "Cinturão do Campeão",
+      "tipo": "artefato",
+      "raridade": "epica",
+      "weight": 0,
+      "oculta": true,
+      "regiaoOrigem": ["cidade"],
+      "minNivel": 6,
+      "historia": ["O cinturão pesa no seu ombro — um lembrete de vitórias que a multidão já esqueceu."],
+      "cor": "amarelo",
+      "efeito": { "tipo": "item", "slot": "acessorio", "nomeItem": "Cinturão do Campeão", "bonus": { "ataque": 4, "vidaMax": 15 } }
+    },
+
+    {
+      "id": "reino_congelado_portal",
+      "emoji": "❄️",
+      "nome": "Portal para o Reino Congelado",
+      "tipo": "local",
+      "raridade": "rara",
+      "weight": 8,
+      "regiaoOrigem": ["montanha", "caverna", "vale_cristalino"],
+      "minNivel": 7,
+      "historia": [
+        "Um arco de gelo eterno marca a entrada de um reino que o calor nunca alcança.",
+        "O frio aqui é diferente — mais antigo, quase consciente."
+      ],
+      "cor": "azul",
+      "efeito": { "tipo": "mudar_regiao", "regiao": "reino_congelado" },
+      "desbloqueia": ["lobo_gelido", "espirito_do_gelo", "rainha_do_gelo", "cristal_de_gelo_eterno"]
+    },
+    {
+      "id": "lobo_gelido",
+      "emoji": "🐺",
+      "nome": "Lobo Gélido",
+      "tipo": "inimigo",
+      "raridade": "rara",
+      "weight": 26,
+      "regiaoOrigem": ["reino_congelado"],
+      "minNivel": 7,
+      "historia": [
+        "O lobo gélido recua uivando, deixando rastros de gelo derretendo no chão.",
+        "Seu pelo congelado racha como vidro quando ele finalmente cai."
+      ],
+      "cor": "azul",
+      "efeito": {
+        "tipo": "combate",
+        "vidaInimigo": 58,
+        "ataqueInimigo": 13,
+        "defesaInimigo": 6,
+        "ouroDrop": [14, 24],
+        "expDrop": 26
+      }
+    },
+    {
+      "id": "espirito_do_gelo",
+      "emoji": "🧊",
+      "nome": "Espírito do Gelo",
+      "tipo": "misterio",
+      "raridade": "epica",
+      "weight": 12,
+      "regiaoOrigem": ["reino_congelado"],
+      "minNivel": 7,
+      "historia": [
+        "Uma figura translúcida de gelo observa você, nem hostil nem amigável.",
+        "O espírito parece testar sua determinação antes de decidir o que fazer."
+      ],
+      "cor": "roxo",
+      "efeito": {
+        "tipo": "misterio",
+        "resultados": [
+          { "chance": 40, "mana": 28, "exp": 10 },
+          { "chance": 35, "sub": "item", "slot": "acessorio", "nomeItem": "Fragmento de Gelo Eterno", "bonus": { "defesa": 3, "mana": 8 } },
+          { "chance": 25, "sub": "dano", "vida": 16 }
+        ]
+      }
+    },
+    {
+      "id": "rainha_do_gelo",
+      "emoji": "👑",
+      "nome": "Rainha do Gelo",
+      "tipo": "chefe",
+      "raridade": "lendaria",
+      "weight": 3,
+      "regiaoOrigem": ["reino_congelado"],
+      "minNivel": 10,
+      "historia": [
+        "A Rainha do Gelo se estilhaça como um vitral, seus fragmentos derretendo antes de tocar o chão.",
+        "O reino congelado parece suspirar, aliviado, quando ela cai."
+      ],
+      "cor": "azul",
+      "efeito": {
+        "tipo": "combate",
+        "vidaInimigo": 130,
+        "ataqueInimigo": 20,
+        "defesaInimigo": 10,
+        "ouroDrop": [60, 95],
+        "expDrop": 75,
+        "itemGarantido": "coroa_de_gelo_eterno"
+      }
+    },
+    {
+      "id": "coroa_de_gelo_eterno",
+      "emoji": "❄️",
+      "nome": "Coroa de Gelo Eterno",
+      "tipo": "artefato",
+      "raridade": "lendaria",
+      "weight": 0,
+      "oculta": true,
+      "regiaoOrigem": ["reino_congelado"],
+      "minNivel": 10,
+      "historia": ["A coroa nunca esquenta, nem mesmo junto ao corpo — um frio que você aprende a carregar."],
+      "cor": "azul",
+      "efeito": { "tipo": "item", "slot": "acessorio", "nomeItem": "Coroa de Gelo Eterno", "bonus": { "defesa": 5, "mana": 15, "vidaMax": 15 } }
+    },
+    {
+      "id": "cristal_de_gelo_eterno",
+      "emoji": "💠",
+      "nome": "Cristal de Gelo Eterno",
+      "tipo": "item",
+      "raridade": "epica",
+      "weight": 8,
+      "regiaoOrigem": ["reino_congelado"],
+      "minNivel": 8,
+      "historia": ["O cristal nunca derrete, mesmo na palma da sua mão febril depois de uma batalha."],
+      "cor": "azul",
+      "efeito": { "tipo": "item", "slot": "arma", "nomeItem": "Lâmina de Gelo Eterno", "bonus": { "ataque": 6, "velocidade": 1 } }
+    },
+
+    {
+      "id": "arquipelago_entrada",
+      "emoji": "🏝",
+      "nome": "Travessia para o Arquipélago",
+      "tipo": "local",
+      "raridade": "rara",
+      "weight": 8,
+      "regiaoOrigem": ["costa"],
+      "minNivel": 6,
+      "historia": [
+        "Um pescador aceita levá-lo até as ilhas distantes em troca de ajuda com as redes.",
+        "O mar se abre em um horizonte pontilhado de pequenas ilhas verdes."
+      ],
+      "cor": "azul",
+      "efeito": { "tipo": "mudar_regiao", "regiao": "arquipelago" },
+      "desbloqueia": ["praia_esquecida", "macaco_ladrao", "naufrago_ilha", "templo_afogado", "rei_dos_mares"]
+    },
+    {
+      "id": "praia_esquecida",
+      "emoji": "🏖",
+      "nome": "Praia Esquecida",
+      "tipo": "local",
+      "raridade": "incomum",
+      "weight": 20,
+      "regiaoOrigem": ["arquipelago"],
+      "minNivel": 6,
+      "historia": [
+        "Areia branca se estende por uma praia que parece nunca ter recebido visitantes.",
+        "Restos de um acampamento antigo sugerem que você não é o primeiro a chegar aqui — só o primeiro a sobreviver."
+      ],
+      "cor": "verde",
+      "efeito": { "tipo": "recompensa_leve", "cura": 25, "exp": 6 }
+    },
+    {
+      "id": "macaco_ladrao",
+      "emoji": "🐒",
+      "nome": "Macaco Ladrão",
+      "tipo": "inimigo",
+      "raridade": "comum",
+      "weight": 40,
+      "regiaoOrigem": ["arquipelago"],
+      "minNivel": 6,
+      "historia": [
+        "O macaco solta sua bolsa e foge saltando entre as árvores, chateado com a perda.",
+        "Você recupera parte do que ele tentou roubar antes que fugisse de vez."
+      ],
+      "cor": "laranja",
+      "efeito": {
+        "tipo": "combate",
+        "vidaInimigo": 22,
+        "ataqueInimigo": 6,
+        "defesaInimigo": 2,
+        "ouroDrop": [6, 14],
+        "expDrop": 12
+      }
+    },
+    {
+      "id": "naufrago_ilha",
+      "emoji": "🏴‍☠️",
+      "nome": "Náufrago da Ilha",
+      "tipo": "npc",
+      "raridade": "incomum",
+      "weight": 18,
+      "regiaoOrigem": ["arquipelago"],
+      "minNivel": 6,
+      "historia": [
+        "Um náufrago magro e bronzeado ergue as mãos em rendição antes de perceber que você não veio para machucá-lo.",
+        "Anos sozinho o deixaram falante — ele insiste em compartilhar tudo o que sabe sobre a ilha."
+      ],
+      "cor": "amarelo",
+      "efeito": { "tipo": "recompensa_leve", "ouro": [8, 18], "exp": 10 }
+    },
+    {
+      "id": "templo_afogado",
+      "emoji": "🌊",
+      "nome": "Templo Afogado",
+      "tipo": "misterio",
+      "raridade": "epica",
+      "weight": 10,
+      "regiaoOrigem": ["arquipelago"],
+      "minNivel": 8,
+      "historia": [
+        "As ruínas de um templo submerso ficam visíveis apenas na maré baixa.",
+        "Símbolos de uma civilização esquecida cobrem cada pedra ainda de pé."
+      ],
+      "cor": "roxo",
+      "efeito": {
+        "tipo": "misterio",
+        "resultados": [
+          { "chance": 35, "ouro": [25, 45], "exp": 15 },
+          { "chance": 35, "sub": "item", "slot": "acessorio", "nomeItem": "Relíquia Afogada", "bonus": { "mana": 10, "defesa": 2 } },
+          { "chance": 30, "sub": "dano", "vida": 20 }
+        ]
+      }
+    },
+    {
+      "id": "rei_dos_mares",
+      "emoji": "🔱",
+      "nome": "Rei dos Mares",
+      "tipo": "chefe",
+      "raridade": "lendaria",
+      "weight": 2,
+      "regiaoOrigem": ["arquipelago"],
+      "minNivel": 13,
+      "historia": [
+        "O Rei dos Mares afunda de volta às profundezas, sua coroa de coral flutuando sozinha na superfície.",
+        "As ondas se acalmam de um jeito que só quem já viu o mar em fúria consegue reconhecer."
+      ],
+      "cor": "azul",
+      "efeito": {
+        "tipo": "combate",
+        "vidaInimigo": 175,
+        "ataqueInimigo": 24,
+        "defesaInimigo": 11,
+        "ouroDrop": [90, 140],
+        "expDrop": 120,
+        "itemGarantido": "tridente_das_profundezas",
+        "flagFinal": "rei_dos_mares"
+      }
+    },
+    {
+      "id": "tridente_das_profundezas",
+      "emoji": "🔱",
+      "nome": "Tridente das Profundezas",
+      "tipo": "artefato",
+      "raridade": "mitica",
+      "weight": 0,
+      "oculta": true,
+      "regiaoOrigem": ["arquipelago"],
+      "minNivel": 13,
+      "historia": ["O tridente pulsa como as marés — nunca completamente parado em suas mãos."],
+      "cor": "azul",
+      "efeito": { "tipo": "item", "slot": "arma", "nomeItem": "Tridente das Profundezas", "bonus": { "ataque": 9, "velocidade": 2 } }
+    },
+
+    {
+      "id": "viajante_perdido",
+      "emoji": "🧭",
+      "nome": "Viajante Perdido",
+      "tipo": "evento",
+      "raridade": "comum",
+      "weight": 24,
+      "inicial": true,
+      "regiaoOrigem": ["aldeia", "floresta", "montanha", "ruinas", "caverna", "pantano", "deserto", "templo", "cemiterio", "castelo", "planicie", "costa", "cripta", "estrada", "cidade"],
+      "minNivel": 1,
+      "historia": [
+        "Um viajante perdido pergunta o caminho e, em troca da ajuda, compartilha o que sabe da estrada à frente.",
+        "Vocês trocam histórias de viagem por um momento antes de seguir cada um seu caminho."
+      ],
+      "cor": "cinza",
+      "efeito": { "tipo": "recompensa_leve", "exp": 6 }
+    },
+    {
+      "id": "moeda_antiga",
+      "emoji": "🪙",
+      "nome": "Moeda Antiga",
+      "tipo": "item",
+      "raridade": "comum",
+      "weight": 22,
+      "inicial": true,
+      "regiaoOrigem": ["aldeia", "floresta", "montanha", "ruinas", "caverna", "pantano", "deserto", "templo", "cemiterio", "castelo", "vulcao", "planicie", "costa", "cripta", "vale_cristalino", "estrada", "cidade"],
+      "minNivel": 1,
+      "historia": [
+        "Uma moeda de um reino que não existe mais brilha entre as pedras do caminho.",
+        "Ela não vale nada como dinheiro corrente, mas um colecionador pagaria bem por ela."
+      ],
+      "cor": "amarelo",
+      "efeito": { "tipo": "recompensa_leve", "ouro": [6, 14] }
+    },
+    {
+      "id": "vento_repentino",
+      "emoji": "🌬",
+      "nome": "Vento Repentino",
+      "tipo": "evento",
+      "raridade": "comum",
+      "weight": 20,
+      "inicial": true,
+      "regiaoOrigem": ["planicie", "montanha", "deserto", "costa", "vulcao", "reino_congelado", "arquipelago", "estrada"],
+      "minNivel": 1,
+      "historia": [
+        "Um vento repentino varre a paisagem, carregando cheiros de lugares distantes.",
+        "Por um instante, você jura ouvir vozes no vento — e então elas se vão."
+      ],
+      "cor": "cinza",
+      "efeito": { "tipo": "recompensa_leve", "exp": 4 }
+    },
+    {
+      "id": "pegada_estranha",
+      "emoji": "🐾",
+      "nome": "Pegada Estranha",
+      "tipo": "misterio",
+      "raridade": "incomum",
+      "weight": 16,
+      "inicial": true,
+      "regiaoOrigem": ["floresta", "montanha", "pantano", "caverna", "cripta", "reino_congelado", "arquipelago", "planicie"],
+      "minNivel": 1,
+      "historia": [
+        "Uma pegada que não pertence a nenhum animal conhecido marca o barro à sua frente.",
+        "Seja lá o que a deixou, não parece ter ido muito longe."
+      ],
+      "cor": "roxo",
+      "efeito": {
+        "tipo": "misterio",
+        "resultados": [
+          { "chance": 45, "exp": 10 },
+          { "chance": 30, "ouro": [5, 12] },
+          { "chance": 25, "sub": "dano", "vida": 8 }
+        ]
+      }
+    },
+    {
+      "id": "mercador_ambulante_generico",
+      "emoji": "🐫",
+      "nome": "Mercador Ambulante",
+      "tipo": "npc",
+      "raridade": "incomum",
+      "weight": 18,
+      "inicial": true,
+      "regiaoOrigem": ["aldeia", "estrada", "deserto", "planicie", "cidade", "costa"],
+      "minNivel": 1,
+      "historia": [
+        "Um mercador ambulante estende um tapete cheio de bugigangas — a maioria inútil, algumas surpreendentemente boas.",
+        "Ele reconhece um cliente de bom gosto quando vê um."
+      ],
+      "cor": "laranja",
+      "efeito": { "tipo": "item", "slot": "consumivel", "cura": 20, "nomeItem": "Ração de Viagem", "custoOuro": 8 }
+    },
+    {
+      "id": "eco_distante",
+      "emoji": "🔊",
+      "nome": "Eco Distante",
+      "tipo": "evento",
+      "raridade": "comum",
+      "weight": 18,
+      "inicial": true,
+      "regiaoOrigem": ["caverna", "cripta", "abismo", "vulcao", "reino_congelado", "templo", "cemiterio"],
+      "minNivel": 1,
+      "historia": [
+        "Um eco distante ressoa pelas pedras, sua origem impossível de identificar.",
+        "O som se repete uma vez mais antes de desaparecer por completo."
+      ],
+      "cor": "cinza",
+      "efeito": { "tipo": "recompensa_leve", "exp": 4 }
+    },
+    {
+      "id": "bencao_do_caminho",
+      "emoji": "🙏",
+      "nome": "Bênção do Caminho",
+      "tipo": "escolha",
+      "raridade": "incomum",
+      "weight": 14,
+      "inicial": true,
+      "regiaoOrigem": ["aldeia", "floresta", "estrada", "planicie", "templo", "cidade", "costa"],
+      "minNivel": 1,
+      "historia": ["Um andarilho oferece uma bênção simples antes de seguir seu próprio caminho."],
+      "cor": "amarelo",
+      "efeito": {
+        "tipo": "escolha",
+        "intro": "Um andarilho de aparência simples oferece uma bênção antes de partir. \"Aceita? Não custa nada além de um momento.\"",
+        "opcoes": [
+          {
+            "id": "aceitar_bencao",
+            "label": "🙏 Aceitar a bênção",
+            "dica": "Um pequeno alívio, sem custo.",
+            "historia": ["Você aceita. Uma sensação de calma o acompanha pelo resto do dia."],
+            "cura": 12,
+            "exp": 4
+          },
+          {
+            "id": "recusar_bencao",
+            "label": "🚶 Seguir em frente",
+            "dica": "Sem tempo a perder.",
+            "historia": ["Você agradece, mas segue seu caminho sem parar."],
+            "exp": 2
+          }
+        ]
+      }
+    },
+    {
+      "id": "resto_de_fogueira",
+      "emoji": "🔥",
+      "nome": "Resto de Fogueira",
+      "tipo": "local",
+      "raridade": "comum",
+      "weight": 20,
+      "inicial": true,
+      "regiaoOrigem": ["floresta", "montanha", "planicie", "estrada", "deserto", "pantano", "reino_congelado"],
+      "minNivel": 1,
+      "historia": [
+        "Brasas ainda mornas indicam que alguém acampou aqui recentemente.",
+        "Você aproveita o calor residual para descansar por um momento antes de seguir."
+      ],
+      "cor": "laranja",
+      "efeito": { "tipo": "recompensa_leve", "cura": 15 }
     }
   ],
   "events": [
