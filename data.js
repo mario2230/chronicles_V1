@@ -91,6 +91,15 @@ const GAME_DATA = {
       "requerRank": 3
     }
   ],
+  "talismas": [
+    { "id": "talisma_veterano", "nome": "Bênção do Veterano", "emoji": "🛡️", "descricao": "+15 vida máxima inicial.", "custo": 25, "bonus": { "vidaMax": 15 } },
+    { "id": "talisma_bolsa", "nome": "Bolsa Recheada", "emoji": "💰", "descricao": "+25 ouro inicial.", "custo": 20, "bonus": { "ouro": 25 } },
+    { "id": "talisma_arcano", "nome": "Reserva Arcana", "emoji": "✨", "descricao": "+15 mana máxima inicial.", "custo": 25, "bonus": { "manaMax": 15 } },
+    { "id": "talisma_lamina", "nome": "Lâmina Afiada", "emoji": "⚔️", "descricao": "+2 ataque permanente.", "custo": 40, "bonus": { "ataque": 2 } },
+    { "id": "talisma_passos", "nome": "Passos Leves", "emoji": "🏃", "descricao": "+2 velocidade permanente.", "custo": 40, "bonus": { "velocidade": 2 } },
+    { "id": "talisma_couraca", "nome": "Couraça Reforçada", "emoji": "🛡", "descricao": "+2 defesa permanente.", "custo": 40, "bonus": { "defesa": 2 } },
+    { "id": "talisma_robusto", "nome": "Constituição Robusta", "emoji": "❤️", "descricao": "+25 vida máxima e +10 mana máxima inicial.", "custo": 60, "bonus": { "vidaMax": 25, "manaMax": 10 } }
+  ],
   "classes": [
     {
       "id": "mago",
@@ -1156,6 +1165,51 @@ const GAME_DATA = {
     }
   ],
   "characters": [
+    {
+      "id": "draven",
+      "emoji": "🐉",
+      "nome": "Draven",
+      "titulo": "O Caçador de Dragões",
+      "personalidade": "Confiante ao ponto da arrogância, mas leal a quem já provou coragem.",
+      "descricao": "Diz-se que já abateu mais dragões do que qualquer outro caçador vivo — e nunca perde a chance de contar cada uma dessas histórias.",
+      "regiaoOrigem": ["montanha", "vulcao"]
+    },
+    {
+      "id": "nyx",
+      "emoji": "🖤",
+      "nome": "Nyx",
+      "titulo": "A Bruxa das Sombras",
+      "personalidade": "Calma, calculista, fala como quem já negociou com coisas piores que a morte.",
+      "descricao": "Uma feiticeira que caminhou tempo demais entre as sombras para continuar sendo completamente humana.",
+      "regiaoOrigem": ["cemiterio", "abismo", "cripta"]
+    },
+    {
+      "id": "aldric",
+      "emoji": "🛡️",
+      "nome": "Sir Aldric",
+      "titulo": "O Cavaleiro Leal",
+      "personalidade": "Formal, disciplinado, acredita piamente em juramentos.",
+      "descricao": "Um cavaleiro que serviu a um rei que já não existe mais neste mundo — mas continua honrando o juramento de proteger quem precisa.",
+      "regiaoOrigem": ["castelo", "capital"]
+    },
+    {
+      "id": "zephyra",
+      "emoji": "🔮",
+      "nome": "Zephyra",
+      "titulo": "A Aprendiz Prodígio",
+      "personalidade": "Curiosa, impaciente, ansiosa para provar seu talento.",
+      "descricao": "Ouviu histórias sobre um arquimago lendário desde criança e decidiu seguir o mesmo caminho, custe o que custar.",
+      "regiaoOrigem": ["templo", "aldeia"]
+    },
+    {
+      "id": "mira",
+      "emoji": "✊",
+      "nome": "Mira",
+      "titulo": "A Voz do Povo",
+      "personalidade": "Apaixonada, direta, desconfia de quem detém poder demais.",
+      "descricao": "Já ajudou a derrubar um trono e não tem medo de fazer de novo, se for preciso.",
+      "regiaoOrigem": ["aldeia", "planicie", "cidade"]
+    },
     {
       "id": "eldrin",
       "emoji": "🧙",
@@ -11802,6 +11856,171 @@ const GAME_DATA = {
       ],
       "cor": "laranja",
       "efeito": { "tipo": "recompensa_leve", "cura": 15 }
+    },
+
+    {
+      "id": "draven_encontro",
+      "emoji": "🐉",
+      "nome": "Draven, o Caçador de Dragões",
+      "tipo": "personagem",
+      "raridade": "epica",
+      "weight": 10,
+      "inicial": true,
+      "requerFinal": "cacador_de_dragoes",
+      "regiaoOrigem": ["montanha", "vulcao"],
+      "minNivel": 3,
+      "historia": [
+        "Draven encosta o machado enorme no ombro e observa você com um sorriso de reconhecimento. \"Ouvi dizer que você também já encarou um dragão nos olhos.\"",
+        "\"Poucos sobrevivem pra contar a história\", diz Draven. \"Você tem cara de quem tem uma boa.\""
+      ],
+      "cor": "vermelho",
+      "efeito": { "tipo": "personagem", "personagemId": "draven", "relacao": 12, "exp": 12, "itemGarantido": "presente_draven" }
+    },
+    {
+      "id": "presente_draven",
+      "emoji": "🦴",
+      "nome": "Dente de Dragão",
+      "tipo": "artefato",
+      "raridade": "epica",
+      "weight": 0,
+      "oculta": true,
+      "regiaoOrigem": ["montanha", "vulcao"],
+      "minNivel": 3,
+      "historia": ["Draven arranca o dente de um antigo troféu na parede e entrega a você. \"Pra lembrar que dragão também sangra.\""],
+      "cor": "vermelho",
+      "efeito": { "tipo": "item", "slot": "acessorio", "nomeItem": "Dente de Dragão", "bonus": { "ataque": 4, "vidaMax": 10 } }
+    },
+
+    {
+      "id": "nyx_encontro",
+      "emoji": "🖤",
+      "nome": "Nyx, a Bruxa das Sombras",
+      "tipo": "personagem",
+      "raridade": "epica",
+      "weight": 10,
+      "inicial": true,
+      "requerFinal": "senhor_das_trevas",
+      "regiaoOrigem": ["cemiterio", "abismo", "cripta"],
+      "minNivel": 3,
+      "historia": [
+        "Nyx emerge da escuridão sem fazer o menor som. \"Reconheço a marca de quem já flertou com as trevas e voltou.\"",
+        "\"Ou talvez não tenha voltado por completo\", ela sorri. \"Isso te tornaria... interessante.\""
+      ],
+      "cor": "roxo",
+      "efeito": { "tipo": "personagem", "personagemId": "nyx", "relacao": 12, "exp": 12, "itemGarantido": "presente_nyx" }
+    },
+    {
+      "id": "presente_nyx",
+      "emoji": "🕯️",
+      "nome": "Véu das Sombras",
+      "tipo": "artefato",
+      "raridade": "epica",
+      "weight": 0,
+      "oculta": true,
+      "regiaoOrigem": ["cemiterio", "abismo", "cripta"],
+      "minNivel": 3,
+      "historia": ["Nyx entrega um véu que parece absorver a luz ao redor. \"Use com cuidado. Ou não use. Já vi acontecer coisa pior.\""],
+      "cor": "roxo",
+      "efeito": { "tipo": "item", "slot": "acessorio", "nomeItem": "Véu das Sombras", "bonus": { "manaMax": 12, "defesa": 2 } }
+    },
+
+    {
+      "id": "aldric_encontro",
+      "emoji": "🛡️",
+      "nome": "Sir Aldric, o Cavaleiro Leal",
+      "tipo": "personagem",
+      "raridade": "epica",
+      "weight": 10,
+      "inicial": true,
+      "requerFinal": "rei",
+      "regiaoOrigem": ["castelo", "capital"],
+      "minNivel": 3,
+      "historia": [
+        "Sir Aldric se ajoelha brevemente ao reconhecer em você a postura de quem já usou uma coroa. \"É uma honra, mesmo que o reino já não seja o mesmo.\"",
+        "\"Jurei proteger quem carrega esse peso\", diz ele, se levantando. \"O juramento continua valendo.\""
+      ],
+      "cor": "azul",
+      "efeito": { "tipo": "personagem", "personagemId": "aldric", "relacao": 12, "exp": 12, "itemGarantido": "presente_aldric" }
+    },
+    {
+      "id": "presente_aldric",
+      "emoji": "🗡️",
+      "nome": "Espada do Juramento",
+      "tipo": "artefato",
+      "raridade": "epica",
+      "weight": 0,
+      "oculta": true,
+      "regiaoOrigem": ["castelo", "capital"],
+      "minNivel": 3,
+      "historia": ["Aldric entrega a espada que carregou desde os tempos de seu antigo rei. \"Que ela sirva um propósito melhor agora.\""],
+      "cor": "azul",
+      "efeito": { "tipo": "item", "slot": "arma", "nomeItem": "Espada do Juramento", "bonus": { "ataque": 3, "defesa": 3 } }
+    },
+
+    {
+      "id": "zephyra_encontro",
+      "emoji": "🔮",
+      "nome": "Zephyra, a Aprendiz Prodígio",
+      "tipo": "personagem",
+      "raridade": "epica",
+      "weight": 10,
+      "inicial": true,
+      "requerFinal": "arquimago",
+      "regiaoOrigem": ["templo", "aldeia"],
+      "minNivel": 3,
+      "historia": [
+        "Zephyra observa você com os olhos brilhando de reconhecimento. \"Você é real? Ouvi histórias sobre um arquimago que soam exatamente como você.\"",
+        "\"Preciso saber tudo\", ela insiste, já puxando um caderno cheio de anotações."
+      ],
+      "cor": "roxo",
+      "efeito": { "tipo": "personagem", "personagemId": "zephyra", "relacao": 12, "exp": 12, "itemGarantido": "presente_zephyra" }
+    },
+    {
+      "id": "presente_zephyra",
+      "emoji": "📖",
+      "nome": "Caderno de Anotações Arcanas",
+      "tipo": "artefato",
+      "raridade": "epica",
+      "weight": 0,
+      "oculta": true,
+      "regiaoOrigem": ["templo", "aldeia"],
+      "minNivel": 3,
+      "historia": ["Zephyra entrega o caderno onde registrou cada teoria própria. \"Talvez você consiga terminar o que comecei.\""],
+      "cor": "roxo",
+      "efeito": { "tipo": "item", "slot": "acessorio", "nomeItem": "Caderno de Anotações Arcanas", "bonus": { "manaMax": 10, "ataque": 2 } }
+    },
+
+    {
+      "id": "mira_encontro",
+      "emoji": "✊",
+      "nome": "Mira, a Voz do Povo",
+      "tipo": "personagem",
+      "raridade": "epica",
+      "weight": 10,
+      "inicial": true,
+      "requerFinal": "libertador",
+      "regiaoOrigem": ["aldeia", "planicie", "cidade"],
+      "minNivel": 3,
+      "historia": [
+        "Mira reconhece você antes mesmo de se apresentar. \"Ouvi o que você fez. O povo ainda fala sobre isso.\"",
+        "\"Se está disposto a lutar de novo por quem não tem voz\", ela diz, \"conte comigo.\""
+      ],
+      "cor": "amarelo",
+      "efeito": { "tipo": "personagem", "personagemId": "mira", "relacao": 12, "exp": 12, "itemGarantido": "presente_mira" }
+    },
+    {
+      "id": "presente_mira",
+      "emoji": "🏹",
+      "nome": "Bandana da Revolta",
+      "tipo": "artefato",
+      "raridade": "epica",
+      "weight": 0,
+      "oculta": true,
+      "regiaoOrigem": ["aldeia", "planicie", "cidade"],
+      "minNivel": 3,
+      "historia": ["Mira tira a própria bandana e entrega a você. \"Ela já viu uma revolução. Talvez veja outra.\""],
+      "cor": "amarelo",
+      "efeito": { "tipo": "item", "slot": "acessorio", "nomeItem": "Bandana da Revolta", "bonus": { "velocidade": 2, "ataque": 2 } }
     }
   ],
   "events": [

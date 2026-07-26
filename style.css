@@ -1415,6 +1415,45 @@ body.weather-corrupcao #weatherLayer {
 .btn-secondary:hover { border-color: var(--text-dim); color: var(--text); }
 
 /* ---------- TELA INICIAL ---------- */
+/* ---------- LEGADO (progressão permanente) ---------- */
+.legado-ecos-inline { margin-left: 6px; color: #6ee7ff; font-weight: 700; }
+.legado-box { max-width: 480px; text-align: left; }
+.legado-ecos { text-align: center; font-size: 1.1rem; margin: 4px 0 16px; color: #6ee7ff; }
+.legado-talisma-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+.legado-talisma {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 10px;
+  padding: 10px;
+}
+.legado-talisma.equipado { border-color: #6ee7ff; background: rgba(110,231,255,0.08); }
+.legado-talisma .lt-emoji { font-size: 1.6rem; }
+.legado-talisma .lt-info { flex: 1; }
+.legado-talisma .lt-nome { font-weight: 700; }
+.legado-talisma .lt-desc { font-size: 0.85rem; opacity: 0.75; }
+.legado-talisma .talisma-btn { white-space: nowrap; }
+.legado-personagens { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; }
+.legado-personagem-chip {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 0.85rem;
+}
+.legado-reward-box {
+  text-align: center;
+  background: rgba(110,231,255,0.08);
+  border: 1px solid rgba(110,231,255,0.3);
+  border-radius: 10px;
+  padding: 10px;
+  margin: 14px 0;
+  color: #6ee7ff;
+}
+.legado-reward-personagem { margin-top: 6px; color: #ffd76e; font-size: 0.9rem; }
+
 .title-box {
   max-width: 480px;
   text-align: center;

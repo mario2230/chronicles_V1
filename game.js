@@ -255,12 +255,14 @@ async function loadData() {
    ============================================================ */
 function novoEstado(classeId, seed) {
   const classe = DATA.classes.find((c) => c.id === classeId);
+  const legado = getLegado();
   return {
     seed,
     rng: mulberry32(seed),
     turno: 0,
     gameOver: false,
     regiao: "aldeia",
+    legadoFinais: new Set(legado.finaisAlcancados), // cache — evita ler localStorage a cada carta sorteada
     turnoEntrouRegiao: 0, // usado pra aumentar a chance de chefe quanto mais tempo o jogador fica na mesma região
     hero: {
       nome: classe.nome,
@@ -873,6 +875,10 @@ function cardIsValid(card) {
     if (card.condicao.classe && state.hero.classeId !== card.condicao.classe) return false;
     if (card.condicao.tagAusente && state.tags[card.condicao.tagAusente]) return false;
   }
+  // personagens de legado só aparecem se aquele final já foi alcançado em
+  // ALGUMA partida anterior (persistido entre runs) — é a recompensa por
+  // ter terminado a história daquele jeito pelo menos uma vez.
+  if (card.requerFinal && !(state.legadoFinais && state.legadoFinais.has(card.requerFinal))) return false;
   return true;
 }
 
@@ -1165,6 +1171,11 @@ const PERSONAGEM_AFINIDADE = {
   lyra: { tema: "instinto selvagem", statPorTier: { velocidade: 1 } },
   seraphina: { tema: "fé e cuidado", statPorTier: { vidaMax: 6 } },
   grimm: { tema: "instinto sombrio", statPorTier: { defesa: 1 } },
+  draven: { tema: "instinto de caçador", statPorTier: { ataque: 1 } },
+  nyx: { tema: "poder sombrio", statPorTier: { manaMax: 3 } },
+  aldric: { tema: "honra e disciplina", statPorTier: { defesa: 1 } },
+  zephyra: { tema: "talento arcano", statPorTier: { manaMax: 4 } },
+  mira: { tema: "carisma revolucionário", statPorTier: { velocidade: 1 } },
 };
 
 function getRelacao(charId) {
@@ -3111,6 +3122,165 @@ function renderAll() {
    de menu). Mostra se há uma aventura em andamento para continuar, um
    atalho para começar uma nova, e as últimas conquistas registradas.
    ============================================================ */
+/* ============================================================
+   LEGADO — progressão permanente entre partidas
+   Diferente do autosave (que é a run atual) e do histórico (que é só
+   registro), o Legado é o que sobrevive de verdade entre jornadas: Ecos
+   acumulados (gastáveis em Talismãs iniciais permanentes) e a lista de
+   finais já alcançados alguma vez (que desbloqueiam personagens de
+   legado exclusivos nas próximas partidas).
+   ============================================================ */
+const LEGADO_KEY = "chronicles_legado";
+
+function getLegado() {
+  try {
+    const raw = localStorage.getItem(LEGADO_KEY);
+    const parsed = raw ? JSON.parse(raw) : {};
+    return {
+      ecos: parsed.ecos || 0,
+      comprados: parsed.comprados || [],
+      equipado: parsed.equipado || null,
+      finaisAlcancados: parsed.finaisAlcancados || [],
+    };
+  } catch (e) {
+    return { ecos: 0, comprados: [], equipado: null, finaisAlcancados: [] };
+  }
+}
+
+function saveLegado(legado) {
+  try { localStorage.setItem(LEGADO_KEY, JSON.stringify(legado)); } catch (e) { /* ignora erros de storage */ }
+}
+
+// quanto uma run rende em Ecos — recompensa nível, sobrevivência, chefes
+// derrotados e descobertas. Morrer ainda rende algo (senão perder vira
+// puro desperdício), só que 40% menos do que aceitar um final de verdade.
+function calcularEcosGanhos(ending) {
+  let ecos = 2 + state.hero.nivel * 2 + state.turno * 0.25 + state.derrotados.size * 6 + state.descobertos.size * 0.3;
+  if (ending.id === "morto") ecos *= 0.6;
+  return Math.max(1, Math.round(ecos));
+}
+
+// registra o final desta run no Legado permanente: soma os Ecos ganhos e,
+// se for a primeira vez alcançando aquele final específico, marca pra
+// desbloquear o personagem de legado correspondente nas próximas runs.
+function registrarFinalNoLegado(ending) {
+  const legado = getLegado();
+  const ecosGanhos = calcularEcosGanhos(ending);
+  legado.ecos += ecosGanhos;
+  const novoFinal = !legado.finaisAlcancados.includes(ending.id);
+  if (novoFinal) legado.finaisAlcancados.push(ending.id);
+  saveLegado(legado);
+  return { ecosGanhos, novoFinal };
+}
+
+const PERSONAGEM_LEGADO_POR_FINAL = {
+  cacador_de_dragoes: { nome: "Draven", emoji: "🐉" },
+  senhor_das_trevas: { nome: "Nyx", emoji: "🖤" },
+  rei: { nome: "Sir Aldric", emoji: "🛡️" },
+  arquimago: { nome: "Zephyra", emoji: "🔮" },
+  libertador: { nome: "Mira", emoji: "✊" },
+};
+
+function showLegadoModal() {
+  const root = document.getElementById("modalRoot");
+  const legado = getLegado();
+  const talismas = DATA.talismas || [];
+
+  root.innerHTML = `
+    <div class="modal-overlay">
+      <div class="modal-box legado-box">
+        <h2>🏺 Legado</h2>
+        <p class="sub">Ecos ganhos em partidas passadas, gastos em bônus permanentes pra próxima jornada.</p>
+        <div class="legado-ecos">💠 <b>${legado.ecos}</b> Ecos de Legado</div>
+
+        <div class="hero-section-title">Talismãs Iniciais (equipe 1 por vez)</div>
+        <div class="legado-talisma-list">
+          ${talismas
+            .map((t) => {
+              const comprado = legado.comprados.includes(t.id);
+              const equipado = legado.equipado === t.id;
+              const podeComprar = !comprado && legado.ecos >= t.custo;
+              let botao;
+              if (!comprado) {
+                botao = `<button class="btn-secondary talisma-btn" ${podeComprar ? "" : "disabled"} onclick="comprarTalisma('${t.id}')">💠 ${t.custo}</button>`;
+              } else if (equipado) {
+                botao = `<button class="btn-primary talisma-btn" onclick="desequiparTalisma()">✓ Equipado</button>`;
+              } else {
+                botao = `<button class="btn-secondary talisma-btn" onclick="equiparTalisma('${t.id}')">Equipar</button>`;
+              }
+              return `
+              <div class="legado-talisma ${comprado ? "comprado" : ""} ${equipado ? "equipado" : ""}">
+                <span class="lt-emoji">${t.emoji}</span>
+                <div class="lt-info">
+                  <div class="lt-nome">${t.nome}</div>
+                  <div class="lt-desc">${t.descricao}</div>
+                </div>
+                ${botao}
+              </div>`;
+            })
+            .join("")}
+        </div>
+
+        <div class="hero-section-title">Personagens de Legado Desbloqueados</div>
+        <div class="legado-personagens">
+          ${
+            legado.finaisAlcancados.filter((id) => PERSONAGEM_LEGADO_POR_FINAL[id]).length
+              ? legado.finaisAlcancados
+                  .filter((id) => PERSONAGEM_LEGADO_POR_FINAL[id])
+                  .map((id) => `<span class="legado-personagem-chip">${PERSONAGEM_LEGADO_POR_FINAL[id].emoji} ${PERSONAGEM_LEGADO_POR_FINAL[id].nome}</span>`)
+                  .join("")
+              : `<p class="empty-note">Nenhum ainda — alcance finais específicos pra desbloquear aliados exclusivos em runs futuras.</p>`
+          }
+        </div>
+
+        <button class="btn-secondary" id="btnFecharLegado" style="margin-top:14px;">Fechar</button>
+      </div>
+    </div>`;
+
+  document.getElementById("btnFecharLegado").addEventListener("click", () => {
+    root.innerHTML = "";
+    showTitleScreen();
+  });
+}
+
+function comprarTalisma(id) {
+  const legado = getLegado();
+  const talisma = (DATA.talismas || []).find((t) => t.id === id);
+  if (!talisma || legado.comprados.includes(id) || legado.ecos < talisma.custo) return;
+  legado.ecos -= talisma.custo;
+  legado.comprados.push(id);
+  if (!legado.equipado) legado.equipado = id; // primeiro talismã comprado já vem equipado
+  saveLegado(legado);
+  showLegadoModal();
+}
+
+function equiparTalisma(id) {
+  const legado = getLegado();
+  if (!legado.comprados.includes(id)) return;
+  legado.equipado = id;
+  saveLegado(legado);
+  showLegadoModal();
+}
+
+function desequiparTalisma() {
+  const legado = getLegado();
+  legado.equipado = null;
+  saveLegado(legado);
+  showLegadoModal();
+}
+
+// aplica o talismã equipado (se houver) ao herói recém-criado — chamado uma
+// única vez, no início da run, dentro de startGame().
+function aplicarTalismaInicial() {
+  const legado = getLegado();
+  if (!legado.equipado) return;
+  const talisma = (DATA.talismas || []).find((t) => t.id === legado.equipado);
+  if (!talisma) return;
+  applyStatDelta(talisma.bonus, `🏺 Talismã equipado: ${talisma.nome}`);
+  if (talisma.bonus.ouro) state.hero.ouro += talisma.bonus.ouro;
+}
+
+
 function peekSave() {
   try {
     const raw = localStorage.getItem("chronicles_save");
@@ -3127,6 +3297,7 @@ function showTitleScreen() {
   const root = document.getElementById("modalRoot");
   const save = peekSave();
   const historico = getRunHistory().slice(0, 6);
+  const legado = getLegado();
 
   root.innerHTML = `
     <div class="modal-overlay title-overlay">
@@ -3138,6 +3309,7 @@ function showTitleScreen() {
         <div class="title-actions">
           ${save ? `<button class="btn-primary" id="btnContinueTitle">▶ Continuar — ${save.hero.nome} (Nv. ${save.hero.nivel})</button>` : ""}
           <button class="${save ? "btn-secondary" : "btn-primary"}" id="btnNewTitle">✨ Nova Aventura</button>
+          <button class="btn-secondary" id="btnLegadoTitle">🏺 Legado <span class="legado-ecos-inline">💠 ${legado.ecos}</span></button>
         </div>
 
         <div class="title-history">
@@ -3177,6 +3349,10 @@ function showTitleScreen() {
     localStorage.removeItem("chronicles_save");
     root.innerHTML = "";
     showClassSelectModal();
+  });
+  document.getElementById("btnLegadoTitle").addEventListener("click", () => {
+    root.innerHTML = "";
+    showLegadoModal();
   });
 }
 
@@ -3487,6 +3663,8 @@ function gerarEpilogo(ending) {
 
 function showEndingModal(ending) {
   recordRunHistory(ending);
+  const { ecosGanhos, novoFinal } = registrarFinalNoLegado(ending);
+  const personagemNovo = novoFinal ? PERSONAGEM_LEGADO_POR_FINAL[ending.id] : null;
   const root = document.getElementById("modalRoot");
   root.innerHTML = `
     <div class="modal-overlay">
@@ -3506,6 +3684,12 @@ function showEndingModal(ending) {
           <div class="ending-stat"><b>${state.hero.ouro}</b><span>Ouro</span></div>
           <div class="ending-stat"><b>${state.descobertos.size}</b><span>Descobertas</span></div>
         </div>
+
+        <div class="legado-reward-box">
+          💠 <b>+${ecosGanhos} Ecos de Legado</b>
+          ${personagemNovo ? `<div class="legado-reward-personagem">${personagemNovo.emoji} <b>${personagemNovo.nome}</b> agora pode aparecer em futuras jornadas!</div>` : ""}
+        </div>
+
         <button class="btn-primary" id="btnRestart">Nova Aventura</button>
         <button class="btn-secondary" id="btnBackTitle" style="margin-top:10px;">🏠 Voltar ao Menu</button>
       </div>
@@ -3534,6 +3718,7 @@ function saveGame() {
       descobertos: [...state.descobertos],
       regioesVisitadas: [...state.regioesVisitadas],
       availableCardIds: [...state.availableCardIds],
+      legadoFinais: [...(state.legadoFinais || [])],
       rng: null,
     };
     localStorage.setItem("chronicles_save", JSON.stringify(serial));
@@ -3551,6 +3736,10 @@ function loadGame() {
     state.descobertos = new Set(parsed.descobertos);
     state.regioesVisitadas = new Set(parsed.regioesVisitadas || [parsed.regiao || "aldeia"]);
     state.availableCardIds = new Set(parsed.availableCardIds);
+    // relê do Legado atual (não só do save) — assim, se o jogador desbloqueou
+    // um novo final de legado em OUTRA run desde o último autosave desta,
+    // os personagens de legado já aparecem aqui também.
+    state.legadoFinais = new Set([...(parsed.legadoFinais || []), ...getLegado().finaisAlcancados]);
     state.rng = mulberry32(parsed.seed + parsed.turno); // continuidade aproximada
     if (!state.seenLines) state.seenLines = {};
     if (!state.narradorMemoria) state.narradorMemoria = [];
@@ -3589,6 +3778,7 @@ function startGame(classeId, seed) {
   state = novoEstado(classeId, seed);
   addStory(`🟢 Sua jornada como ${state.hero.nome} começa em uma pequena aldeia.`, "verde");
   state.tree.push({ emoji: state.hero.emoji, nome: state.hero.nome, tipo: "heroi" });
+  aplicarTalismaInicial();
   drawThreeCards();
   renderAll();
   updateRerollTooltip();
