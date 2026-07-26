@@ -49,6 +49,10 @@ const REGIAO_META = {
 
 // níveis de relacionamento com personagens, do mais hostil ao mais próximo
 REGIAO_META.vale_cristalino = { emoji: "💎", nome: "Vale Cristalino" };
+REGIAO_META.estrada = { emoji: "🛤", nome: "A Estrada" };
+REGIAO_META.cidade = { emoji: "🏛️", nome: "Cidade Grande" };
+REGIAO_META.reino_congelado = { emoji: "❄️", nome: "Reino Congelado" };
+REGIAO_META.arquipelago = { emoji: "🏝", nome: "Arquipélago" };
 
 // Bônus de conjunto transformam equipamentos isolados em escolhas de build.
 // Duas peças definem uma direção; três peças recompensam o compromisso.

@@ -1320,7 +1320,9 @@ const GAME_DATA = {
         "estudar_ilusionismo",
         "estudar_elementalismo",
         "fonte_de_mana",
-        "cristal_de_foco"
+        "cristal_de_foco",
+        "santuario_transmutacao",
+        "item_martelo_forja"
       ]
     },
     {
@@ -1436,7 +1438,12 @@ const GAME_DATA = {
         "arquearia_torneio",
         "lobo_alfa",
         "racao_seca",
-        "po_de_fada"
+        "po_de_fada",
+        "item_aljava",
+        "cogumelos_brilhantes",
+        "armadilha_urso",
+        "enxame_vespas",
+        "escudo_espinhoso"
       ]
     },
     {
@@ -1783,7 +1790,11 @@ const GAME_DATA = {
         "orin_biblioteca_perdida",
         "estatua_rei_esquecido",
         "registro_da_guilda",
-        "arrombamento_cofre"
+        "arrombamento_cofre",
+        "altar_de_sangue",
+        "item_ferramentas_mestre",
+        "estatua_choro",
+        "elixir_deuses"
       ]
     },
     {
@@ -2078,7 +2089,9 @@ const GAME_DATA = {
         "vento_curativo",
         "lanca_dos_ventos",
         "lyra_vento_encontro",
-        "manada_furia"
+        "manada_furia",
+        "behemoth_dourado",
+        "manto_de_penas"
       ]
     },
     {
@@ -2226,7 +2239,8 @@ const GAME_DATA = {
         "pescador_costa",
         "resgate_naufragos",
         "mare_baixa",
-        "arquipelago_entrada"
+        "arquipelago_entrada",
+        "escama_abissal"
       ]
     },
     {
@@ -2423,7 +2437,10 @@ const GAME_DATA = {
         "fonte_de_mana",
         "cristal_de_foco",
         "po_de_estrelas",
-        "reino_congelado_portal"
+        "reino_congelado_portal",
+        "tempestade_magica",
+        "golem_granito",
+        "coracao_cristal"
       ]
     },
     {
@@ -2508,7 +2525,10 @@ const GAME_DATA = {
         "morcego_rei",
         "cristaleira",
         "fonte_de_mana",
-        "cristal_de_foco"
+        "cristal_de_foco",
+        "armadura_juggernaut",
+        "cassino_goblin",
+        "mimico_bau"
       ]
     },
     {
@@ -2942,7 +2962,9 @@ const GAME_DATA = {
         "lamina_do_juramento",
         "grimm_encontro",
         "escola_necromancia",
-        "tumulo_sem_nome"
+        "tumulo_sem_nome",
+        "calice_escarlate",
+        "espectro_lamentoso"
       ]
     },
     {
@@ -3115,7 +3137,8 @@ const GAME_DATA = {
         "contrabandista",
         "senhor_das_areias",
         "persuasao_mercador",
-        "po_de_estrelas"
+        "po_de_estrelas",
+        "item_colar_orador"
       ]
     },
     {
@@ -4482,7 +4505,10 @@ const GAME_DATA = {
         "juramento_capital",
         "guarda_corrompido",
         "santuario_arcano",
-        "cidade_portoes"
+        "cidade_portoes",
+        "banco_de_ferro",
+        "coroa_de_ouro_maldito",
+        "mestre_darmas"
       ]
     },
     {
@@ -11710,9 +11736,9 @@ const GAME_DATA = {
       "efeito": { "tipo": "item", "slot": "consumivel", "cura": 20, "nomeItem": "Ração de Viagem", "custoOuro": 8 }
     },
     {
-      "id": "eco_distante",
+      "id": "eco_das_pedras",
       "emoji": "🔊",
-      "nome": "Eco Distante",
+      "nome": "Eco das Pedras",
       "tipo": "evento",
       "raridade": "comum",
       "weight": 18,
