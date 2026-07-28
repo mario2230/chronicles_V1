@@ -164,19 +164,6 @@ const GAME_DATA = {
           }
         },
         {
-          "id": "mago_3",
-          "nome": "Instinto Predatório Arcano",
-          "emoji": "🦉",
-          "nivelDesbloqueio": 8,
-          "tipo": "passiva",
-          "descricao": "Quando o inimigo se aproxima do fim, todo o seu dano em combate se torna letal contra alvos abaixo de 35% de vida.",
-          "efeito": {
-            "tipo": "passiva_execucao",
-            "limiar": 0.35,
-            "bonus": 1.7
-          }
-        },
-        {
           "id": "mago_5",
           "nome": "Sobrecarga Arcana",
           "emoji": "🌀",
@@ -196,6 +183,20 @@ const GAME_DATA = {
             "cooldown": 4
           }
         },
+        {
+          "id": "mago_3",
+          "nome": "Instinto Predatório Arcano",
+          "emoji": "🦉",
+          "nivelDesbloqueio": 8,
+          "tipo": "passiva",
+          "descricao": "Quando o inimigo se aproxima do fim, todo o seu dano em combate se torna letal contra alvos abaixo de 35% de vida.",
+          "efeito": {
+            "tipo": "passiva_execucao",
+            "limiar": 0.35,
+            "bonus": 1.7
+          }
+        },
+        
         {
           "id": "mago_6",
           "nome": "Explosão de Mana",
@@ -287,6 +288,20 @@ const GAME_DATA = {
           }
         },
         {
+          "id": "guerreiro_5",
+          "nome": "Investida Brutal",
+          "emoji": "🐂",
+          "nivelDesbloqueio": 6,
+          "tipo": "ativa",
+          "descricao": "Avança com todo o peso do corpo contra o inimigo, ignorando a própria defesa em troca de dano bruto.",
+          "efeito": {
+            "tipo": "ativa_dano_combate",
+            "multiplicador": 1.8,
+            "custoMana": 8,
+            "cooldown": 3
+          }
+        },
+        {
           "id": "guerreiro_3",
           "nome": "Cicatrizes de Guerra",
           "emoji": "🩸",
@@ -300,20 +315,6 @@ const GAME_DATA = {
             "divisor": 2,
             "incremento": 2,
             "max": 18
-          }
-        },
-        {
-          "id": "guerreiro_5",
-          "nome": "Investida Brutal",
-          "emoji": "🐂",
-          "nivelDesbloqueio": 6,
-          "tipo": "ativa",
-          "descricao": "Avança com todo o peso do corpo contra o inimigo, ignorando a própria defesa em troca de dano bruto.",
-          "efeito": {
-            "tipo": "ativa_dano_combate",
-            "multiplicador": 1.8,
-            "custoMana": 8,
-            "cooldown": 3
           }
         },
         {
@@ -413,18 +414,6 @@ const GAME_DATA = {
           }
         },
         {
-          "id": "arqueiro_3",
-          "nome": "Reflexos Apurados",
-          "emoji": "💨",
-          "nivelDesbloqueio": 8,
-          "tipo": "passiva",
-          "descricao": "Seus reflexos permitem esquivar por completo de 24% dos ataques inimigos.",
-          "efeito": {
-            "tipo": "passiva_esquiva",
-            "chance": 0.24
-          }
-        },
-        {
           "id": "arqueiro_5",
           "nome": "Tiro Duplo",
           "emoji": "🏹",
@@ -439,6 +428,19 @@ const GAME_DATA = {
             "cooldown": 3
           }
         },
+        {
+          "id": "arqueiro_3",
+          "nome": "Reflexos Apurados",
+          "emoji": "💨",
+          "nivelDesbloqueio": 8,
+          "tipo": "passiva",
+          "descricao": "Seus reflexos permitem esquivar por completo de 24% dos ataques inimigos.",
+          "efeito": {
+            "tipo": "passiva_esquiva",
+            "chance": 0.24
+          }
+        },
+        
         {
           "id": "arqueiro_6",
           "nome": "Flecha Perfurante",
@@ -525,19 +527,6 @@ const GAME_DATA = {
           }
         },
         {
-          "id": "ladino_3",
-          "nome": "Contatos no Submundo",
-          "emoji": "🕸️",
-          "nivelDesbloqueio": 8,
-          "tipo": "passiva",
-          "descricao": "Seus contatos reduzem muito o custo de rerolls de cartas e de subornos em combate.",
-          "efeito": {
-            "tipo": "passiva_desconto",
-            "reroll": 0.55,
-            "suborno": 0.35
-          }
-        },
-        {
           "id": "ladino_5",
           "nome": "Golpe Furtivo",
           "emoji": "🗡️",
@@ -551,6 +540,20 @@ const GAME_DATA = {
             "cooldown": 3
           }
         },
+        {
+          "id": "ladino_3",
+          "nome": "Contatos no Submundo",
+          "emoji": "🕸️",
+          "nivelDesbloqueio": 8,
+          "tipo": "passiva",
+          "descricao": "Seus contatos reduzem muito o custo de rerolls de cartas e de subornos em combate.",
+          "efeito": {
+            "tipo": "passiva_desconto",
+            "reroll": 0.55,
+            "suborno": 0.35
+          }
+        },
+        
         {
           "id": "ladino_6",
           "nome": "Sumiço",
@@ -639,6 +642,23 @@ const GAME_DATA = {
             ]
           }
         },
+
+        {
+          "id": "paladino_5",
+          "nome": "Golpe Sagrado",
+          "emoji": "⚔️",
+          "nivelDesbloqueio": 6,
+          "tipo": "ativa",
+          "descricao": "Um golpe abençoado que fere o inimigo e devolve parte do dano como vida.",
+          "efeito": {
+            "tipo": "ativa_dano_combate",
+            "multiplicador": 1.7,
+            "custoMana": 10,
+            "drenoVida": 0.3,
+            "cooldown": 3
+          }
+        },
+
         {
           "id": "paladino_3",
           "nome": "Protetor do Povo",
@@ -655,21 +675,7 @@ const GAME_DATA = {
             "max": 24
           }
         },
-        {
-          "id": "paladino_5",
-          "nome": "Golpe Sagrado",
-          "emoji": "⚔️",
-          "nivelDesbloqueio": 6,
-          "tipo": "ativa",
-          "descricao": "Um golpe abençoado que fere o inimigo e devolve parte do dano como vida.",
-          "efeito": {
-            "tipo": "ativa_dano_combate",
-            "multiplicador": 1.7,
-            "custoMana": 10,
-            "drenoVida": 0.3,
-            "cooldown": 3
-          }
-        },
+        
         {
           "id": "paladino_6",
           "nome": "Escudo da Fé",
@@ -764,6 +770,24 @@ const GAME_DATA = {
             "maxStacks": 10
           }
         },
+
+
+        {
+          "id": "necromante_5",
+          "nome": "Explosão Necrótica",
+          "emoji": "☠️",
+          "nivelDesbloqueio": 6,
+          "tipo": "ativa",
+          "descricao": "Rompe a carne do inimigo com energia da morte, drenando metade do dano causado como vida.",
+          "efeito": {
+            "tipo": "ativa_dano_combate",
+            "multiplicador": 1.6,
+            "custoMana": 10,
+            "drenoVida": 0.5,
+            "cooldown": 3
+          }
+        },
+
         {
           "id": "necromante_3",
           "nome": "Exército de Ossos",
@@ -780,21 +804,7 @@ const GAME_DATA = {
             "max": 18
           }
         },
-        {
-          "id": "necromante_5",
-          "nome": "Explosão Necrótica",
-          "emoji": "☠️",
-          "nivelDesbloqueio": 6,
-          "tipo": "ativa",
-          "descricao": "Rompe a carne do inimigo com energia da morte, drenando metade do dano causado como vida.",
-          "efeito": {
-            "tipo": "ativa_dano_combate",
-            "multiplicador": 1.6,
-            "custoMana": 10,
-            "drenoVida": 0.5,
-            "cooldown": 3
-          }
-        },
+        
         {
           "id": "necromante_6",
           "nome": "Ceifar Almas",
@@ -877,6 +887,20 @@ const GAME_DATA = {
           }
         },
         {
+          "id": "druida_5",
+          "nome": "Investida Selvagem",
+          "emoji": "🐾",
+          "nivelDesbloqueio": 6,
+          "tipo": "ativa",
+          "descricao": "Canaliza o instinto de uma fera para atacar com força bruta.",
+          "efeito": {
+            "tipo": "ativa_dano_combate",
+            "multiplicador": 1.6,
+            "custoMana": 9,
+            "cooldown": 3
+          }
+        },
+        {
           "id": "druida_3",
           "nome": "Um com a Terra",
           "emoji": "🍃",
@@ -901,20 +925,7 @@ const GAME_DATA = {
             ]
           }
         },
-        {
-          "id": "druida_5",
-          "nome": "Investida Selvagem",
-          "emoji": "🐾",
-          "nivelDesbloqueio": 6,
-          "tipo": "ativa",
-          "descricao": "Canaliza o instinto de uma fera para atacar com força bruta.",
-          "efeito": {
-            "tipo": "ativa_dano_combate",
-            "multiplicador": 1.6,
-            "custoMana": 9,
-            "cooldown": 3
-          }
-        },
+        
         {
           "id": "druida_6",
           "nome": "Renascimento Selvagem",
@@ -994,6 +1005,20 @@ const GAME_DATA = {
           }
         },
         {
+          "id": "bardo_5",
+          "nome": "Acorde Dissonante",
+          "emoji": "🎸",
+          "nivelDesbloqueio": 6,
+          "tipo": "ativa",
+          "descricao": "Um som capaz de ferir tanto quanto qualquer lâmina.",
+          "efeito": {
+            "tipo": "ativa_dano_combate",
+            "multiplicador": 1.5,
+            "custoMana": 9,
+            "cooldown": 3
+          }
+        },
+        {
           "id": "bardo_3",
           "nome": "Rede de Contatos",
           "emoji": "🎭",
@@ -1009,20 +1034,7 @@ const GAME_DATA = {
             "max": 28
           }
         },
-        {
-          "id": "bardo_5",
-          "nome": "Acorde Dissonante",
-          "emoji": "🎸",
-          "nivelDesbloqueio": 6,
-          "tipo": "ativa",
-          "descricao": "Um som capaz de ferir tanto quanto qualquer lâmina.",
-          "efeito": {
-            "tipo": "ativa_dano_combate",
-            "multiplicador": 1.5,
-            "custoMana": 9,
-            "cooldown": 3
-          }
-        },
+        
         {
           "id": "bardo_6",
           "nome": "Mão Leve",
@@ -1110,6 +1122,21 @@ const GAME_DATA = {
           }
         },
         {
+          "id": "monge_5",
+          "nome": "Punho Relâmpago",
+          "emoji": "👊",
+          "nivelDesbloqueio": 6,
+          "tipo": "ativa",
+          "descricao": "Uma sequência de três golpes rápidos, cada um mais fraco, mas quase impossíveis de evitar todos.",
+          "efeito": {
+            "tipo": "ativa_dano_combate",
+            "multiplicador": 0.9,
+            "custoMana": 10,
+            "golpes": 3,
+            "cooldown": 4
+          }
+        },
+        {
           "id": "monge_3",
           "nome": "Equilíbrio Interior",
           "emoji": "☯️",
@@ -1125,21 +1152,7 @@ const GAME_DATA = {
             "max": 7
           }
         },
-        {
-          "id": "monge_5",
-          "nome": "Punho Relâmpago",
-          "emoji": "👊",
-          "nivelDesbloqueio": 6,
-          "tipo": "ativa",
-          "descricao": "Uma sequência de três golpes rápidos, cada um mais fraco, mas quase impossíveis de evitar todos.",
-          "efeito": {
-            "tipo": "ativa_dano_combate",
-            "multiplicador": 0.9,
-            "custoMana": 10,
-            "golpes": 3,
-            "cooldown": 4
-          }
-        },
+        
         {
           "id": "monge_6",
           "nome": "Respiração Interior",
