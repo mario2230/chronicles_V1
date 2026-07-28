@@ -1451,8 +1451,8 @@ function showEquipPrompt(item) {
       </div>
     </div>
     <div class="equip-toast-compare">
-      <div><span class="equip-toast-label">novo</span> ${bonusTxt(item.bonus)}</div>
       ${atual ? `<div><span class="equip-toast-label">atual</span> ${bonusTxt(atual.bonus)}</div>` : `<div class="equip-toast-label">nenhum equipado ainda</div>`}
+      <div><span class="equip-toast-label">novo</span> ${bonusTxt(item.bonus)}</div>
     </div>
     <div class="equip-toast-actions">
       <button class="equip-toast-btn equip-toast-yes">Equipar agora</button>
