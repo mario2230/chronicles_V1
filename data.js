@@ -14,6 +14,7 @@ const GAME_DATA = {
   "spells": [
     {
       "id": "faisca_arcana",
+      "nivelMinimo": 1,
       "nome": "Faísca Arcana",
       "emoji": "✨",
       "escola": null,
@@ -22,6 +23,7 @@ const GAME_DATA = {
     },
     {
       "id": "bola_de_fogo",
+      "nivelMinimo": 3,
       "nome": "Bola de Fogo",
       "emoji": "🔥",
       "escola": "piromancia",
@@ -30,6 +32,7 @@ const GAME_DATA = {
     },
     {
       "id": "toque_sombrio",
+      "nivelMinimo": 3,
       "nome": "Toque Sombrio",
       "emoji": "☠",
       "escola": "necromancia",
@@ -39,6 +42,7 @@ const GAME_DATA = {
     },
     {
       "id": "lamina_ilusoria",
+      "nivelMinimo": 3,
       "nome": "Lâmina Ilusória",
       "emoji": "🌙",
       "escola": "ilusionismo",
@@ -47,6 +51,7 @@ const GAME_DATA = {
     },
     {
       "id": "raio_encadeado",
+      "nivelMinimo": 4,
       "nome": "Raio Encadeado",
       "emoji": "⚡",
       "escola": "elementalismo",
@@ -90,6 +95,13 @@ const GAME_DATA = {
       "custoMana": 26,
       "requerRank": 3
     }
+  ],
+  "melhoriasRepetiveis": [
+    { "id": "melhoria_velocidade", "nome": "Reflexos Treinados", "emoji": "🏃", "descricao": "+1 velocidade permanente por compra.", "stat": "velocidade", "valorPorNivel": 1, "custoBase": 15, "custoPorNivel": 12, "max": 5 },
+    { "id": "melhoria_ataque", "nome": "Punho Fortalecido", "emoji": "⚔️", "descricao": "+1 ataque permanente por compra.", "stat": "ataque", "valorPorNivel": 1, "custoBase": 18, "custoPorNivel": 14, "max": 5 },
+    { "id": "melhoria_defesa", "nome": "Pele Endurecida", "emoji": "🛡", "descricao": "+1 defesa permanente por compra.", "stat": "defesa", "valorPorNivel": 1, "custoBase": 18, "custoPorNivel": 14, "max": 5 },
+    { "id": "melhoria_vida", "nome": "Vitalidade Ampliada", "emoji": "❤️", "descricao": "+8 vida máxima permanente por compra.", "stat": "vidaMax", "valorPorNivel": 8, "custoBase": 16, "custoPorNivel": 12, "max": 5 },
+    { "id": "melhoria_mana", "nome": "Poço Arcano", "emoji": "✨", "descricao": "+8 mana máxima permanente por compra.", "stat": "manaMax", "valorPorNivel": 8, "custoBase": 16, "custoPorNivel": 12, "max": 5 }
   ],
   "talismas": [
     { "id": "talisma_veterano", "nome": "Bênção do Veterano", "emoji": "🛡️", "descricao": "+15 vida máxima inicial.", "custo": 25, "bonus": { "vidaMax": 15 } },

@@ -286,7 +286,8 @@ function novoEstado(classeId, seed) {
       conquistas: [],
       escolas: [],
       buffsAtivos: [], // buffs temporários de combate (ataque/defesa/velocidade), vindos de poções
-      habilidadesDesbloqueadas: [], // ids de habilidades de classe já desbloqueadas
+      habilidadesDesbloqueadas: [], // ids de habilidades de classe já CONFIRMADAS pelo jogador
+      habilidadesNotificadas: [], // ids já avisadas como disponíveis (evita repetir o aviso)
       habilidadesBonus: {}, // soma permanente de bonus/malus de habilidades passivas fixas
       cooldownsHabilidade: {}, // id -> turnos restantes de recarga
       inimigosDerrotadosTotal: 0, // contador global (comuns + elites + chefes) para passivas dinâmicas
@@ -344,8 +345,21 @@ function getHabilidadesClasse() {
   const classe = getClasseAtual();
   return (classe && classe.habilidades) || [];
 }
-function getHabilidadesDesbloqueadas() {
+// nível elegível (poderia desbloquear) — não confundir com "ativa de fato".
+function getHabilidadesElegiveis() {
   return getHabilidadesClasse().filter((h) => state.hero.nivel >= h.nivelDesbloqueio);
+}
+// elegíveis mas que o jogador ainda não escolheu confirmar — aparecem na
+// barra de habilidades como um convite pra desbloquear, não automático.
+function getHabilidadesElegiveisNaoConfirmadas() {
+  const confirmadas = state.hero.habilidadesDesbloqueadas || [];
+  return getHabilidadesElegiveis().filter((h) => !confirmadas.includes(h.id));
+}
+// só as que o jogador efetivamente confirmou — é isso que conta pra todo
+// efeito de jogo (dano, passivas, esquiva etc.), não o nível sozinho.
+function getHabilidadesDesbloqueadas() {
+  const confirmadas = state.hero.habilidadesDesbloqueadas || [];
+  return getHabilidadesClasse().filter((h) => state.hero.nivel >= h.nivelDesbloqueio && confirmadas.includes(h.id));
 }
 
 // bônus vivo (recalculado sempre) de habilidades passivas cujo poder
@@ -425,28 +439,45 @@ function registrarCondicaoPassiva(tipo, qtd = 1) {
   state.passiveConditionCounters[tipo] = (state.passiveConditionCounters[tipo] || 0) + qtd;
 }
 
-// chamada logo após state.hero.nivel++ (dentro de ganharExp). Aplica de
-// forma permanente o bônus/malus de habilidades passivas fixas assim que
-// elas desbloqueiam, e avisa o jogador no diário.
+// chamada logo após state.hero.nivel++ (dentro de ganharExp). Não aplica
+// mais nada sozinha — só avisa que uma nova habilidade PODE ser escolhida
+// na barra de habilidades. É o jogador quem decide quando confirmar
+// (ver confirmarHabilidade), o que também deixa a habilidade "oculta" (🔒)
+// até esse momento, em vez de já revelar o que ela faz.
 function verificarNovasHabilidades() {
   const habilidades = getHabilidadesClasse();
   if (!habilidades.length) return;
   if (!state.hero.habilidadesDesbloqueadas) state.hero.habilidadesDesbloqueadas = [];
   if (!state.hero.habilidadesBonus) state.hero.habilidadesBonus = {};
+  if (!state.hero.habilidadesNotificadas) state.hero.habilidadesNotificadas = [];
   habilidades.forEach((hab) => {
-    if (state.hero.nivel >= hab.nivelDesbloqueio && !state.hero.habilidadesDesbloqueadas.includes(hab.id)) {
-      state.hero.habilidadesDesbloqueadas.push(hab.id);
-      if (hab.efeito.tipo === "passiva_stat") {
-        Object.entries(hab.efeito.bonus || {}).forEach(([k, v]) => {
-          state.hero.habilidadesBonus[k] = (state.hero.habilidadesBonus[k] || 0) + v;
-        });
-        Object.entries(hab.efeito.malus || {}).forEach(([k, v]) => {
-          state.hero.habilidadesBonus[k] = (state.hero.habilidadesBonus[k] || 0) + v;
-        });
-      }
-      addStory(`${hab.emoji} Nova habilidade desbloqueada: ${hab.nome}! ${hab.descricao}`, "roxo");
+    if (state.hero.nivel >= hab.nivelDesbloqueio && !state.hero.habilidadesNotificadas.includes(hab.id)) {
+      state.hero.habilidadesNotificadas.push(hab.id);
+      addStory(`❓ Uma nova habilidade pode ser desbloqueada! Escolha-a na barra de habilidades quando quiser.`, "roxo");
     }
   });
+}
+
+// o jogador clica numa habilidade elegível-mas-não-confirmada pra
+// efetivamente desbloqueá-la. Só a partir daqui ela conta pra qualquer
+// cálculo do jogo (dano, passivas, esquiva, custo de mana etc.).
+function confirmarHabilidade(habId) {
+  const hab = getHabilidadesClasse().find((h) => h.id === habId);
+  if (!hab || state.hero.nivel < hab.nivelDesbloqueio) return;
+  if (!state.hero.habilidadesDesbloqueadas) state.hero.habilidadesDesbloqueadas = [];
+  if (state.hero.habilidadesDesbloqueadas.includes(habId)) return;
+  state.hero.habilidadesDesbloqueadas.push(habId);
+  if (!state.hero.habilidadesBonus) state.hero.habilidadesBonus = {};
+  if (hab.efeito.tipo === "passiva_stat") {
+    Object.entries(hab.efeito.bonus || {}).forEach(([k, v]) => {
+      state.hero.habilidadesBonus[k] = (state.hero.habilidadesBonus[k] || 0) + v;
+    });
+    Object.entries(hab.efeito.malus || {}).forEach(([k, v]) => {
+      state.hero.habilidadesBonus[k] = (state.hero.habilidadesBonus[k] || 0) + v;
+    });
+  }
+  addStory(`${hab.emoji} Você desbloqueou ${hab.nome}! ${hab.descricao}`, "roxo");
+  renderAll();
 }
 
 // passivas de regeneração (vida) rodam uma vez por turno do mundo — não a
@@ -523,6 +554,7 @@ function ganharRelacaoEscola(escolaId, quantidade) {
   }
 }
 function spellDisponivel(spell) {
+  if (state.hero.nivel < (spell.nivelMinimo || 1)) return false;
   if (!spell.requerRank) return true;
   const entry = getEscolaEntry(spell.escola);
   return !!entry && escolaRankInfo(entry.relacao).rank >= spell.requerRank;
@@ -747,41 +779,57 @@ function renderSkillBar() {
   if (!el) return;
   const habilidades = getHabilidadesClasse();
   if (!habilidades.length) { el.innerHTML = ""; return; }
+  const confirmadas = state.hero.habilidadesDesbloqueadas || [];
 
   el.innerHTML = habilidades.map((hab) => {
-    const desbloqueada = state.hero.nivel >= hab.nivelDesbloqueio;
+    const elegivel = state.hero.nivel >= hab.nivelDesbloqueio;
+    const confirmada = confirmadas.includes(hab.id);
+    const pendente = elegivel && !confirmada; // pode escolher desbloquear agora
     const ativa = hab.tipo === "ativa";
     const cd = (state.hero.cooldownsHabilidade && state.hero.cooldownsHabilidade[hab.id]) || 0;
     const semMana = ativa && state.hero.mana < (hab.efeito.custoMana || 0);
-    const fraca = desbloqueada && (cd > 0 || semMana);
+    const fraca = confirmada && (cd > 0 || semMana);
     const classes = [
       "skill-icon",
-      desbloqueada ? (ativa ? "skill-ativa" : "skill-passiva") : "skill-locked",
+      !elegivel ? "skill-locked" : confirmada ? (ativa ? "skill-ativa" : "skill-passiva") : "skill-pendente",
       fraca ? "skill-fraca" : "",
     ].filter(Boolean).join(" ");
-    const onclick = desbloqueada && ativa ? ` onclick="usarHabilidade('${hab.id}')"` : "";
+    // habilidade ainda não elegível: clique não faz nada. Elegível mas não
+    // confirmada: clicar desbloqueia (independente de ser ativa ou passiva).
+    // Confirmada e ativa: clicar usa a habilidade em combate.
+    const onclick = pendente ? ` onclick="confirmarHabilidade('${hab.id}')"` : confirmada && ativa ? ` onclick="usarHabilidade('${hab.id}')"` : "";
 
-    const meta = [];
-    if (!desbloqueada) meta.push(`<span>Desbloqueia no <b>nível ${hab.nivelDesbloqueio}</b></span>`);
-    if (desbloqueada && ativa) {
-      meta.push(`<span>Custo: <b>${hab.efeito.custoMana || 0} mana</b></span>`);
-      meta.push(`<span>Recarga: <b>${hab.cooldown || 0}t</b></span>`);
-      if (cd > 0) meta.push(`<span style="color:var(--cor-vermelho)">Recarregando: <b>${cd}t</b></span>`);
-      if (semMana) meta.push(`<span style="color:var(--cor-vermelho)">Mana insuficiente</span>`);
+    let tooltip;
+    if (!elegivel) {
+      // oculta de propósito — o jogador só sabe que existe "algo" e em que
+      // nível, não o que faz. É isso que cria a surpresa da progressão.
+      tooltip = `
+        <div class="skill-tooltip stt-locked">
+          <div class="stt-nome"><span>🔒</span> Habilidade Bloqueada</div>
+          <div class="stt-desc">Desbloqueia no <b>nível ${hab.nivelDesbloqueio}</b>. O que ela faz é surpresa até lá.</div>
+        </div>`;
+    } else {
+      const meta = [];
+      if (confirmada && ativa) {
+        meta.push(`<span>Custo: <b>${hab.efeito.custoMana || 0} mana</b></span>`);
+        meta.push(`<span>Recarga: <b>${hab.cooldown || 0}t</b></span>`);
+        if (cd > 0) meta.push(`<span style="color:var(--cor-vermelho)">Recarregando: <b>${cd}t</b></span>`);
+        if (semMana) meta.push(`<span style="color:var(--cor-vermelho)">Mana insuficiente</span>`);
+      }
+      const efeitoResumo = resumoEfeitoHabilidade(hab, true);
+      tooltip = `
+        <div class="skill-tooltip ${ativa ? "stt-ativa" : "stt-passiva"} ${pendente ? "stt-pendente" : ""}">
+          <div class="stt-nome"><span>${hab.emoji}</span> ${hab.nome} <span class="stt-tag">${ativa ? "ativa" : "passiva"}</span></div>
+          <div class="stt-desc">${hab.descricao}${efeitoResumo ? `<div style="margin-top:6px;color:var(--cor-ciano);">${efeitoResumo}</div>` : ""}</div>
+          ${pendente ? `<div class="stt-unlock-hint">✨ Clique pra desbloquear</div>` : `<div class="stt-meta">${meta.join("")}</div>`}
+        </div>`;
     }
-
-    const efeitoResumo = resumoEfeitoHabilidade(hab, desbloqueada);
-    const tooltip = `
-      <div class="skill-tooltip ${ativa ? "stt-ativa" : "stt-passiva"}">
-        <div class="stt-nome"><span>${hab.emoji}</span> ${hab.nome} <span class="stt-tag">${ativa ? "ativa" : "passiva"}</span></div>
-        <div class="stt-desc">${hab.descricao}${efeitoResumo ? `<div style="margin-top:6px;color:var(--cor-ciano);">${efeitoResumo}</div>` : ""}</div>
-        <div class="stt-meta">${meta.join("")}</div>
-      </div>`;
 
     return `
       <div class="${classes}"${onclick}>
-        <span class="skill-emoji">${desbloqueada ? hab.emoji : "🔒"}</span>
-        ${desbloqueada && ativa && cd > 0 ? `<span class="skill-cd">${cd}</span>` : ""}
+        <span class="skill-emoji">${!elegivel ? "🔒" : confirmada ? hab.emoji : "✨"}</span>
+        ${confirmada && ativa && cd > 0 ? `<span class="skill-cd">${cd}</span>` : ""}
+        ${pendente ? `<span class="skill-pendente-dot"></span>` : ""}
         ${tooltip}
       </div>`;
   }).join("");
@@ -2178,6 +2226,9 @@ function renderBattleModal() {
             ? `<div class="battle-actions battle-item-menu">
                 ${(DATA.spells || [])
                   .map((s) => {
+                    if (state.hero.nivel < (s.nivelMinimo || 1)) {
+                      return `<button class="battle-btn item-btn battle-btn-bloqueado" disabled>${s.emoji} ${s.nome} 🔒 <small>desbloqueia no nível ${s.nivelMinimo}</small></button>`;
+                    }
                     if (!spellDisponivel(s)) {
                       const entry = getEscolaEntry(s.escola);
                       const rankAtual = entry ? escolaRankInfo(entry.relacao).rank : 0;
@@ -3141,10 +3192,46 @@ function getLegado() {
       comprados: parsed.comprados || [],
       equipado: parsed.equipado || null,
       finaisAlcancados: parsed.finaisAlcancados || [],
+      melhorias: parsed.melhorias || {}, // { melhoriaId: quantidadeComprada }
     };
   } catch (e) {
-    return { ecos: 0, comprados: [], equipado: null, finaisAlcancados: [] };
+    return { ecos: 0, comprados: [], equipado: null, finaisAlcancados: [], melhorias: {} };
   }
+}
+
+// custo da PRÓXIMA compra de uma melhoria repetível — cresce a cada nível
+// já comprado, então evoluir fica gradualmente mais caro (sensação real
+// de progressão contínua, sem virar algo trivial de maximizar de cara).
+function custoProximaMelhoria(melhoria, legado) {
+  const nivelAtual = legado.melhorias[melhoria.id] || 0;
+  return melhoria.custoBase + melhoria.custoPorNivel * nivelAtual;
+}
+
+function comprarMelhoria(id) {
+  const legado = getLegado();
+  const melhoria = (DATA.melhoriasRepetiveis || []).find((m) => m.id === id);
+  if (!melhoria) return;
+  const nivelAtual = legado.melhorias[id] || 0;
+  if (nivelAtual >= melhoria.max) return;
+  const custo = custoProximaMelhoria(melhoria, legado);
+  if (legado.ecos < custo) return;
+  legado.ecos -= custo;
+  legado.melhorias[id] = nivelAtual + 1;
+  saveLegado(legado);
+  showLegadoModal();
+}
+
+// aplica TODAS as melhorias repetíveis compradas — diferente do talismã
+// (só 1 equipado por vez), as melhorias empilham e ficam sempre ativas.
+function aplicarMelhoriasLegado() {
+  const legado = getLegado();
+  const partes = [];
+  (DATA.melhoriasRepetiveis || []).forEach((m) => {
+    const nivel = legado.melhorias[m.id] || 0;
+    if (nivel <= 0) return;
+    const total = nivel * m.valorPorNivel;
+    applyStatDelta({ [m.stat]: total }, `🏺 ${m.nome} (nível ${nivel})`);
+  });
 }
 
 function saveLegado(legado) {
@@ -3214,6 +3301,30 @@ function showLegadoModal() {
                 <div class="lt-info">
                   <div class="lt-nome">${t.nome}</div>
                   <div class="lt-desc">${t.descricao}</div>
+                </div>
+                ${botao}
+              </div>`;
+            })
+            .join("")}
+        </div>
+
+        <div class="hero-section-title">Melhorias Permanentes (empilham, até 5x cada)</div>
+        <div class="legado-talisma-list">
+          ${(DATA.melhoriasRepetiveis || [])
+            .map((m) => {
+              const nivel = legado.melhorias[m.id] || 0;
+              const cheio = nivel >= m.max;
+              const custo = custoProximaMelhoria(m, legado);
+              const podeComprar = !cheio && legado.ecos >= custo;
+              const botao = cheio
+                ? `<button class="btn-primary talisma-btn" disabled>✓ Máximo</button>`
+                : `<button class="btn-secondary talisma-btn" ${podeComprar ? "" : "disabled"} onclick="comprarMelhoria('${m.id}')">💠 ${custo}</button>`;
+              return `
+              <div class="legado-talisma ${cheio ? "equipado" : ""}">
+                <span class="lt-emoji">${m.emoji}</span>
+                <div class="lt-info">
+                  <div class="lt-nome">${m.nome} <span class="lt-nivel">Nv. ${nivel}/${m.max}</span></div>
+                  <div class="lt-desc">${m.descricao}</div>
                 </div>
                 ${botao}
               </div>`;
@@ -3473,6 +3584,22 @@ function showInventoryModal() {
   });
 }
 
+// monta o tooltip de um item da mochila: nome, descrição (puxada da carta
+// original que o entregou) e efeito resumido — pra nunca mais esquecer o
+// que um "Pó de Estrela" faz.
+function buildItemTooltipHtml(nome, emoji, descricao, efeitoTxt) {
+  return `
+    <div class="item-tooltip">
+      <div class="itt-nome"><span>${emoji}</span> ${nome}</div>
+      <div class="itt-desc">${descricao}</div>
+      ${efeitoTxt ? `<div class="itt-efeito">${efeitoTxt}</div>` : ""}
+    </div>`;
+}
+function descricaoOriginalDoItem(itemId) {
+  const card = DATA.cards.find((c) => c.id === itemId);
+  return (card && card.historia && card.historia[0]) || "Um item recolhido durante a jornada.";
+}
+
 function inventoryModalContent() {
   const h = state.hero;
   const equipHtml = ["arma", "armadura", "acessorio"]
@@ -3480,7 +3607,8 @@ function inventoryModalContent() {
       const it = h.equipamentos[slot];
       if (!it) return `<div class="inv-item"><span class="slot">${slot}</span><span class="empty-note">vazio</span></div>`;
       const bonusTxt = Object.entries(it.bonus || {}).map(([k, v]) => `${k} ${v > 0 ? "+" : ""}${v}`).join(", ");
-      return `<div class="inv-item"><span class="slot">${slot}</span><span>${it.emoji || "🎒"} ${it.nome}<br><small style="color:#00E5FF">${bonusTxt}</small></span></div>`;
+      const tooltip = buildItemTooltipHtml(it.nome, it.emoji || "🎒", descricaoOriginalDoItem(it.id), bonusTxt ? `⚔ ${bonusTxt}` : "");
+      return `<div class="inv-item inv-item-hoverable"><span class="slot">${slot}</span><span>${it.emoji || "🎒"} ${it.nome}<br><small style="color:#00E5FF">${bonusTxt}</small></span>${tooltip}</div>`;
     })
     .join("");
 
@@ -3490,10 +3618,12 @@ function inventoryModalContent() {
         .map((it) => {
           const bonusTxt = Object.entries(it.bonus || {}).map(([k, v]) => `${k} ${v > 0 ? "+" : ""}${v}`).join(", ");
           const qtyTag = (it.quantidade || 1) > 1 ? `<span class="item-qty">x${it.quantidade}</span>` : "";
-          return `<div class="inv-item inv-item-actionable" onclick="equiparDaMochila('${it.itemId}')">
+          const tooltip = buildItemTooltipHtml(it.nome, it.emoji, descricaoOriginalDoItem(it.itemId), bonusTxt ? `⚔ ${bonusTxt}` : "");
+          return `<div class="inv-item inv-item-actionable inv-item-hoverable" onclick="equiparDaMochila('${it.itemId}')">
             <span class="slot">${it.slot}</span>
             <span>${it.emoji} ${it.nome}${qtyTag}<br><small style="color:#00E5FF">${bonusTxt}</small></span>
             <span class="inv-swap-hint">trocar ›</span>
+            ${tooltip}
           </div>`;
         })
         .join("")
@@ -3502,19 +3632,28 @@ function inventoryModalContent() {
   const consumiveis = state.hero.inventario.filter((it) => it.tipo === "consumivel");
   const consumHtml = consumiveis.length
     ? consumiveis
-        .map(
-          (it) => `<div class="inv-item inv-item-actionable" onclick="usarItemDaMochila('${it.itemId}')">
+        .map((it) => {
+          const efeitos = [];
+          if (it.cura) efeitos.push(`❤️ Cura ${it.cura} de vida`);
+          if (it.mana) efeitos.push(`✨ Restaura ${it.mana} de mana`);
+          if (it.buffCombate) {
+            const partes = Object.entries(it.buffCombate).map(([k, v]) => `${k} ${v > 0 ? "+" : ""}${v}`).join(", ");
+            if (partes) efeitos.push(`⚔ ${partes} em combate`);
+          }
+          const tooltip = buildItemTooltipHtml(it.nome, it.emoji, descricaoOriginalDoItem(it.itemId), efeitos.join(" · "));
+          return `<div class="inv-item inv-item-actionable inv-item-hoverable" onclick="usarItemDaMochila('${it.itemId}')">
             <span>${it.emoji} ${it.nome}</span>
             <span class="item-qty">x${it.quantidade}</span>
             <span class="inv-swap-hint">usar ›</span>
-          </div>`
-        )
+            ${tooltip}
+          </div>`;
+        })
         .join("")
     : `<div class="empty-note">Mochila sem consumíveis.</div>`;
 
   return `
     <h2>🎒 Mochila</h2>
-    <p class="sub">Tudo que ${h.nome} carrega nesta jornada.</p>
+    <p class="sub">Tudo que ${h.nome} carrega nesta jornada. Passe o mouse sobre um item pra ver o que ele faz.</p>
 
     <div class="codex-section-title">Equipados</div>
     <div class="equip-list">${equipHtml}</div>
@@ -3779,6 +3918,7 @@ function startGame(classeId, seed) {
   addStory(`🟢 Sua jornada como ${state.hero.nome} começa em uma pequena aldeia.`, "verde");
   state.tree.push({ emoji: state.hero.emoji, nome: state.hero.nome, tipo: "heroi" });
   aplicarTalismaInicial();
+  aplicarMelhoriasLegado();
   drawThreeCards();
   renderAll();
   updateRerollTooltip();

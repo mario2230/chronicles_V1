@@ -265,6 +265,28 @@ main.panels {
   flex-direction: column;
   gap: 6px;
 }
+.inv-item-hoverable { position: relative; }
+.item-tooltip {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 100%;
+  margin-top: 6px;
+  background: var(--bg);
+  border: 1px solid var(--primary);
+  border-radius: 10px;
+  padding: 10px 12px;
+  z-index: 40;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-4px);
+  transition: opacity .15s ease, transform .15s ease;
+  box-shadow: 0 10px 24px rgba(0,0,0,0.5);
+}
+.inv-item-hoverable:hover .item-tooltip { opacity: 1; transform: translateY(0); }
+.item-tooltip .itt-nome { font-weight: 700; display: flex; align-items: center; gap: 6px; margin-bottom: 4px; }
+.item-tooltip .itt-desc { font-size: 0.8rem; color: var(--text-dim); font-style: italic; margin-bottom: 6px; }
+.item-tooltip .itt-efeito { font-size: 0.8rem; color: var(--primary); }
 .equip-item, .inv-item {
   background: var(--card);
   border: 1px solid var(--border);
@@ -596,6 +618,28 @@ main.panels {
 .skill-icon.skill-locked:hover { transform: none; }
 .skill-icon.skill-fraca { opacity: 0.45; }
 .skill-icon.skill-fraca:hover { transform: none; box-shadow: 0 6px 18px rgba(0,0,0,0.45); }
+.skill-icon.skill-pendente {
+  cursor: pointer;
+  border-color: #ffd76e;
+  animation: skillPendentePulse 1.6s ease-in-out infinite;
+}
+@keyframes skillPendentePulse {
+  0%, 100% { box-shadow: 0 0 6px rgba(255,215,110,0.4); }
+  50% { box-shadow: 0 0 16px rgba(255,215,110,0.9); }
+}
+.skill-pendente-dot {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #ffd76e;
+  box-shadow: 0 0 6px rgba(255,215,110,0.8);
+}
+.stt-unlock-hint { margin-top: 6px; color: #ffd76e; font-weight: 700; text-align: center; }
+.skill-tooltip.stt-pendente { border-color: #ffd76e; }
+.skill-tooltip.stt-locked .stt-nome { opacity: 0.8; }
 
 .skill-cd {
   position: absolute;
@@ -1433,6 +1477,7 @@ body.weather-corrupcao #weatherLayer {
 .legado-talisma .lt-emoji { font-size: 1.6rem; }
 .legado-talisma .lt-info { flex: 1; }
 .legado-talisma .lt-nome { font-weight: 700; }
+.legado-talisma .lt-nivel { font-weight: 400; font-size: 0.78rem; color: var(--primary); margin-left: 6px; }
 .legado-talisma .lt-desc { font-size: 0.85rem; opacity: 0.75; }
 .legado-talisma .talisma-btn { white-space: nowrap; }
 .legado-personagens { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; }
