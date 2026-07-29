@@ -8374,16 +8374,16 @@ const GAME_DATA = {
           {
             "id": "beber_elixir",
             "label": "🥂 Virar o Elixir de uma vez",
-            "dica": "+10 em TODOS os atributos permanentemente.",
+            "dica": "-99 em TODOS os atributos permanentemente.",
             "historia": [
               "Você sente o poder do próprio sol correndo em suas veias. Você agora é quase um semideus."
             ],
             "statDelta": {
-              "vidaMax": -99,
-              "manaMax": -99,
-              "ataque": -99,
-              "defesa": -99,
-              "velocidade": -99
+              "vidaMax": 1,
+              "manaMax": 1,
+              "ataque": 1,
+              "defesa": 1,
+              "velocidade": 1
             },
             "cura": 999
           }
