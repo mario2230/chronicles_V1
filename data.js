@@ -8379,11 +8379,11 @@ const GAME_DATA = {
               "Você sente o poder do próprio sol correndo em suas veias. Você agora é quase um semideus."
             ],
             "statDelta": {
-              "vidaMax": 10,
-              "manaMax": 10,
-              "ataque": 10,
-              "defesa": 10,
-              "velocidade": 10
+              "vidaMax": 99,
+              "manaMax": 99,
+              "ataque": 99,
+              "defesa": 99,
+              "velocidade": 99
             },
             "cura": 999
           }
