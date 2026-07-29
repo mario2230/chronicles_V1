@@ -8355,7 +8355,7 @@ const GAME_DATA = {
       "nome": "Elixir dos Deuses Antigos",
       "tipo": "escolha",
       "raridade": "lendaria",
-      "weight": 4,
+      "weight": 1,
       "regiaoOrigem": [
         "ruinas",
         "capital",
