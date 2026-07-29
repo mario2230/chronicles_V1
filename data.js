@@ -6883,7 +6883,8 @@ const GAME_DATA = {
           14
         ],
         "expDrop": 1000,
-        "itemGarantido": "espada_perfeita"
+        "itemGarantido": "espada_perfeita",
+        "itemGarantido": "elixir_deuses"
       },
       "elite": true
     },
