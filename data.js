@@ -4891,7 +4891,7 @@ const GAME_DATA = {
       "nome": "TiTiAgo",
       "tipo": "chefe",
       "raridade": "mitica",
-      "weight": 1,
+      "weight": 5,
       "faseMin": 4,
       "regiaoOrigem": [
         "abismo",
