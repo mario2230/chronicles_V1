@@ -4884,6 +4884,38 @@ const GAME_DATA = {
         "flagFinal": "senhor_do_abismo"
       }
     },
+
+    {
+      "id": "Thiago - BetaTester",
+      "emoji": "😎",
+      "nome": "TiTiAgo",
+      "tipo": "chefe",
+      "raridade": "mitica",
+      "weight": 1,
+      "faseMin": 4,
+      "regiaoOrigem": [
+        "abismo",
+        "aldeia"
+      ],
+      "minNivel": 30,
+      "historia": [
+        "...",
+        "..."
+      ],
+      "cor": "vermelho",
+      "efeito": {
+        "tipo": "combate",
+        "vidaInimigo": 870,
+        "ataqueInimigo": 398,
+        "defesaInimigo": 294,
+        "ouroDrop": [
+          100,
+          180
+        ],
+        "expDrop": 150,
+        "flagFinal": "finalDoThiago"
+      }
+    },
     {
       "id": "corvo_mensageiro",
       "emoji": "🐦‍⬛",
@@ -12376,6 +12408,14 @@ const GAME_DATA = {
       "texto": "Com o Leviatã abatido nas profundezas, até os oceanos mais revoltos se acalmam diante da sua presença."
     },
     {
+      "id": "beta_tester",
+      "emoji": "😎",
+      "titulo": "Player Tester",
+      "condicao": "flag",
+      "flag": "finalDoThiago",
+      "texto": "O Grande Thiago."
+    },
+    {
       "id": "midas_amaldicoado",
       "emoji": "💰",
       "titulo": "Midas Amaldiçoado",
@@ -12391,6 +12431,7 @@ const GAME_DATA = {
       "atributo": "defesa",
       "valorMinimo": 30,
       "texto": "Nenhuma lâmina te corta, nenhum veneno te aflige. Você se tornou uma muralha inquebrável, o escudo absoluto do reino."
-    }
+    },
+   
   ]
 };
