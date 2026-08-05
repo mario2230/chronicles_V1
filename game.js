@@ -10,7 +10,7 @@ Copyright © 2026
 Todos os direitos reservados.
 
 GitHub:
-https://github.com/SEU-USUARIO
+https://github.com/mario2230
 
 ========================================================
 */
